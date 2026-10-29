@@ -382,6 +382,93 @@ button, input, select { font: inherit; color: inherit; }
 .raw-table thead th { font-family: var(--font); color: var(--muted); font-size: 0.7rem; text-transform: uppercase; }
 .raw-table tbody th { font-family: var(--font); font-weight: 400; color: var(--muted); }
 
+/* ------------------------------------------------------------------ mode tabs */
+
+.modes { display: inline-flex; padding: 4px; gap: 4px; border: 1px solid var(--line); border-radius: 999px; background: rgba(6, 9, 18, 0.5); }
+.modes [role="tab"] { padding: 8px 16px; border: 0; border-radius: 999px; background: transparent; cursor: pointer; font-weight: 600; color: var(--muted); }
+.modes [role="tab"][aria-selected="true"] { background: var(--text); color: var(--bg); }
+
+/* ------------------------------------------------------------------ guess the year */
+
+.guess { display: grid; place-items: start center; padding: 24px 16px 40px; }
+.guess-card {
+  width: min(860px, 100%);
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: calc(var(--radius) + 4px);
+  padding: 22px;
+}
+.guess-card h2 { margin: 0 0 6px; }
+.guess-intro { margin: 0 0 14px; color: var(--muted); }
+.guess-setup { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; }
+.guess-setup label { font-weight: 700; }
+.guess-setup select { padding: 8px 10px; border-radius: 10px; border: 1px solid var(--line); background: var(--panel-solid); }
+.guess-score { margin-left: auto; font: 700 0.95rem var(--mono); color: var(--muted); }
+
+.guess-stage .screen { max-width: 620px; margin: 0 auto; }
+.mystery-cover {
+  position: absolute; inset: 0;
+  display: grid; place-items: center;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(86, 180, 233, 0.18), transparent 60%),
+    repeating-radial-gradient(circle at 50% 50%, #0c0f1a 0 3px, #121829 3px 6px);
+}
+.mystery-cover span { font: 800 5rem/1 var(--font); color: rgba(238, 242, 250, 0.6); }
+.guess-card.is-playing .mystery-cover span, .guess.is-playing .mystery-cover span { animation: breathe 1.6s ease-in-out infinite; }
+@keyframes breathe { 50% { transform: scale(1.12); color: var(--text); } }
+.hearing { text-align: center; color: var(--muted); font: 0.85rem var(--mono); margin: 8px 0 0; min-height: 1.2em; }
+
+.guess-listen { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin: 16px 0; }
+.pill {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 10px 16px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--panel-solid);
+  cursor: pointer;
+  font-weight: 600;
+}
+.pill kbd {
+  font: 700 0.72rem var(--mono);
+  padding: 1px 6px;
+  border-radius: 5px;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.06);
+}
+.pill.main { background: var(--text); color: var(--bg); border-color: transparent; }
+.pill.main kbd { border-color: rgba(0, 0, 0, 0.25); background: rgba(0, 0, 0, 0.06); }
+.pill.old { border-color: var(--old); }
+.pill.new { border-color: var(--new); }
+.pill.old.is-on { background: var(--old); color: #05070f; }
+.pill.new.is-on { background: var(--new); color: #05070f; }
+
+.guess-choices { border: 0; padding: 0; margin: 0; }
+.guess-choices legend { font-weight: 700; margin-bottom: 8px; }
+.options { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+.option {
+  padding: 14px 8px;
+  font: 700 1.3rem var(--mono);
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: var(--panel-solid);
+  cursor: pointer;
+}
+.option kbd { font-size: 0.75rem; color: var(--muted); margin-right: 6px; }
+.option:disabled { cursor: default; }
+.option.is-answer { border: 2px solid var(--good); background: rgba(0, 158, 115, 0.22); }
+.option.is-answer::after { content: " ✓"; }
+.option.is-wrong { border: 2px dashed var(--new); }
+.option.is-wrong::after { content: " ✗"; }
+
+.guess-result { margin-top: 16px; padding: 14px 16px; border-radius: var(--radius); background: rgba(6, 9, 18, 0.55); border: 1px solid var(--line); }
+.verdict { margin: 0; font-size: 1.3rem; font-weight: 800; }
+.detail { margin: 4px 0 12px; color: var(--muted); }
+
+@media (max-width: 760px) {
+  .options { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .modes { order: 3; width: 100%; justify-content: center; }
+}
+
 /* ------------------------------------------------------------------ footer */
 
 .credits {

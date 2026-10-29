@@ -24,6 +24,10 @@
           <p class="tagline">NASA Earth data you can hear</p>
         </div>
       </div>
+      <div class="modes" role="tablist" aria-label="Mode">
+        <button role="tab" id="tab-jukebox" aria-selected="true" aria-controls="panel-jukebox" type="button">Jukebox</button>
+        <button role="tab" id="tab-guess" aria-selected="false" aria-controls="panel-guess" tabindex="-1" type="button">Guess the Year</button>
+      </div>
       <div class="top-actions">
         <button id="duet-toggle" class="duet-toggle" type="button" aria-pressed="false" aria-describedby="duet-hint">
           <span class="duet-dot old" aria-hidden="true"></span><span class="duet-dot new" aria-hidden="true"></span>
@@ -33,7 +37,7 @@
       </div>
     </header>
 
-    <main id="panel-jukebox" class="layout">
+    <main id="panel-jukebox" class="layout" role="tabpanel" aria-labelledby="tab-jukebox">
       <section class="themes" aria-labelledby="themes-heading">
         <h2 id="themes-heading" class="section-title">Themes</h2>
         <div id="theme-tiles"></div>
@@ -110,6 +114,49 @@
         <h2 id="readout-heading" class="section-title">Live mapping</h2>
         <div id="mapping-readout"></div>
       </aside>
+    </main>
+
+    <main id="panel-guess" class="guess" role="tabpanel" aria-labelledby="tab-guess" hidden>
+      <section class="guess-card" aria-labelledby="guess-heading">
+        <h2 id="guess-heading">Guess the Year</h2>
+        <p class="guess-intro">
+          A NASA frame from a hidden year is playing. Compare it with the oldest and newest years,
+          then guess which year you are hearing. Denser, faster, tenser sound means more of the
+          theme's "active" signal.
+        </p>
+
+        <div class="guess-setup">
+          <label for="guess-theme">Theme</label>
+          <select id="guess-theme"></select>
+          <span class="guess-score" id="guess-score" aria-live="off">Score 0 / 0</span>
+        </div>
+
+        <div class="guess-stage">
+          <div class="mystery screen" id="mystery-screen">
+            <img id="mystery-img" alt="" hidden />
+            <div class="mystery-cover" id="mystery-cover" aria-hidden="true"><span>?</span></div>
+            <span class="year-badge" id="mystery-year" aria-hidden="true"></span>
+          </div>
+          <p class="hearing" id="mystery-hearing" aria-hidden="true"></p>
+        </div>
+
+        <div class="guess-listen" role="group" aria-label="Listen">
+          <button id="guess-oldest" class="pill old" type="button"><kbd>A</kbd> Hear oldest <span></span></button>
+          <button id="guess-play" class="pill main" type="button" aria-pressed="false"><kbd>Space</kbd> <span>Play mystery year</span></button>
+          <button id="guess-newest" class="pill new" type="button"><kbd>B</kbd> Hear newest <span></span></button>
+        </div>
+
+        <fieldset class="guess-choices" id="guess-choices">
+          <legend>Which year is the mystery? (keys 1–4)</legend>
+          <div id="guess-options" class="options"></div>
+        </fieldset>
+
+        <div class="guess-result" id="guess-result" hidden>
+          <p id="guess-verdict" class="verdict"></p>
+          <p id="guess-detail" class="detail"></p>
+          <button id="guess-next" class="pill main" type="button"><kbd>Enter</kbd> Next round</button>
+        </div>
+      </section>
     </main>
 
     <div id="sr-announcer" class="sr-only" aria-live="polite" aria-atomic="true"></div>

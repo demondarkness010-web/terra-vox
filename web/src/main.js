@@ -6,6 +6,7 @@ import { Duet, LISTEN_MODES, describeGap } from './audio/duet.js';
 import { createThemeTiles } from './ui/themeTiles.js';
 import { createTurntable } from './ui/turntable.js';
 import { createMappingReadout } from './ui/mappingReadout.js';
+import { createGuessTheYear } from './ui/guessTheYear.js';
 
 const themes = loadThemes();
 
@@ -15,6 +16,7 @@ const state = {
   playing: false,
   duet: false,
   listenMode: 'together',
+  mode: 'jukebox',   // 'jukebox' | 'guess'
 };
 
 let voice = null;
@@ -221,8 +223,48 @@ function meterLoop() {
   requestAnimationFrame(meterLoop);
 }
 
+// ------------------------------------------------------------ modes
+
+const guess = createGuessTheYear(document.getElementById('panel-guess'), { themes, unlock, announce });
+const modeTabs = [...document.querySelectorAll('.modes [role="tab"]')];
+
+function setMode(mode) {
+  if (mode === state.mode) return;
+  state.mode = mode;
+  modeTabs.forEach((tab) => {
+    const on = tab.id === `tab-${mode}`;
+    tab.setAttribute('aria-selected', String(on));
+    tab.tabIndex = on ? 0 : -1;
+  });
+  document.getElementById('panel-jukebox').hidden = mode !== 'jukebox';
+  document.getElementById('panel-guess').hidden = mode !== 'guess';
+  duetToggle.hidden = mode !== 'jukebox';
+  if (mode === 'guess') {
+    if (state.duet) toggleDuet(false);
+    voice?.stop();
+    setPlaying(false);
+    guess.activate();
+  } else {
+    guess.deactivate();
+    announce('Jukebox. Choose a theme and press Space to play, or D for Duet.');
+  }
+}
+
+modeTabs.forEach((tab, i) => {
+  tab.addEventListener('click', () => setMode(tab.id.replace('tab-', '')));
+  tab.addEventListener('keydown', (e) => {
+    const d = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
+    if (!d) return;
+    e.preventDefault();
+    const next = modeTabs[(i + d + modeTabs.length) % modeTabs.length];
+    next.focus();
+    setMode(next.id.replace('tab-', ''));
+  });
+});
+
 // Minimal global keys (the full keyboard map lands with a11y.js).
 document.addEventListener('keydown', (e) => {
+  if (state.mode !== 'jukebox') return;
   if (e.ctrlKey || e.metaKey || e.altKey) return;
   const tag = e.target.tagName;
   const typing = tag === 'INPUT' && e.target.type !== 'range';
