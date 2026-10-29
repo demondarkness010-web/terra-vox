@@ -96,8 +96,8 @@ export function createTurntable(root, { onTogglePlay, onScrub, onStep, onListenM
     document.getElementById('gap-sentence').textContent = gap.sentence;
     const p = gap.physical;
     document.getElementById('gap-physical').textContent =
-      `${capitalize(p.label)}: ${p.from} → ${p.to} (${p.delta}). `
-      + `Share of ${p.activeLabel}: ${p.activeFrom} → ${p.activeTo}.`;
+      `${capitalize(p.label)}: ${p.from} → ${p.to} (${p.delta}).`
+      + (p.activeLabel ? ` Share of ${p.activeLabel}: ${p.activeFrom} → ${p.activeTo}.` : '');
     const rows = document.getElementById('gap-rows');
     rows.replaceChildren(...gap.items.map((it) => {
       const tr = document.createElement('tr');

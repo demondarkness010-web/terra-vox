@@ -1,11 +1,15 @@
 // The four theme tiles ("album covers"), built as an ARIA radio group:
 // Tab reaches the group once, arrow keys move between themes and select them,
 // Home/End jump to the ends. Each cover is real NASA EIC imagery.
+//
+// Selecting with arrows only browses. Activating a tile (click, tap, Enter,
+// Space) also starts the soundscape, like dropping the needle on a record;
+// Space on the tile that is already selected toggles play/pause.
 
 const NEXT_KEYS = ['ArrowDown', 'ArrowRight'];
 const PREV_KEYS = ['ArrowUp', 'ArrowLeft'];
 
-export function createThemeTiles(container, themes, { onSelect, labelledBy }) {
+export function createThemeTiles(container, themes, { onSelect, onActivate, labelledBy }) {
   container.replaceChildren();
   const group = document.createElement('div');
   group.className = 'tiles';
@@ -45,13 +49,25 @@ export function createThemeTiles(container, themes, { onSelect, labelledBy }) {
     eq.innerHTML = '<i></i><i></i><i></i>';
 
     tile.append(art, name, meta, eq);
-    tile.addEventListener('click', () => select(theme.id, { notify: true }));
+    tile.addEventListener('click', () => {
+      select(theme.id, { notify: true });
+      onActivate?.(theme.id, { toggle: false });
+    });
     return tile;
   });
 
   group.addEventListener('keydown', (e) => {
     const i = tiles.indexOf(document.activeElement);
     if (i < 0) return;
+    if (e.key === ' ' || e.key === 'Enter') {
+      e.preventDefault();      // handled here, not as a synthetic click
+      e.stopPropagation();
+      const id = tiles[i].dataset.theme;
+      const wasCurrent = id === current;
+      select(id, { notify: true });
+      onActivate?.(id, { toggle: wasCurrent && e.key === ' ' });
+      return;
+    }
     let next = null;
     if (NEXT_KEYS.includes(e.key)) next = (i + 1) % tiles.length;
     else if (PREV_KEYS.includes(e.key)) next = (i - 1 + tiles.length) % tiles.length;

@@ -342,6 +342,46 @@ button, input, select { font: inherit; color: inherit; }
 .gap-table tr.same { opacity: 0.6; }
 .gap-table tr.changed td:last-child { font-weight: 700; }
 
+/* ------------------------------------------------------------------ readout */
+
+.readout {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: calc(var(--radius) + 4px);
+  padding: 16px;
+  min-width: 0;
+}
+.readout-head { margin-bottom: 8px; }
+.readout-frame { margin: 0; font-weight: 700; }
+.readout-physical { margin: 2px 0 0; color: var(--muted); font-size: 0.88rem; }
+.readout-physical .h { display: block; font-size: 0.8rem; }
+
+.readout-table, .raw-table { width: 100%; border-collapse: collapse; font-size: 0.86rem; }
+.readout-table th, .readout-table td { padding: 6px 4px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+.readout-table thead th { font-size: 0.72rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
+.readout-table thead th.old { color: var(--old); }
+.readout-table thead th.new { color: var(--new); }
+.readout-table tbody th { font-weight: 400; color: var(--muted); }
+.readout-table code { font-family: var(--mono); font-size: 0.8rem; color: var(--text); }
+.readout-table .cell .v { display: block; font: 700 0.95rem var(--mono); }
+.readout-table .cell .h { display: block; font-size: 0.72rem; color: var(--muted); }
+.readout-table .cell.out .v { color: var(--accent); }
+.readout-table.is-duet .cell .v { font-size: 0.85rem; }
+.readout-table .cell.old .v { color: var(--old); }
+.readout-table .cell.new .v { color: var(--new); }
+
+.cell.flash { animation: flash 0.9s ease-out; }
+@keyframes flash { from { background: rgba(240, 228, 66, 0.22); } to { background: transparent; } }
+.cell.pulse { animation: pulse 0.6s ease-out; }
+@keyframes pulse { from { background: rgba(255, 255, 255, 0.12); } to { background: transparent; } }
+
+.readout-raw { margin-top: 12px; font-size: 0.85rem; }
+.readout-raw summary { cursor: pointer; color: var(--muted); font-weight: 700; padding: 4px 0; }
+.readout-note { color: var(--muted); font-size: 0.8rem; margin: 4px 0 8px; }
+.raw-table th, .raw-table td { padding: 4px; border-bottom: 1px solid var(--line); text-align: left; font-family: var(--mono); font-size: 0.78rem; }
+.raw-table thead th { font-family: var(--font); color: var(--muted); font-size: 0.7rem; text-transform: uppercase; }
+.raw-table tbody th { font-family: var(--font); font-weight: 400; color: var(--muted); }
+
 /* ------------------------------------------------------------------ footer */
 
 .credits {

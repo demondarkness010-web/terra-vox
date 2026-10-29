@@ -41,17 +41,19 @@ export const newestFrame = (theme) => theme.frames[theme.frames.length - 1];
 
 // ------------------------------------------------------------ real units
 
-// What counts as an "active" pixel per theme (drives notes per bar).
+// What counts as an "active" pixel per theme (drives notes per bar). For
+// wildfires the active share IS the headline number, so it is not repeated.
 const ACTIVE = {
-  wildfires: 'map pixels with a detected fire',
+  wildfires: null,
   sea_level: 'ocean at least 10 cm above the mean',
   air_quality: 'observed air above 5 ×10¹⁵ molec/cm² of NO₂',
   greenhouse_gases: 'air holding at least 1,900 ppb of methane',
 };
 
-/** "ocean at least 10 cm above the mean" + the frame's share of it, in %. */
+/** e.g. { label: "ocean at least 10 cm above the mean", percent: 24.8 }, or null. */
 export function activeShare(frame) {
-  return { label: ACTIVE[frame.theme], percent: frame.raw.pixelDensity * 100 };
+  const label = ACTIVE[frame.theme];
+  return label ? { label, percent: frame.raw.pixelDensity * 100 } : null;
 }
 
 const PHYSICAL = {

@@ -5,6 +5,7 @@ import { Voice, startAudio, whenHeard } from './audio/sonify.js';
 import { Duet, LISTEN_MODES, describeGap } from './audio/duet.js';
 import { createThemeTiles } from './ui/themeTiles.js';
 import { createTurntable } from './ui/turntable.js';
+import { createMappingReadout } from './ui/mappingReadout.js';
 
 const themes = loadThemes();
 
@@ -29,6 +30,7 @@ function announce(text) {
 const tiles = createThemeTiles(document.getElementById('theme-tiles'), themes, {
   labelledBy: 'themes-heading',
   onSelect: selectTheme,
+  onActivate: (id, { toggle }) => { if (toggle || !state.playing) togglePlay(); },
 });
 
 const turntable = createTurntable(document.getElementById('player'), {
@@ -38,6 +40,8 @@ const turntable = createTurntable(document.getElementById('player'), {
   listenModes: LISTEN_MODES,
   onListenMode: setListenMode,
 });
+
+const readout = createMappingReadout(document.getElementById('mapping-readout'));
 
 const duetToggle = document.getElementById('duet-toggle');
 duetToggle.addEventListener('click', () => toggleDuet());
@@ -71,6 +75,14 @@ function onBar(event) {
 
 function render() {
   turntable.showFrame(state.index);
+  readout.showFrame(state.theme, currentFrame());
+}
+
+function renderDuet() {
+  const gap = describeGap(state.theme);
+  turntable.showDuet(gap);
+  readout.showDuet(state.theme, gap.oldest, gap.newest);
+  return gap;
 }
 
 function setPlaying(playing) {
@@ -115,8 +127,7 @@ function selectTheme(id) {
   turntable.setTheme(state.theme);
   render();
   if (state.duet) {
-    const gap = describeGap(state.theme);
-    turntable.showDuet(gap);
+    const gap = renderDuet();
     duet.setTheme(state.theme);
     tiles.setPlaying(state.theme.id, state.playing);
     announce(gap.spoken);
@@ -175,9 +186,9 @@ async function toggleDuet(on = !state.duet) {
     if (!duet) {
       duet = new Duet();
       duet.setMode(state.listenMode);
+      duet.onBar((e) => whenHeard(e.time, () => { if (state.duet) readout.pulse(e.voice); }));
     }
-    const gap = describeGap(state.theme);
-    turntable.showDuet(gap);
+    const gap = renderDuet();
     turntable.setListenMode(state.listenMode);
     duet.setTheme(state.theme);
     duet.start();

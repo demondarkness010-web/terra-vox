@@ -162,9 +162,9 @@ export function describeGap(theme) {
     from: physicalShort(a),
     to: physicalShort(b),
     delta: physicalDelta(a, b),
-    activeLabel: shareA.label,
-    activeFrom: pct(shareA.percent),
-    activeTo: pct(shareB.percent),
+    activeLabel: shareA?.label ?? null,
+    activeFrom: shareA ? pct(shareA.percent) : null,
+    activeTo: shareB ? pct(shareB.percent) : null,
   };
 
   const list = words.length === 0 ? 'nearly the same as'
@@ -173,7 +173,7 @@ export function describeGap(theme) {
   const sentence = `${b.year} sounds ${list} ${a.year}.`;
   const spoken = `Duet. ${theme.name}: ${a.year} in your left ear, ${b.year} in your right. `
     + `In ${a.year}, ${physicalSpoken(a)}. In ${b.year}, ${physicalSpoken(b)}. `
-    + `The share of ${physical.activeLabel} went from ${physical.activeFrom} to ${physical.activeTo}. `
+    + (physical.activeLabel ? `The share of ${physical.activeLabel} went from ${physical.activeFrom} to ${physical.activeTo}. ` : '')
     + `Listen: ${sentence} `
     + `Left plays ${speakNote(pa.note)} on a ${TIMBRE_WORD[pa.timbre]}; right plays ${speakNote(pb.note)} on a ${TIMBRE_WORD[pb.timbre]}.`;
 
