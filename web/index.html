@@ -34,6 +34,17 @@
           Duet
         </button>
         <span id="duet-hint" class="sr-only">Plays the oldest year in your left ear and the newest year in your right ear at the same time. Shortcut: D.</span>
+        <label class="describe">
+          <span>Describe</span>
+          <select id="describe" aria-describedby="describe-hint">
+            <option value="off">Off</option>
+            <option value="brief" selected>Brief</option>
+            <option value="full">Full</option>
+          </select>
+        </label>
+        <span id="describe-hint" class="sr-only">How much a screen reader hears on every bar. Brief: the year and its value. Full: the whole caption. Shortcut: C.</span>
+        <button id="speak-toggle" class="chip" type="button" aria-pressed="false" title="Read descriptions aloud with the browser's voice (S)">Speak aloud</button>
+        <button id="help-button" class="chip" type="button" aria-haspopup="dialog" title="Keyboard shortcuts (?)">Keys <kbd>?</kbd></button>
       </div>
     </header>
 
@@ -74,6 +85,11 @@
             </div>
             <figcaption id="duet-new-cap" class="frame-caption"></figcaption>
           </figure>
+        </div>
+
+        <div class="caption-track" id="caption-track" role="group" aria-label="Data caption">
+          <p id="cap-data" class="cap-data"></p>
+          <p id="cap-sound" class="cap-sound"></p>
         </div>
 
         <section id="duet-panel" class="duet-panel" aria-labelledby="gap-heading" hidden>
@@ -160,6 +176,16 @@
     </main>
 
     <div id="sr-announcer" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+    <div id="sr-captions" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+
+    <dialog id="help-dialog" class="help-dialog" aria-labelledby="help-title">
+      <div class="help-head">
+        <h2 id="help-title">Keyboard shortcuts</h2>
+        <button type="button" class="icon-btn" data-close aria-label="Close">✕</button>
+      </div>
+      <p class="help-lead">Every shortcut is also a button on screen. Sound is the main channel; nothing needs the mouse or the visuals.</p>
+      <div class="help-body"></div>
+    </dialog>
 
     <footer class="credits">
       Imagery: NASA GIBS / Worldview (MODIS, OMI, AIRS, JPL MEaSUREs). Cover art: NASA SVS Earth Information Center.

@@ -95,7 +95,8 @@ export function getMaster({ reverb = true } = {}) {
   const input = new Tone.Gain(1);
   const compressor = new Tone.Compressor({ threshold: -20, ratio: 3, attack: 0.01, release: 0.25 });
   const limiter = new Tone.Limiter(-1);
-  const output = new Tone.Gain(0.9);
+  const duck = new Tone.Gain(1);       // dips the music while speech talks
+  const output = new Tone.Gain(0.9);   // master volume
   input.connect(compressor);
   if (reverb) {
     const verb = new Tone.Reverb({ decay: 4, preDelay: 0.03, wet: 1 });
@@ -105,7 +106,8 @@ export function getMaster({ reverb = true } = {}) {
     verb.connect(compressor);
   }
   compressor.connect(limiter);
-  limiter.connect(output);
+  limiter.connect(duck);
+  duck.connect(output);
   output.toDestination();
 
   const waveform = new Tone.Waveform(1024);
@@ -113,7 +115,7 @@ export function getMaster({ reverb = true } = {}) {
   limiter.connect(waveform);
   limiter.connect(fft);
 
-  master = { context: ctx, input, output, waveform, fft };
+  master = { context: ctx, input, duck, output, waveform, fft };
   return master;
 }
 
@@ -137,6 +139,12 @@ export async function startAudio() {
 
 export function setMasterVolume(linear) {
   getMaster().output.gain.rampTo(clamp(linear, 0, 1), 0.1);
+}
+
+/** Lower the music ~8 dB while spoken descriptions play, then restore it. */
+export function duckMusic(on) {
+  if (!master) return;
+  master.duck.gain.rampTo(on ? 0.4 : 1, 0.25);
 }
 
 // ------------------------------------------------------------ voice

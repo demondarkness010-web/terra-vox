@@ -7,6 +7,8 @@ import { createThemeTiles } from './ui/themeTiles.js';
 import { createTurntable } from './ui/turntable.js';
 import { createMappingReadout } from './ui/mappingReadout.js';
 import { createGuessTheYear } from './ui/guessTheYear.js';
+import { createCaptionTrack, altText, VERBOSITY } from './ui/captions.js';
+import { createAnnouncer, installShortcuts, createHelpDialog } from './ui/a11y.js';
 
 const themes = loadThemes();
 
@@ -22,12 +24,23 @@ const state = {
 let voice = null;
 let duet = null;
 
-const announcer = document.getElementById('sr-announcer');
+// ------------------------------------------------------------ words
+
+const captions = createCaptionTrack({
+  dataEl: document.getElementById('cap-data'),
+  soundEl: document.getElementById('cap-sound'),
+  liveEl: document.getElementById('sr-captions'),
+});
+
+const announceToReader = createAnnouncer(document.getElementById('sr-announcer'));
+// Events go to the screen reader, and to the browser voice when "Speak
+// aloud" is on, so the app is fully usable without a screen reader too.
 function announce(text) {
-  // Clear first so repeating the same sentence is still announced.
-  announcer.textContent = '';
-  setTimeout(() => { announcer.textContent = text; }, 30);
+  announceToReader(text);
+  captions.speakOnly(text);
 }
+
+// ------------------------------------------------------------ views
 
 const tiles = createThemeTiles(document.getElementById('theme-tiles'), themes, {
   labelledBy: 'themes-heading',
@@ -41,6 +54,7 @@ const turntable = createTurntable(document.getElementById('player'), {
   onStep: step,
   listenModes: LISTEN_MODES,
   onListenMode: setListenMode,
+  altFor: altText,
 });
 
 const readout = createMappingReadout(document.getElementById('mapping-readout'));
@@ -62,16 +76,18 @@ function ensureVoice() {
 
 // One bar = one frame (one year). Each bar reports which frame it is about to
 // play: queue the following year for the next downbeat now, and update the
-// screen at the moment the bar is actually heard.
+// screen and captions at the moment the bar is actually heard.
 function onBar(event) {
   const { frame } = event;
-  if (state.playing && frame.theme === state.theme.id) {
+  const playing = state.playing;
+  if (playing && frame.theme === state.theme.id) {
     voice.setFrame(state.theme.frames[(frame.index + 1) % state.theme.frames.length]);
   }
   whenHeard(event.time, () => {
-    if (frame.theme !== state.theme.id) return;
+    if (frame.theme !== state.theme.id || state.duet) return;
     state.index = frame.index;
     render();
+    if (playing) captions.bar(frame);
   });
 }
 
@@ -84,6 +100,7 @@ function renderDuet() {
   const gap = describeGap(state.theme);
   turntable.showDuet(gap);
   readout.showDuet(state.theme, gap.oldest, gap.newest);
+  captions.duet(gap);
   return gap;
 }
 
@@ -115,6 +132,7 @@ async function togglePlay() {
     voice.stop();
     setPlaying(false);
     announce(`Paused at ${currentFrame().label}.`);
+    captions.describe(currentFrame(), state.theme, { delay: 1400 });
   } else {
     voice.setFrame(currentFrame(), { restart: true });
     voice.start();
@@ -141,19 +159,22 @@ function selectTheme(id) {
   }
   tiles.setPlaying(state.theme.id, state.playing);
   const [y0, y1] = state.theme.yearRange;
-  announce(`${state.theme.name}, ${y0} to ${y1}, ${state.theme.frameCount} frames. ${state.playing ? 'Playing.' : 'Press Space to play.'}`);
+  announce(`${state.theme.name}, ${y0} to ${y1}, ${state.theme.frameCount} frames. ${state.theme.signature} data. ${state.playing ? '' : 'Press Space to play.'}`);
+  if (!state.playing) captions.describe(currentFrame(), state.theme, { delay: 2200 });
 }
 
 // Scrubbing answers immediately: while playing, a fresh bar starts on the new
-// frame; while paused, one bar of the new frame plays as an audition, so a
-// keyboard or screen-reader user hears every year they step onto.
+// frame; while paused, one bar of the new frame plays as an audition and the
+// frame is described, so a keyboard or screen-reader user hears every year
+// they step onto.
 let lastAudition = -1;
 async function scrubTo(index, { final }) {
   if (index === state.index && !final) return;
   state.index = index;
   render();
+  if (!state.playing) captions.describe(currentFrame(), state.theme);
   if (!voice && !final) return;
-  await startAudio();
+  if (!(await unlock())) return;
   ensureVoice();
   if (state.playing) {
     voice.setFrame(currentFrame(), { restart: true });
@@ -168,6 +189,11 @@ function step(delta) {
   if (state.duet) return;
   const n = state.theme.frames.length;
   scrubTo((state.index + delta + n) % n, { final: true });
+}
+
+function repeatDescription() {
+  if (state.duet) announce(describeGap(state.theme).spoken);
+  else captions.describe(currentFrame(), state.theme, { delay: 0 });
 }
 
 // ------------------------------------------------------------ duet
@@ -205,16 +231,23 @@ async function toggleDuet(on = !state.duet) {
   }
 }
 
+const LISTEN_HELP = {
+  together: 'Oldest in your left ear, newest in your right, at the same time.',
+  turns: 'One bar of the oldest year, then one bar of the newest, centred. Works on one speaker or one earbud.',
+  oldest: 'Only the oldest year, centred.',
+  newest: 'Only the newest year, centred.',
+};
+
 function setListenMode(mode) {
   state.listenMode = mode;
   duet?.setMode(mode);
-  const help = {
-    together: 'Oldest in your left ear, newest in your right, at the same time.',
-    turns: 'One bar of the oldest year, then one bar of the newest, centred. Works on one speaker or one earbud.',
-    oldest: 'Only the oldest year, centred.',
-    newest: 'Only the newest year, centred.',
-  };
-  announce(`${LISTEN_MODES[mode]}. ${help[mode]}`);
+  turntable.setListenMode(mode);
+  announce(`${LISTEN_MODES[mode]}. ${LISTEN_HELP[mode]}`);
+}
+
+function cycleListenMode() {
+  const modes = Object.keys(LISTEN_MODES);
+  setListenMode(modes[(modes.indexOf(state.listenMode) + 1) % modes.length]);
 }
 
 function meterLoop() {
@@ -262,28 +295,95 @@ modeTabs.forEach((tab, i) => {
   });
 });
 
-// Minimal global keys (the full keyboard map lands with a11y.js).
-document.addEventListener('keydown', (e) => {
-  if (state.mode !== 'jukebox') return;
-  if (e.ctrlKey || e.metaKey || e.altKey) return;
-  const tag = e.target.tagName;
-  const typing = tag === 'INPUT' && e.target.type !== 'range';
-  if (typing || tag === 'TEXTAREA' || tag === 'SELECT') return;
-  if (e.key === ' ' && tag !== 'BUTTON') { e.preventDefault(); togglePlay(); }
-  else if (e.key === '[') step(-1);
-  else if (e.key === ']') step(1);
-  else if (e.key === 'd' || e.key === 'D') toggleDuet();
-});
+// ------------------------------------------------------------ settings
 
+const prefs = loadPrefs();
+const describeSelect = document.getElementById('describe');
+const speakToggle = document.getElementById('speak-toggle');
+
+function setVerbosity(v, { say = true } = {}) {
+  captions.setVerbosity(v);
+  describeSelect.value = v;
+  savePrefs({ verbosity: v });
+  if (say) announce(`Descriptions: ${VERBOSITY[v]}.`);
+}
+
+function setSpeak(on, { say = true } = {}) {
+  captions.setSpeak(on);
+  speakToggle.setAttribute('aria-pressed', String(on));
+  savePrefs({ speak: on });
+  if (say) announce(on ? 'Speaking descriptions aloud.' : 'Speech off.');
+}
+
+describeSelect.addEventListener('change', () => setVerbosity(describeSelect.value));
+speakToggle.addEventListener('click', () => setSpeak(!captions.speak));
+if (!captions.hasSpeech) speakToggle.hidden = true;
+
+function loadPrefs() {
+  try { return JSON.parse(localStorage.getItem('terra-vox-prefs') ?? '{}'); } catch { return {}; }
+}
+function savePrefs(patch) {
+  try { localStorage.setItem('terra-vox-prefs', JSON.stringify({ ...loadPrefs(), ...patch })); } catch { /* private mode */ }
+}
+
+// ------------------------------------------------------------ keyboard
+
+const jukebox = () => state.mode === 'jukebox';
+const SHORTCUTS = [
+  { keys: [' '], label: 'Play / pause', run: togglePlay, when: jukebox },
+  { keys: ['['], label: 'Previous year', run: () => step(-1), when: jukebox },
+  { keys: [']'], label: 'Next year', run: () => step(1), when: jukebox },
+  { keys: ['1', '2', '3', '4'], label: 'Choose theme 1–4 and play', when: jukebox,
+    run: (e) => { const t = themes[Number(e.key) - 1]; tiles.select(t.id, { notify: true }); if (!state.playing) togglePlay(); } },
+  { keys: ['d'], label: 'Duet on / off (oldest left, newest right)', run: () => toggleDuet(), when: jukebox },
+  { keys: ['l'], label: 'Duet: next listening mode', run: cycleListenMode, when: () => jukebox() && state.duet },
+  { keys: ['r'], label: 'Repeat the description', run: repeatDescription, when: jukebox },
+  { keys: ['c'], label: 'Description detail: off / brief / full', run: () => {
+    const order = Object.keys(VERBOSITY);
+    setVerbosity(order[(order.indexOf(captions.verbosity) + 1) % order.length]);
+  } },
+  { keys: ['s'], label: 'Speak aloud on / off', run: () => setSpeak(!captions.speak) },
+  { keys: ['g'], label: 'Switch Jukebox / Guess the Year', run: () => {
+    const m = state.mode === 'jukebox' ? 'guess' : 'jukebox';
+    setMode(m);
+    document.getElementById(`tab-${m}`).focus();
+  } },
+  { keys: ['?', 'h'], label: 'Show these shortcuts', run: () => help.open() },
+];
+
+installShortcuts(SHORTCUTS);
+
+const help = createHelpDialog(document.getElementById('help-dialog'), [document.getElementById('help-button')], [
+  { title: 'Jukebox', items: SHORTCUTS.filter((s) => s.when === jukebox || s.keys[0] === 'l') },
+  { title: 'Timeline (when focused)', items: [
+    { keys: ['ArrowLeft', 'ArrowRight'], label: 'Step one year (plays it)' },
+    { keys: ['Home', 'End'], label: 'Oldest / newest year' },
+  ] },
+  { title: 'Guess the Year', items: [
+    { keys: [' '], label: 'Play / stop the mystery year' },
+    { keys: ['a'], label: 'Hear the oldest year' },
+    { keys: ['b'], label: 'Hear the newest year' },
+    { keys: ['1', '2', '3', '4'], label: 'Answer' },
+    { keys: ['Enter'], label: 'Next round' },
+  ] },
+  { title: 'Anywhere', items: SHORTCUTS.filter((s) => !s.when) },
+]);
+
+// ------------------------------------------------------------ start
+
+setVerbosity(prefs.verbosity ?? 'brief', { say: false });
+setSpeak(prefs.speak ?? false, { say: false });
 tiles.select(state.theme.id);
 turntable.setTheme(state.theme);
 render();
+captions.show(currentFrame());
 
 if (import.meta.env.DEV) {
   window.__terraVox = {
     state,
     themes,
     gap: (id) => describeGap(getTheme(id ?? state.theme.id)),
+    alt: (id, i = 0) => altText(getTheme(id).frames[i], getTheme(id)),
     voices: () => ({ voice, duet }),
     duetContrast: async (id, seconds) => {
       const { measureDuet } = await import('./audio/levelCheck.js');

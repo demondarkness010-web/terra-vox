@@ -213,6 +213,7 @@ export function createGuessTheYear(root, { themes, unlock, announce }) {
     if (e.ctrlKey || e.metaKey || e.altKey) return;
     const tag = e.target.tagName;
     if (tag === 'SELECT' || tag === 'INPUT' || tag === 'TEXTAREA') return;
+    if (document.querySelector('dialog[open]')) return;
     const k = e.key.toLowerCase();
     if (k === ' ' && tag !== 'BUTTON') { e.preventDefault(); toggleMystery(); }
     else if (k === 'a') playAnchor('oldest');

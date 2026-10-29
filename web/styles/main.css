@@ -382,6 +382,67 @@ button, input, select { font: inherit; color: inherit; }
 .raw-table thead th { font-family: var(--font); color: var(--muted); font-size: 0.7rem; text-transform: uppercase; }
 .raw-table tbody th { font-family: var(--font); font-weight: 400; color: var(--muted); }
 
+/* ------------------------------------------------------------------ captions */
+
+/* Subtitle-style data caption: high contrast, large, always the plain numbers. */
+.caption-track {
+  margin-top: 12px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: #000;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  text-align: center;
+  min-height: 3.4em;
+}
+.cap-data { margin: 0; font: 700 1.05rem/1.35 var(--font); color: #fff; }
+.cap-sound { margin: 2px 0 0; font: 0.92rem/1.35 var(--mono); color: var(--focus); }
+
+/* ------------------------------------------------------------------ settings + help */
+
+.describe { display: inline-flex; align-items: center; gap: 6px; font-size: 0.85rem; color: var(--muted); }
+.describe select { padding: 7px 8px; border-radius: 10px; border: 1px solid var(--line); background: var(--panel-solid); color: var(--text); }
+.chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--panel-solid);
+  cursor: pointer;
+  font-size: 0.88rem;
+}
+.chip[aria-pressed="true"] { background: var(--good); border-color: transparent; color: #05070f; font-weight: 700; }
+.chip kbd { font: 700 0.75rem var(--mono); }
+
+.help-dialog {
+  width: min(640px, calc(100vw - 32px));
+  max-height: calc(100vh - 48px);
+  padding: 20px 22px;
+  border: 1px solid var(--line);
+  border-radius: calc(var(--radius) + 4px);
+  background: var(--panel-solid);
+  color: var(--text);
+}
+.help-dialog::backdrop { background: rgba(2, 4, 10, 0.72); }
+.help-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.help-head h2 { margin: 0; }
+.help-lead { color: var(--muted); margin: 6px 0 12px; }
+.help-body { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 8px 24px; }
+.help-body h3 { margin: 8px 0 6px; font-size: 0.8rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+.help-body dl { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 6px 12px; align-items: baseline; }
+.help-body dt { white-space: nowrap; }
+.help-body dd { margin: 0; }
+.help-body kbd {
+  display: inline-block;
+  min-width: 1.6em;
+  padding: 1px 6px;
+  text-align: center;
+  font: 700 0.78rem var(--mono);
+  border: 1px solid var(--line);
+  border-bottom-width: 2px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.05);
+}
+
 /* ------------------------------------------------------------------ mode tabs */
 
 .modes { display: inline-flex; padding: 4px; gap: 4px; border: 1px solid var(--line); border-radius: 999px; background: rgba(6, 9, 18, 0.5); }
