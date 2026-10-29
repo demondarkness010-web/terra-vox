@@ -1,0 +1,335 @@
+{
+  "generatedAt": "2026-10-29T19:02:40+00:00",
+  "source": "NASA GIBS (Worldview) imagery; NASA SVS Earth Information Center cover art",
+  "scale": "C minor pentatonic",
+  "themes": [
+    {
+      "id": "wildfires",
+      "name": "Wildfires",
+      "signature": "spiky, event-driven",
+      "dataset": "MODIS Terra Thermal Anomalies and Fires (day + night)",
+      "instrument": "MODIS / Terra",
+      "layer": "MODIS_Terra_Thermal_Anomalies_All",
+      "unitsNote": "each orange dot is a satellite-detected active fire",
+      "physical": {
+        "label": "fire detections",
+        "units": "% of map"
+      },
+      "activeRule": {
+        "kind": "opaque"
+      },
+      "composite": "union",
+      "compositeDays": 8,
+      "thumbnail": "assets/thumbnails/wildfires.jpg",
+      "eic": {
+        "dashboard": "https://svs.gsfc.nasa.gov/gallery/wildland-fires/",
+        "visualization": "https://svs.gsfc.nasa.gov/5113/",
+        "thumbnail": "https://svs.gsfc.nasa.gov/vis/a000000/a005100/a005113/fires_frp_VIIRS.892_print.jpg"
+      },
+      "dateRange": {
+        "start": "2001-08-08",
+        "end": "2025-08-08"
+      },
+      "yearRange": [
+        2001,
+        2025
+      ],
+      "frameCount": 25,
+      "frames": [
+        "2001-08-08",
+        "2002-08-08",
+        "2003-08-08",
+        "2004-08-08",
+        "2005-08-08",
+        "2006-08-08",
+        "2007-08-08",
+        "2008-08-08",
+        "2009-08-08",
+        "2010-08-08",
+        "2011-08-08",
+        "2012-08-08",
+        "2013-08-08",
+        "2014-08-08",
+        "2015-08-08",
+        "2016-08-08",
+        "2017-08-08",
+        "2018-08-08",
+        "2019-08-08",
+        "2020-08-08",
+        "2021-08-08",
+        "2022-08-08",
+        "2023-08-08",
+        "2024-08-08",
+        "2025-08-08"
+      ],
+      "normalization": {
+        "hue": {
+          "min": 24.693978757356952,
+          "max": 28.783657415921095
+        },
+        "brightness": {
+          "min": 0.050640440373140215,
+          "max": 0.05509213590285356
+        },
+        "colorVariance": {
+          "min": 0.20779445469955943,
+          "max": 0.22454598239919873
+        },
+        "pixelDensity": {
+          "min": 0.07020378112792969,
+          "max": 0.08256149291992188
+        },
+        "frameDelta": {
+          "min": 0.01728657491846022,
+          "max": 0.021232647365993923
+        }
+      }
+    },
+    {
+      "id": "sea_level",
+      "name": "Sea Level Change",
+      "signature": "slow, monotonic",
+      "dataset": "JPL MEaSUREs Gridded Sea Surface Height Anomalies (TOPEX/Poseidon, Jason-1/2/3)",
+      "instrument": "Satellite radar altimetry",
+      "layer": "JPL_MEaSUREs_L4_Sea_Surface_Height_Anomalies",
+      "unitsNote": "warmer colours mean the sea surface sits higher than the 20-year mean",
+      "physical": {
+        "label": "mean sea surface height anomaly",
+        "units": "cm"
+      },
+      "activeRule": {
+        "kind": "value_at_least",
+        "value": 0.1
+      },
+      "composite": "single",
+      "compositeDays": 1,
+      "thumbnail": "assets/thumbnails/sea_level.jpg",
+      "eic": {
+        "dashboard": "https://svs.gsfc.nasa.gov/gallery/climate-vital-signs-dashboard/",
+        "visualization": "https://svs.gsfc.nasa.gov/5235/",
+        "thumbnail": "https://svs.gsfc.nasa.gov/vis/a000000/a005200/a005235/seaLevelWaveTankComp_noWW_3-5-5-2024a.01500_print.jpg"
+      },
+      "dateRange": {
+        "start": "1992-09-30",
+        "end": "2018-09-29"
+      },
+      "yearRange": [
+        1992,
+        2018
+      ],
+      "frameCount": 27,
+      "frames": [
+        "1992-09-30",
+        "1993-09-30",
+        "1994-09-30",
+        "1995-09-30",
+        "1996-09-29",
+        "1997-09-29",
+        "1998-09-29",
+        "1999-09-29",
+        "2000-10-03",
+        "2001-10-03",
+        "2002-10-03",
+        "2003-10-03",
+        "2004-10-02",
+        "2005-10-02",
+        "2006-10-02",
+        "2007-10-02",
+        "2008-10-01",
+        "2009-10-01",
+        "2010-10-01",
+        "2011-10-01",
+        "2012-09-30",
+        "2013-09-30",
+        "2014-09-30",
+        "2015-09-30",
+        "2016-09-29",
+        "2017-09-29",
+        "2018-09-29"
+      ],
+      "normalization": {
+        "hue": {
+          "min": 133.7580150463837,
+          "max": 186.7935998479441
+        },
+        "brightness": {
+          "min": 0.7105300836635475,
+          "max": 0.7637079506408799
+        },
+        "colorVariance": {
+          "min": 0.4994854209388343,
+          "max": 0.6299054558345557
+        },
+        "pixelDensity": {
+          "min": 0.054429910803339886,
+          "max": 0.24767640532282192
+        },
+        "frameDelta": {
+          "min": 0.17014608680300874,
+          "max": 0.25832414407992665
+        }
+      }
+    },
+    {
+      "id": "air_quality",
+      "name": "Air Quality",
+      "signature": "noisy, daily-fluctuating",
+      "dataset": "OMI Tropospheric Nitrogen Dioxide (NO2) Column, daily",
+      "instrument": "OMI / Aura",
+      "layer": "OMI_Nitrogen_Dioxide_Tropo_Column",
+      "unitsNote": "darker orange and red mark heavier NO2 pollution",
+      "physical": {
+        "label": "mean tropospheric NO2",
+        "units": "x10^15 molecules/cm2"
+      },
+      "activeRule": {
+        "kind": "value_at_least",
+        "value": 5000000000000000.0
+      },
+      "composite": "first_valid",
+      "compositeDays": 3,
+      "thumbnail": "assets/thumbnails/air_quality.jpg",
+      "eic": {
+        "dashboard": "https://svs.gsfc.nasa.gov/gallery/air-quality-dashboard/",
+        "visualization": "https://svs.gsfc.nasa.gov/5175/",
+        "thumbnail": "https://svs.gsfc.nasa.gov/vis/a000000/a005100/a005175/tempo_no2_north-america.02402_print.jpg"
+      },
+      "dateRange": {
+        "start": "2005-03-15",
+        "end": "2025-03-15"
+      },
+      "yearRange": [
+        2005,
+        2025
+      ],
+      "frameCount": 21,
+      "frames": [
+        "2005-03-15",
+        "2006-03-15",
+        "2007-03-15",
+        "2008-03-15",
+        "2009-03-15",
+        "2010-03-15",
+        "2011-03-15",
+        "2012-03-15",
+        "2013-03-15",
+        "2014-03-15",
+        "2015-03-15",
+        "2016-03-15",
+        "2017-03-15",
+        "2018-03-15",
+        "2019-03-15",
+        "2020-03-15",
+        "2021-03-15",
+        "2022-03-15",
+        "2023-03-15",
+        "2024-03-15",
+        "2025-03-15"
+      ],
+      "normalization": {
+        "hue": {
+          "min": 232.86342826157272,
+          "max": 233.3470437536064
+        },
+        "brightness": {
+          "min": 0.9578880159724014,
+          "max": 0.9602287241712021
+        },
+        "colorVariance": {
+          "min": 0.06965633996242653,
+          "max": 0.09640914798167628
+        },
+        "pixelDensity": {
+          "min": 0.004028546440762003,
+          "max": 0.008516497294142857
+        },
+        "frameDelta": {
+          "min": 0.02234250472211138,
+          "max": 0.02402114069188451
+        }
+      }
+    },
+    {
+      "id": "greenhouse_gases",
+      "name": "Greenhouse Gases",
+      "signature": "smooth, trending",
+      "dataset": "AIRS Methane (CH4) at 400 hPa, monthly mean",
+      "instrument": "AIRS / Aqua",
+      "layer": "AIRS_L3_Methane_400hPa_Volume_Mixing_Ratio_Monthly_Day",
+      "unitsNote": "deeper red means more methane in the mid-troposphere",
+      "physical": {
+        "label": "mean methane at 400 hPa",
+        "units": "ppb"
+      },
+      "activeRule": {
+        "kind": "value_at_least",
+        "value": 1900.0
+      },
+      "composite": "single",
+      "compositeDays": 1,
+      "thumbnail": "assets/thumbnails/greenhouse_gases.jpg",
+      "eic": {
+        "dashboard": "https://svs.gsfc.nasa.gov/gallery/greenhouse-gases-dashboard/",
+        "visualization": "https://svs.gsfc.nasa.gov/5116/",
+        "thumbnail": "https://svs.gsfc.nasa.gov/vis/a000000/a005100/a005116/TotalCH4_Volume_1920x1920.00080_print.jpg"
+      },
+      "dateRange": {
+        "start": "2003-08-01",
+        "end": "2026-08-01"
+      },
+      "yearRange": [
+        2003,
+        2026
+      ],
+      "frameCount": 24,
+      "frames": [
+        "2003-08-01",
+        "2004-08-01",
+        "2005-08-01",
+        "2006-08-01",
+        "2007-08-01",
+        "2008-08-01",
+        "2009-08-01",
+        "2010-08-01",
+        "2011-08-01",
+        "2012-08-01",
+        "2013-08-01",
+        "2014-08-01",
+        "2015-08-01",
+        "2016-08-01",
+        "2017-08-01",
+        "2018-08-01",
+        "2019-08-01",
+        "2020-08-01",
+        "2021-08-01",
+        "2022-08-01",
+        "2023-08-01",
+        "2024-08-01",
+        "2025-08-01",
+        "2026-08-01"
+      ],
+      "normalization": {
+        "hue": {
+          "min": 228.62114138224328,
+          "max": 292.1798266792196
+        },
+        "brightness": {
+          "min": 0.44027659307439215,
+          "max": 0.6959485744147207
+        },
+        "colorVariance": {
+          "min": 0.20505043393370814,
+          "max": 0.2543898500347106
+        },
+        "pixelDensity": {
+          "min": 0.0,
+          "max": 0.4920227506411996
+        },
+        "frameDelta": {
+          "min": 0.015223526798821743,
+          "max": 0.044610664183547304
+        }
+      }
+    }
+  ]
+}

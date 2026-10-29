@@ -1,0 +1,53 @@
+{
+  "theme": "wildfires",
+  "index": 3,
+  "date": "2004-08-08",
+  "year": 2004,
+  "label": "Aug 08-15, 2004",
+  "image": "data/display/wildfires/2004-08-08.jpg",
+  "hue": 247.457,
+  "brightness": 0.7076,
+  "colorVariance": 0.705,
+  "pixelDensity": 0.6606,
+  "frameDelta": 0.6079,
+  "latBand": "equatorial",
+  "raw": {
+    "hue": 27.50514,
+    "brightness": 0.05379,
+    "colorVariance": 0.2196,
+    "pixelDensity": 0.07837,
+    "hsvHueMean": 242.59776,
+    "activeCentroidLat": 17.47381,
+    "frameDelta": 0.01969
+  },
+  "physical": {
+    "label": "fire detections",
+    "units": "% of map",
+    "value": 7.84,
+    "clusters": 236,
+    "activeThreshold": null
+  },
+  "source": {
+    "layer": "MODIS_Terra_Thermal_Anomalies_All",
+    "days": [
+      "2004-08-08",
+      "2004-08-09",
+      "2004-08-10",
+      "2004-08-11",
+      "2004-08-12",
+      "2004-08-13",
+      "2004-08-14",
+      "2004-08-15"
+    ],
+    "urls": [
+      "https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi?SERVICE=WMS&REQUEST=GetMap&VERSION=1.1.1&SRS=EPSG:4326&BBOX=-180,-90,180,90&WIDTH=1024&HEIGHT=512&FORMAT=image/png&TRANSPARENT=TRUE&STYLES=&LAYERS=MODIS_Terra_Thermal_Anomalies_All&TIME=2004-08-08",
+      "https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi?SERVICE=WMS&REQUEST=GetMap&VERSION=1.1.1&SRS=EPSG:4326&BBOX=-180,-90,180,90&WIDTH=1024&HEIGHT=512&FORMAT=image/png&TRANSPARENT=TRUE&STYLES=&LAYERS=MODIS_Terra_Thermal_Anomalies_All&TIME=2004-08-09",
+      "https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi?SERVICE=WMS&REQUEST=GetMap&VERSION=1.1.1&SRS=EPSG:4326&BBOX=-180,-90,180,90&WIDTH=1024&HEIGHT=512&FORMAT=image/png&TRANSPARENT=TRUE&STYLES=&LAYERS=MODIS_Terra_Thermal_Anomalies_All&TIME=2004-08-10",
+      "https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi?SERVICE=WMS&REQUEST=GetMap&VERSION=1.1.1&SRS=EPSG:4326&BBOX=-180,-90,180,90&WIDTH=1024&HEIGHT=512&FORMAT=image/png&TRANSPARENT=TRUE&STYLES=&LAYERS=MODIS_Terra_Thermal_Anomalies_All&TIME=2004-08-11",
+      "https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi?SERVICE=WMS&REQUEST=GetMap&VERSION=1.1.1&SRS=EPSG:4326&BBOX=-180,-90,180,90&WIDTH=1024&HEIGHT=512&FORMAT=image/png&TRANSPARENT=TRUE&STYLES=&LAYERS=MODIS_Terra_Thermal_Anomalies_All&TIME=2004-08-12",
+      "https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi?SERVICE=WMS&REQUEST=GetMap&VERSION=1.1.1&SRS=EPSG:4326&BBOX=-180,-90,180,90&WIDTH=1024&HEIGHT=512&FORMAT=image/png&TRANSPARENT=TRUE&STYLES=&LAYERS=MODIS_Terra_Thermal_Anomalies_All&TIME=2004-08-13",
+      "https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi?SERVICE=WMS&REQUEST=GetMap&VERSION=1.1.1&SRS=EPSG:4326&BBOX=-180,-90,180,90&WIDTH=1024&HEIGHT=512&FORMAT=image/png&TRANSPARENT=TRUE&STYLES=&LAYERS=MODIS_Terra_Thermal_Anomalies_All&TIME=2004-08-14",
+      "https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi?SERVICE=WMS&REQUEST=GetMap&VERSION=1.1.1&SRS=EPSG:4326&BBOX=-180,-90,180,90&WIDTH=1024&HEIGHT=512&FORMAT=image/png&TRANSPARENT=TRUE&STYLES=&LAYERS=MODIS_Terra_Thermal_Anomalies_All&TIME=2004-08-15"
+    ]
+  }
+}

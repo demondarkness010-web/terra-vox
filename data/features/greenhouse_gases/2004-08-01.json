@@ -1,0 +1,40 @@
+{
+  "theme": "greenhouse_gases",
+  "index": 1,
+  "date": "2004-08-01",
+  "year": 2004,
+  "label": "August 2004",
+  "image": "data/display/greenhouse_gases/2004-08-01.jpg",
+  "hue": 21.439,
+  "brightness": 0.9606,
+  "colorVariance": 0.4929,
+  "pixelDensity": 0.0,
+  "frameDelta": 0.1022,
+  "latBand": "equatorial",
+  "raw": {
+    "hue": 232.40631,
+    "brightness": 0.68587,
+    "colorVariance": 0.22937,
+    "pixelDensity": 0.0,
+    "hsvHueMean": 55.6703,
+    "activeCentroidLat": 8.56999,
+    "frameDelta": 0.01823
+  },
+  "physical": {
+    "label": "mean methane at 400 hPa",
+    "units": "ppb",
+    "value": 1774.0,
+    "p90": 1839.0,
+    "paletteExactMatch": 1.0,
+    "activeThreshold": 1900.0
+  },
+  "source": {
+    "layer": "AIRS_L3_Methane_400hPa_Volume_Mixing_Ratio_Monthly_Day",
+    "days": [
+      "2004-08-01"
+    ],
+    "urls": [
+      "https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi?SERVICE=WMS&REQUEST=GetMap&VERSION=1.1.1&SRS=EPSG:4326&BBOX=-180,-90,180,90&WIDTH=1024&HEIGHT=512&FORMAT=image/png&TRANSPARENT=TRUE&STYLES=&LAYERS=AIRS_L3_Methane_400hPa_Volume_Mixing_Ratio_Monthly_Day&TIME=2004-08-01"
+    ]
+  }
+}

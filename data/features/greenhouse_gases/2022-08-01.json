@@ -1,0 +1,40 @@
+{
+  "theme": "greenhouse_gases",
+  "index": 19,
+  "date": "2022-08-01",
+  "year": 2022,
+  "label": "August 2022",
+  "image": "data/display/greenhouse_gases/2022-08-01.jpg",
+  "hue": 339.551,
+  "brightness": 0.1284,
+  "colorVariance": 0.3116,
+  "pixelDensity": 0.8814,
+  "frameDelta": 0.5974,
+  "latBand": "north",
+  "raw": {
+    "hue": 288.56948,
+    "brightness": 0.47311,
+    "colorVariance": 0.22042,
+    "pixelDensity": 0.43369,
+    "hsvHueMean": 10.34515,
+    "activeCentroidLat": 45.39736,
+    "frameDelta": 0.03278
+  },
+  "physical": {
+    "label": "mean methane at 400 hPa",
+    "units": "ppb",
+    "value": 1875.0,
+    "p90": 1937.0,
+    "paletteExactMatch": 1.0,
+    "activeThreshold": 1900.0
+  },
+  "source": {
+    "layer": "AIRS_L3_Methane_400hPa_Volume_Mixing_Ratio_Monthly_Day",
+    "days": [
+      "2022-08-01"
+    ],
+    "urls": [
+      "https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi?SERVICE=WMS&REQUEST=GetMap&VERSION=1.1.1&SRS=EPSG:4326&BBOX=-180,-90,180,90&WIDTH=1024&HEIGHT=512&FORMAT=image/png&TRANSPARENT=TRUE&STYLES=&LAYERS=AIRS_L3_Methane_400hPa_Volume_Mixing_Ratio_Monthly_Day&TIME=2022-08-01"
+    ]
+  }
+}

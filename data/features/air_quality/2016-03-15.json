@@ -1,0 +1,44 @@
+{
+  "theme": "air_quality",
+  "index": 11,
+  "date": "2016-03-15",
+  "year": 2016,
+  "label": "Mar 15-17, 2016",
+  "image": "data/display/air_quality/2016-03-15.jpg",
+  "hue": 302.239,
+  "brightness": 0.4457,
+  "colorVariance": 0.6606,
+  "pixelDensity": 0.6484,
+  "frameDelta": 0.4662,
+  "latBand": "north",
+  "raw": {
+    "hue": 233.26945,
+    "brightness": 0.95893,
+    "colorVariance": 0.08733,
+    "pixelDensity": 0.00694,
+    "hsvHueMean": 55.3622,
+    "activeCentroidLat": 34.37358,
+    "frameDelta": 0.02313
+  },
+  "physical": {
+    "label": "mean tropospheric NO2",
+    "units": "x10^15 molecules/cm2",
+    "value": 0.42,
+    "p90": 0.9,
+    "paletteExactMatch": 1.0,
+    "activeThreshold": 5000000000000000.0
+  },
+  "source": {
+    "layer": "OMI_Nitrogen_Dioxide_Tropo_Column",
+    "days": [
+      "2016-03-15",
+      "2016-03-16",
+      "2016-03-17"
+    ],
+    "urls": [
+      "https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi?SERVICE=WMS&REQUEST=GetMap&VERSION=1.1.1&SRS=EPSG:4326&BBOX=-180,-90,180,90&WIDTH=1024&HEIGHT=512&FORMAT=image/png&TRANSPARENT=TRUE&STYLES=&LAYERS=OMI_Nitrogen_Dioxide_Tropo_Column&TIME=2016-03-15",
+      "https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi?SERVICE=WMS&REQUEST=GetMap&VERSION=1.1.1&SRS=EPSG:4326&BBOX=-180,-90,180,90&WIDTH=1024&HEIGHT=512&FORMAT=image/png&TRANSPARENT=TRUE&STYLES=&LAYERS=OMI_Nitrogen_Dioxide_Tropo_Column&TIME=2016-03-16",
+      "https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi?SERVICE=WMS&REQUEST=GetMap&VERSION=1.1.1&SRS=EPSG:4326&BBOX=-180,-90,180,90&WIDTH=1024&HEIGHT=512&FORMAT=image/png&TRANSPARENT=TRUE&STYLES=&LAYERS=OMI_Nitrogen_Dioxide_Tropo_Column&TIME=2016-03-17"
+    ]
+  }
+}

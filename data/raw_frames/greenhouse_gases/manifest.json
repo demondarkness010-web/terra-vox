@@ -1,0 +1,273 @@
+{
+  "theme": "greenhouse_gases",
+  "layer": "AIRS_L3_Methane_400hPa_Volume_Mixing_Ratio_Monthly_Day",
+  "dataset": "AIRS Methane (CH4) at 400 hPa, monthly mean",
+  "composite": "single",
+  "frames": [
+    {
+      "date": "2003-08-01",
+      "label": "August 2003",
+      "days": [
+        "2003-08-01"
+      ],
+      "file": "data/raw_frames/greenhouse_gases/2003-08-01.png",
+      "source_urls": [
+        "https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi?SERVICE=WMS&REQUEST=GetMap&VERSION=1.1.1&SRS=EPSG:4326&BBOX=-180,-90,180,90&WIDTH=1024&HEIGHT=512&FORMAT=image/png&TRANSPARENT=TRUE&STYLES=&LAYERS=AIRS_L3_Methane_400hPa_Volume_Mixing_Ratio_Monthly_Day&TIME=2003-08-01"
+      ]
+    },
+    {
+      "date": "2004-08-01",
+      "label": "August 2004",
+      "days": [
+        "2004-08-01"
+      ],
+      "file": "data/raw_frames/greenhouse_gases/2004-08-01.png",
+      "source_urls": [
+        "https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi?SERVICE=WMS&REQUEST=GetMap&VERSION=1.1.1&SRS=EPSG:4326&BBOX=-180,-90,180,90&WIDTH=1024&HEIGHT=512&FORMAT=image/png&TRANSPARENT=TRUE&STYLES=&LAYERS=AIRS_L3_Methane_400hPa_Volume_Mixing_Ratio_Monthly_Day&TIME=2004-08-01"
+      ]
+    },
+    {
+      "date": "2005-08-01",
+      "label": "August 2005",
+      "days": [
+        "2005-08-01"
+      ],
+      "file": "data/raw_frames/greenhouse_gases/2005-08-01.png",
+      "source_urls": [
+        "https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi?SERVICE=WMS&REQUEST=GetMap&VERSION=1.1.1&SRS=EPSG:4326&BBOX=-180,-90,180,90&WIDTH=1024&HEIGHT=512&FORMAT=image/png&TRANSPARENT=TRUE&STYLES=&LAYERS=AIRS_L3_Methane_400hPa_Volume_Mixing_Ratio_Monthly_Day&TIME=2005-08-01"
+      ]
+    },
+    {
+      "date": "2006-08-01",
+      "label": "August 2006",
+      "days": [
+        "2006-08-01"
+      ],
+      "file": "data/raw_frames/greenhouse_gases/2006-08-01.png",
+      "source_urls": [
+        "https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi?SERVICE=WMS&REQUEST=GetMap&VERSION=1.1.1&SRS=EPSG:4326&BBOX=-180,-90,180,90&WIDTH=1024&HEIGHT=512&FORMAT=image/png&TRANSPARENT=TRUE&STYLES=&LAYERS=AIRS_L3_Methane_400hPa_Volume_Mixing_Ratio_Monthly_Day&TIME=2006-08-01"
+      ]
+    },
+    {
+      "date": "2007-08-01",
+      "label": "August 2007",
+      "days": [
+        "2007-08-01"
+      ],
+      "file": "data/raw_frames/greenhouse_gases/2007-08-01.png",
+      "source_urls": [
+        "https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi?SERVICE=WMS&REQUEST=GetMap&VERSION=1.1.1&SRS=EPSG:4326&BBOX=-180,-90,180,90&WIDTH=1024&HEIGHT=512&FORMAT=image/png&TRANSPARENT=TRUE&STYLES=&LAYERS=AIRS_L3_Methane_400hPa_Volume_Mixing_Ratio_Monthly_Day&TIME=2007-08-01"
+      ]
+    },
+    {
+      "date": "2008-08-01",
+      "label": "August 2008",
+      "days": [
+        "2008-08-01"
+      ],
+      "file": "data/raw_frames/greenhouse_gases/2008-08-01.png",
+      "source_urls": [
+        "https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi?SERVICE=WMS&REQUEST=GetMap&VERSION=1.1.1&SRS=EPSG:4326&BBOX=-180,-90,180,90&WIDTH=1024&HEIGHT=512&FORMAT=image/png&TRANSPARENT=TRUE&STYLES=&LAYERS=AIRS_L3_Methane_400hPa_Volume_Mixing_Ratio_Monthly_Day&TIME=2008-08-01"
+      ]
+    },
+    {
+      "date": "2009-08-01",
+      "label": "August 2009",
+      "days": [
+        "2009-08-01"
+      ],
+      "file": "data/raw_frames/greenhouse_gases/2009-08-01.png",
+      "source_urls": [
+        "https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi?SERVICE=WMS&REQUEST=GetMap&VERSION=1.1.1&SRS=EPSG:4326&BBOX=-180,-90,180,90&WIDTH=1024&HEIGHT=512&FORMAT=image/png&TRANSPARENT=TRUE&STYLES=&LAYERS=AIRS_L3_Methane_400hPa_Volume_Mixing_Ratio_Monthly_Day&TIME=2009-08-01"
+      ]
+    },
+    {
+      "date": "2010-08-01",
+      "label": "August 2010",
+      "days": [
+        "2010-08-01"
+      ],
+      "file": "data/raw_frames/greenhouse_gases/2010-08-01.png",
+      "source_urls": [
+        "https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi?SERVICE=WMS&REQUEST=GetMap&VERSION=1.1.1&SRS=EPSG:4326&BBOX=-180,-90,180,90&WIDTH=1024&HEIGHT=512&FORMAT=image/png&TRANSPARENT=TRUE&STYLES=&LAYERS=AIRS_L3_Methane_400hPa_Volume_Mixing_Ratio_Monthly_Day&TIME=2010-08-01"
+      ]
+    },
+    {
+      "date": "2011-08-01",
+      "label": "August 2011",
+      "days": [
+        "2011-08-01"
+      ],
+      "file": "data/raw_frames/greenhouse_gases/2011-08-01.png",
+      "source_urls": [
+        "https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi?SERVICE=WMS&REQUEST=GetMap&VERSION=1.1.1&SRS=EPSG:4326&BBOX=-180,-90,180,90&WIDTH=1024&HEIGHT=512&FORMAT=image/png&TRANSPARENT=TRUE&STYLES=&LAYERS=AIRS_L3_Methane_400hPa_Volume_Mixing_Ratio_Monthly_Day&TIME=2011-08-01"
+      ]
+    },
+    {
+      "date": "2012-08-01",
+      "label": "August 2012",
+      "days": [
+        "2012-08-01"
+      ],
+      "file": "data/raw_frames/greenhouse_gases/2012-08-01.png",
+      "source_urls": [
+        "https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi?SERVICE=WMS&REQUEST=GetMap&VERSION=1.1.1&SRS=EPSG:4326&BBOX=-180,-90,180,90&WIDTH=1024&HEIGHT=512&FORMAT=image/png&TRANSPARENT=TRUE&STYLES=&LAYERS=AIRS_L3_Methane_400hPa_Volume_Mixing_Ratio_Monthly_Day&TIME=2012-08-01"
+      ]
+    },
+    {
+      "date": "2013-08-01",
+      "label": "August 2013",
+      "days": [
+        "2013-08-01"
+      ],
+      "file": "data/raw_frames/greenhouse_gases/2013-08-01.png",
+      "source_urls": [
+        "https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi?SERVICE=WMS&REQUEST=GetMap&VERSION=1.1.1&SRS=EPSG:4326&BBOX=-180,-90,180,90&WIDTH=1024&HEIGHT=512&FORMAT=image/png&TRANSPARENT=TRUE&STYLES=&LAYERS=AIRS_L3_Methane_400hPa_Volume_Mixing_Ratio_Monthly_Day&TIME=2013-08-01"
+      ]
+    },
+    {
+      "date": "2014-08-01",
+      "label": "August 2014",
+      "days": [
+        "2014-08-01"
+      ],
+      "file": "data/raw_frames/greenhouse_gases/2014-08-01.png",
+      "source_urls": [
+        "https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi?SERVICE=WMS&REQUEST=GetMap&VERSION=1.1.1&SRS=EPSG:4326&BBOX=-180,-90,180,90&WIDTH=1024&HEIGHT=512&FORMAT=image/png&TRANSPARENT=TRUE&STYLES=&LAYERS=AIRS_L3_Methane_400hPa_Volume_Mixing_Ratio_Monthly_Day&TIME=2014-08-01"
+      ]
+    },
+    {
+      "date": "2015-08-01",
+      "label": "August 2015",
+      "days": [
+        "2015-08-01"
+      ],
+      "file": "data/raw_frames/greenhouse_gases/2015-08-01.png",
+      "source_urls": [
+        "https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi?SERVICE=WMS&REQUEST=GetMap&VERSION=1.1.1&SRS=EPSG:4326&BBOX=-180,-90,180,90&WIDTH=1024&HEIGHT=512&FORMAT=image/png&TRANSPARENT=TRUE&STYLES=&LAYERS=AIRS_L3_Methane_400hPa_Volume_Mixing_Ratio_Monthly_Day&TIME=2015-08-01"
+      ]
+    },
+    {
+      "date": "2016-08-01",
+      "label": "August 2016",
+      "days": [
+        "2016-08-01"
+      ],
+      "file": "data/raw_frames/greenhouse_gases/2016-08-01.png",
+      "source_urls": [
+        "https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi?SERVICE=WMS&REQUEST=GetMap&VERSION=1.1.1&SRS=EPSG:4326&BBOX=-180,-90,180,90&WIDTH=1024&HEIGHT=512&FORMAT=image/png&TRANSPARENT=TRUE&STYLES=&LAYERS=AIRS_L3_Methane_400hPa_Volume_Mixing_Ratio_Monthly_Day&TIME=2016-08-01"
+      ]
+    },
+    {
+      "date": "2017-08-01",
+      "label": "August 2017",
+      "days": [
+        "2017-08-01"
+      ],
+      "file": "data/raw_frames/greenhouse_gases/2017-08-01.png",
+      "source_urls": [
+        "https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi?SERVICE=WMS&REQUEST=GetMap&VERSION=1.1.1&SRS=EPSG:4326&BBOX=-180,-90,180,90&WIDTH=1024&HEIGHT=512&FORMAT=image/png&TRANSPARENT=TRUE&STYLES=&LAYERS=AIRS_L3_Methane_400hPa_Volume_Mixing_Ratio_Monthly_Day&TIME=2017-08-01"
+      ]
+    },
+    {
+      "date": "2018-08-01",
+      "label": "August 2018",
+      "days": [
+        "2018-08-01"
+      ],
+      "file": "data/raw_frames/greenhouse_gases/2018-08-01.png",
+      "source_urls": [
+        "https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi?SERVICE=WMS&REQUEST=GetMap&VERSION=1.1.1&SRS=EPSG:4326&BBOX=-180,-90,180,90&WIDTH=1024&HEIGHT=512&FORMAT=image/png&TRANSPARENT=TRUE&STYLES=&LAYERS=AIRS_L3_Methane_400hPa_Volume_Mixing_Ratio_Monthly_Day&TIME=2018-08-01"
+      ]
+    },
+    {
+      "date": "2019-08-01",
+      "label": "August 2019",
+      "days": [
+        "2019-08-01"
+      ],
+      "file": "data/raw_frames/greenhouse_gases/2019-08-01.png",
+      "source_urls": [
+        "https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi?SERVICE=WMS&REQUEST=GetMap&VERSION=1.1.1&SRS=EPSG:4326&BBOX=-180,-90,180,90&WIDTH=1024&HEIGHT=512&FORMAT=image/png&TRANSPARENT=TRUE&STYLES=&LAYERS=AIRS_L3_Methane_400hPa_Volume_Mixing_Ratio_Monthly_Day&TIME=2019-08-01"
+      ]
+    },
+    {
+      "date": "2020-08-01",
+      "label": "August 2020",
+      "days": [
+        "2020-08-01"
+      ],
+      "file": "data/raw_frames/greenhouse_gases/2020-08-01.png",
+      "source_urls": [
+        "https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi?SERVICE=WMS&REQUEST=GetMap&VERSION=1.1.1&SRS=EPSG:4326&BBOX=-180,-90,180,90&WIDTH=1024&HEIGHT=512&FORMAT=image/png&TRANSPARENT=TRUE&STYLES=&LAYERS=AIRS_L3_Methane_400hPa_Volume_Mixing_Ratio_Monthly_Day&TIME=2020-08-01"
+      ]
+    },
+    {
+      "date": "2021-08-01",
+      "label": "August 2021",
+      "days": [
+        "2021-08-01"
+      ],
+      "file": "data/raw_frames/greenhouse_gases/2021-08-01.png",
+      "source_urls": [
+        "https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi?SERVICE=WMS&REQUEST=GetMap&VERSION=1.1.1&SRS=EPSG:4326&BBOX=-180,-90,180,90&WIDTH=1024&HEIGHT=512&FORMAT=image/png&TRANSPARENT=TRUE&STYLES=&LAYERS=AIRS_L3_Methane_400hPa_Volume_Mixing_Ratio_Monthly_Day&TIME=2021-08-01"
+      ]
+    },
+    {
+      "date": "2022-08-01",
+      "label": "August 2022",
+      "days": [
+        "2022-08-01"
+      ],
+      "file": "data/raw_frames/greenhouse_gases/2022-08-01.png",
+      "source_urls": [
+        "https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi?SERVICE=WMS&REQUEST=GetMap&VERSION=1.1.1&SRS=EPSG:4326&BBOX=-180,-90,180,90&WIDTH=1024&HEIGHT=512&FORMAT=image/png&TRANSPARENT=TRUE&STYLES=&LAYERS=AIRS_L3_Methane_400hPa_Volume_Mixing_Ratio_Monthly_Day&TIME=2022-08-01"
+      ]
+    },
+    {
+      "date": "2023-08-01",
+      "label": "August 2023",
+      "days": [
+        "2023-08-01"
+      ],
+      "file": "data/raw_frames/greenhouse_gases/2023-08-01.png",
+      "source_urls": [
+        "https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi?SERVICE=WMS&REQUEST=GetMap&VERSION=1.1.1&SRS=EPSG:4326&BBOX=-180,-90,180,90&WIDTH=1024&HEIGHT=512&FORMAT=image/png&TRANSPARENT=TRUE&STYLES=&LAYERS=AIRS_L3_Methane_400hPa_Volume_Mixing_Ratio_Monthly_Day&TIME=2023-08-01"
+      ]
+    },
+    {
+      "date": "2024-08-01",
+      "label": "August 2024",
+      "days": [
+        "2024-08-01"
+      ],
+      "file": "data/raw_frames/greenhouse_gases/2024-08-01.png",
+      "source_urls": [
+        "https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi?SERVICE=WMS&REQUEST=GetMap&VERSION=1.1.1&SRS=EPSG:4326&BBOX=-180,-90,180,90&WIDTH=1024&HEIGHT=512&FORMAT=image/png&TRANSPARENT=TRUE&STYLES=&LAYERS=AIRS_L3_Methane_400hPa_Volume_Mixing_Ratio_Monthly_Day&TIME=2024-08-01"
+      ]
+    },
+    {
+      "date": "2025-08-01",
+      "label": "August 2025",
+      "days": [
+        "2025-08-01"
+      ],
+      "file": "data/raw_frames/greenhouse_gases/2025-08-01.png",
+      "source_urls": [
+        "https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi?SERVICE=WMS&REQUEST=GetMap&VERSION=1.1.1&SRS=EPSG:4326&BBOX=-180,-90,180,90&WIDTH=1024&HEIGHT=512&FORMAT=image/png&TRANSPARENT=TRUE&STYLES=&LAYERS=AIRS_L3_Methane_400hPa_Volume_Mixing_Ratio_Monthly_Day&TIME=2025-08-01"
+      ]
+    },
+    {
+      "date": "2026-08-01",
+      "label": "August 2026",
+      "days": [
+        "2026-08-01"
+      ],
+      "file": "data/raw_frames/greenhouse_gases/2026-08-01.png",
+      "source_urls": [
+        "https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi?SERVICE=WMS&REQUEST=GetMap&VERSION=1.1.1&SRS=EPSG:4326&BBOX=-180,-90,180,90&WIDTH=1024&HEIGHT=512&FORMAT=image/png&TRANSPARENT=TRUE&STYLES=&LAYERS=AIRS_L3_Methane_400hPa_Volume_Mixing_Ratio_Monthly_Day&TIME=2026-08-01"
+      ]
+    }
+  ],
+  "colormap": "https://gibs.earthdata.nasa.gov/colormaps/v1.3/AIRS_Methane_Volume_Mixing_Ratio.xml"
+}

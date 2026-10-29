@@ -1,0 +1,44 @@
+{
+  "theme": "air_quality",
+  "index": 6,
+  "date": "2011-03-15",
+  "year": 2011,
+  "label": "Mar 15-17, 2011",
+  "image": "data/display/air_quality/2011-03-15.jpg",
+  "hue": 359.964,
+  "brightness": 0.0462,
+  "colorVariance": 0.8423,
+  "pixelDensity": 1.0,
+  "frameDelta": 0.7402,
+  "latBand": "north",
+  "raw": {
+    "hue": 233.34704,
+    "brightness": 0.958,
+    "colorVariance": 0.09219,
+    "pixelDensity": 0.00852,
+    "hsvHueMean": 55.31105,
+    "activeCentroidLat": 33.52188,
+    "frameDelta": 0.02359
+  },
+  "physical": {
+    "label": "mean tropospheric NO2",
+    "units": "x10^15 molecules/cm2",
+    "value": 0.45,
+    "p90": 0.9,
+    "paletteExactMatch": 1.0,
+    "activeThreshold": 5000000000000000.0
+  },
+  "source": {
+    "layer": "OMI_Nitrogen_Dioxide_Tropo_Column",
+    "days": [
+      "2011-03-15",
+      "2011-03-16",
+      "2011-03-17"
+    ],
+    "urls": [
+      "https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi?SERVICE=WMS&REQUEST=GetMap&VERSION=1.1.1&SRS=EPSG:4326&BBOX=-180,-90,180,90&WIDTH=1024&HEIGHT=512&FORMAT=image/png&TRANSPARENT=TRUE&STYLES=&LAYERS=OMI_Nitrogen_Dioxide_Tropo_Column&TIME=2011-03-15",
+      "https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi?SERVICE=WMS&REQUEST=GetMap&VERSION=1.1.1&SRS=EPSG:4326&BBOX=-180,-90,180,90&WIDTH=1024&HEIGHT=512&FORMAT=image/png&TRANSPARENT=TRUE&STYLES=&LAYERS=OMI_Nitrogen_Dioxide_Tropo_Column&TIME=2011-03-16",
+      "https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi?SERVICE=WMS&REQUEST=GetMap&VERSION=1.1.1&SRS=EPSG:4326&BBOX=-180,-90,180,90&WIDTH=1024&HEIGHT=512&FORMAT=image/png&TRANSPARENT=TRUE&STYLES=&LAYERS=OMI_Nitrogen_Dioxide_Tropo_Column&TIME=2011-03-17"
+    ]
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "theme": "greenhouse_gases",
+  "index": 17,
+  "date": "2020-08-01",
+  "year": 2020,
+  "label": "August 2020",
+  "image": "data/display/greenhouse_gases/2020-08-01.jpg",
+  "hue": 266.36,
+  "brightness": 0.4068,
+  "colorVariance": 0.1438,
+  "pixelDensity": 0.3719,
+  "frameDelta": 0.399,
+  "latBand": "north",
+  "raw": {
+    "hue": 275.64748,
+    "brightness": 0.54427,
+    "colorVariance": 0.21214,
+    "pixelDensity": 0.18298,
+    "hsvHueMean": 20.69525,
+    "activeCentroidLat": 62.32248,
+    "frameDelta": 0.02695
+  },
+  "physical": {
+    "label": "mean methane at 400 hPa",
+    "units": "ppb",
+    "value": 1844.0,
+    "p90": 1911.0,
+    "paletteExactMatch": 1.0,
+    "activeThreshold": 1900.0
+  },
+  "source": {
+    "layer": "AIRS_L3_Methane_400hPa_Volume_Mixing_Ratio_Monthly_Day",
+    "days": [
+      "2020-08-01"
+    ],
+    "urls": [
+      "https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi?SERVICE=WMS&REQUEST=GetMap&VERSION=1.1.1&SRS=EPSG:4326&BBOX=-180,-90,180,90&WIDTH=1024&HEIGHT=512&FORMAT=image/png&TRANSPARENT=TRUE&STYLES=&LAYERS=AIRS_L3_Methane_400hPa_Volume_Mixing_Ratio_Monthly_Day&TIME=2020-08-01"
+    ]
+  }
+}

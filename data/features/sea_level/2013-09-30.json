@@ -1,0 +1,40 @@
+{
+  "theme": "sea_level",
+  "index": 21,
+  "date": "2013-09-30",
+  "year": 2013,
+  "label": "Sep 30, 2013",
+  "image": "data/display/sea_level/2013-09-30.jpg",
+  "hue": 260.736,
+  "brightness": 0.8892,
+  "colorVariance": 0.1908,
+  "pixelDensity": 0.494,
+  "frameDelta": 0.0441,
+  "latBand": "equatorial",
+  "raw": {
+    "hue": 172.16986,
+    "brightness": 0.75781,
+    "colorVariance": 0.52437,
+    "pixelDensity": 0.14989,
+    "hsvHueMean": 97.95888,
+    "activeCentroidLat": 9.01995,
+    "frameDelta": 0.17403
+  },
+  "physical": {
+    "label": "mean sea surface height anomaly",
+    "units": "cm",
+    "value": 2.5,
+    "p90": 12.5,
+    "paletteExactMatch": 1.0,
+    "activeThreshold": 0.1
+  },
+  "source": {
+    "layer": "JPL_MEaSUREs_L4_Sea_Surface_Height_Anomalies",
+    "days": [
+      "2013-09-30"
+    ],
+    "urls": [
+      "https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi?SERVICE=WMS&REQUEST=GetMap&VERSION=1.1.1&SRS=EPSG:4326&BBOX=-180,-90,180,90&WIDTH=1024&HEIGHT=512&FORMAT=image/png&TRANSPARENT=TRUE&STYLES=&LAYERS=JPL_MEaSUREs_L4_Sea_Surface_Height_Anomalies&TIME=2013-09-30"
+    ]
+  }
+}

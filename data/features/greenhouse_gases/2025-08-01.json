@@ -1,0 +1,40 @@
+{
+  "theme": "greenhouse_gases",
+  "index": 22,
+  "date": "2025-08-01",
+  "year": 2025,
+  "label": "August 2025",
+  "image": "data/display/greenhouse_gases/2025-08-01.jpg",
+  "hue": 348.85,
+  "brightness": 0.0678,
+  "colorVariance": 0.7044,
+  "pixelDensity": 0.9298,
+  "frameDelta": 0.5012,
+  "latBand": "north",
+  "raw": {
+    "hue": 290.2112,
+    "brightness": 0.4576,
+    "colorVariance": 0.23981,
+    "pixelDensity": 0.4575,
+    "hsvHueMean": 9.10899,
+    "activeCentroidLat": 44.12924,
+    "frameDelta": 0.02995
+  },
+  "physical": {
+    "label": "mean methane at 400 hPa",
+    "units": "ppb",
+    "value": 1880.0,
+    "p90": 1945.0,
+    "paletteExactMatch": 1.0,
+    "activeThreshold": 1900.0
+  },
+  "source": {
+    "layer": "AIRS_L3_Methane_400hPa_Volume_Mixing_Ratio_Monthly_Day",
+    "days": [
+      "2025-08-01"
+    ],
+    "urls": [
+      "https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi?SERVICE=WMS&REQUEST=GetMap&VERSION=1.1.1&SRS=EPSG:4326&BBOX=-180,-90,180,90&WIDTH=1024&HEIGHT=512&FORMAT=image/png&TRANSPARENT=TRUE&STYLES=&LAYERS=AIRS_L3_Methane_400hPa_Volume_Mixing_Ratio_Monthly_Day&TIME=2025-08-01"
+    ]
+  }
+}

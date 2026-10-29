@@ -1,0 +1,40 @@
+{
+  "theme": "sea_level",
+  "index": 2,
+  "date": "1994-09-30",
+  "year": 1994,
+  "label": "Sep 30, 1994",
+  "image": "data/display/sea_level/1994-09-30.jpg",
+  "hue": 1.758,
+  "brightness": 0.0122,
+  "colorVariance": 0.8173,
+  "pixelDensity": 0.0719,
+  "frameDelta": 0.4625,
+  "latBand": "equatorial",
+  "raw": {
+    "hue": 134.01694,
+    "brightness": 0.71118,
+    "colorVariance": 0.60607,
+    "pixelDensity": 0.06832,
+    "hsvHueMean": 126.65968,
+    "activeCentroidLat": 5.74899,
+    "frameDelta": 0.21093
+  },
+  "physical": {
+    "label": "mean sea surface height anomaly",
+    "units": "cm",
+    "value": -2.6,
+    "p90": 7.5,
+    "paletteExactMatch": 1.0,
+    "activeThreshold": 0.1
+  },
+  "source": {
+    "layer": "JPL_MEaSUREs_L4_Sea_Surface_Height_Anomalies",
+    "days": [
+      "1994-09-30"
+    ],
+    "urls": [
+      "https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi?SERVICE=WMS&REQUEST=GetMap&VERSION=1.1.1&SRS=EPSG:4326&BBOX=-180,-90,180,90&WIDTH=1024&HEIGHT=512&FORMAT=image/png&TRANSPARENT=TRUE&STYLES=&LAYERS=JPL_MEaSUREs_L4_Sea_Surface_Height_Anomalies&TIME=1994-09-30"
+    ]
+  }
+}

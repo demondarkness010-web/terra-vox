@@ -1,0 +1,40 @@
+{
+  "theme": "sea_level",
+  "index": 12,
+  "date": "2004-10-02",
+  "year": 2004,
+  "label": "Oct 02, 2004",
+  "image": "data/display/sea_level/2004-10-02.jpg",
+  "hue": 148.926,
+  "brightness": 0.7177,
+  "colorVariance": 0.3351,
+  "pixelDensity": 0.1792,
+  "frameDelta": 0.1633,
+  "latBand": "equatorial",
+  "raw": {
+    "hue": 155.69794,
+    "brightness": 0.7487,
+    "colorVariance": 0.54319,
+    "pixelDensity": 0.08906,
+    "hsvHueMean": 110.17813,
+    "activeCentroidLat": 5.86763,
+    "frameDelta": 0.18455
+  },
+  "physical": {
+    "label": "mean sea surface height anomaly",
+    "units": "cm",
+    "value": -0.0,
+    "p90": 9.5,
+    "paletteExactMatch": 1.0,
+    "activeThreshold": 0.1
+  },
+  "source": {
+    "layer": "JPL_MEaSUREs_L4_Sea_Surface_Height_Anomalies",
+    "days": [
+      "2004-10-02"
+    ],
+    "urls": [
+      "https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi?SERVICE=WMS&REQUEST=GetMap&VERSION=1.1.1&SRS=EPSG:4326&BBOX=-180,-90,180,90&WIDTH=1024&HEIGHT=512&FORMAT=image/png&TRANSPARENT=TRUE&STYLES=&LAYERS=JPL_MEaSUREs_L4_Sea_Surface_Height_Anomalies&TIME=2004-10-02"
+    ]
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "theme": "greenhouse_gases",
+  "index": 9,
+  "date": "2012-08-01",
+  "year": 2012,
+  "label": "August 2012",
+  "image": "data/display/greenhouse_gases/2012-08-01.jpg",
+  "hue": 145.204,
+  "brightness": 0.6995,
+  "colorVariance": 0.315,
+  "pixelDensity": 0.0103,
+  "frameDelta": 0.1748,
+  "latBand": "north",
+  "raw": {
+    "hue": 254.25723,
+    "brightness": 0.61911,
+    "colorVariance": 0.22059,
+    "pixelDensity": 0.00508,
+    "hsvHueMean": 37.98103,
+    "activeCentroidLat": 39.74511,
+    "frameDelta": 0.02036
+  },
+  "physical": {
+    "label": "mean methane at 400 hPa",
+    "units": "ppb",
+    "value": 1808.0,
+    "p90": 1877.0,
+    "paletteExactMatch": 1.0,
+    "activeThreshold": 1900.0
+  },
+  "source": {
+    "layer": "AIRS_L3_Methane_400hPa_Volume_Mixing_Ratio_Monthly_Day",
+    "days": [
+      "2012-08-01"
+    ],
+    "urls": [
+      "https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi?SERVICE=WMS&REQUEST=GetMap&VERSION=1.1.1&SRS=EPSG:4326&BBOX=-180,-90,180,90&WIDTH=1024&HEIGHT=512&FORMAT=image/png&TRANSPARENT=TRUE&STYLES=&LAYERS=AIRS_L3_Methane_400hPa_Volume_Mixing_Ratio_Monthly_Day&TIME=2012-08-01"
+    ]
+  }
+}
