@@ -117,6 +117,15 @@ export function getMaster({ reverb = true } = {}) {
   return master;
 }
 
+/**
+ * Run `fn` when audio scheduled for AudioContext time `time` is heard.
+ * Uses a timer rather than Tone.Draw (requestAnimationFrame), which stops in
+ * background tabs and would freeze captions while the music plays on.
+ */
+export function whenHeard(time, fn) {
+  setTimeout(fn, Math.max(0, (time - Tone.immediate()) * 1000));
+}
+
 /** Unlock audio (must run inside a user gesture) and start the clock. */
 export async function startAudio() {
   await Tone.start();
@@ -141,6 +150,7 @@ export class Voice {
   constructor({ name = 'voice', destination = null, level = 0.5 } = {}) {
     this.name = name;
     this.frame = null;
+    this.pending = null;
     this.params = null;
     this.panOverride = null;
     this.running = false;
@@ -176,13 +186,27 @@ export class Voice {
     return () => this.listeners.delete(fn);
   }
 
-  /** Load a frame. Timbre and pan change now; rhythm and pitch on the next bar. */
+  /**
+   * Load a frame. While playing, the frame is queued and takes over on the
+   * next downbeat, so a bar never changes timbre halfway through. With
+   * `restart`, it takes over immediately and a fresh bar starts now (used for
+   * scrubbing, so the sound answers the hand without waiting for the bar).
+   */
   setFrame(frame, { restart = false } = {}) {
+    if (this.running && !restart) {
+      this.pending = frame;
+      return;
+    }
+    this._adopt(frame);
+    if (restart && this.running) this._restart();
+  }
+
+  _adopt(frame) {
+    this.pending = null;
     this.frame = frame;
     this.params = mapFeatures(frame);
     this._applyTimbre(this.params.timbre);
     this._applyPan();
-    if (restart && this.running) this._restart();
   }
 
   setPanOverride(pan) {
@@ -194,10 +218,13 @@ export class Voice {
     this.out.gain.rampTo(linear, ramp);
   }
 
-  start() {
-    if (this.running || !this.frame) return;
+  /** Play bars until stopped, or only `bars` bars (e.g. 1 = an audition). */
+  start({ bars = Infinity } = {}) {
+    if (!this.frame) return;
+    if (this.running) this.stop();
     this.running = true;
     this.bar = 0;
+    this._barsLeft = bars;
     this._nextBarAt = this.transport.seconds + 0.06;
     this._schedule();
   }
@@ -236,6 +263,7 @@ export class Voice {
 
   _playBar(time) {
     if (!this.running) return;
+    if (this.pending) this._adopt(this.pending);
     const params = this.params;
     const plan = barPlan(params);
 
@@ -244,12 +272,16 @@ export class Voice {
     });
     this.pad.triggerAttackRelease(plan.dyad, plan.barSeconds * 0.92, time, params.velocity * PAD_LEVEL);
 
+    // Listeners run now, a lookahead before the bar sounds, so they can queue
+    // the next frame in time; for UI work they should use whenHeard(event.time).
     const event = { voice: this.name, bar: this.bar, frame: this.frame, params, plan, time };
     this.bar += 1;
-    Tone.getDraw().schedule(() => this.listeners.forEach((fn) => fn(event)), time);
+    this.listeners.forEach((fn) => fn(event));
 
     this._nextBarAt += plan.barSeconds;
-    this._schedule();
+    this._barsLeft -= 1;
+    if (this._barsLeft > 0) this._schedule();
+    else { this.running = false; this._eventId = null; }
   }
 
   _applyTimbre(type) {
