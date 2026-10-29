@@ -1,0 +1,18 @@
+{
+  "name": "terra-vox-web",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Terra Vox: an Earth Information Jukebox that turns NASA Earth imagery into real-time, musically constrained sound.",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "tone": "15.1.22"
+  },
+  "devDependencies": {
+    "vite": "8.3.5"
+  }
+}
