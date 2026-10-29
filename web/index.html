@@ -24,6 +24,13 @@
           <p class="tagline">NASA Earth data you can hear</p>
         </div>
       </div>
+      <div class="top-actions">
+        <button id="duet-toggle" class="duet-toggle" type="button" aria-pressed="false" aria-describedby="duet-hint">
+          <span class="duet-dot old" aria-hidden="true"></span><span class="duet-dot new" aria-hidden="true"></span>
+          Duet
+        </button>
+        <span id="duet-hint" class="sr-only">Plays the oldest year in your left ear and the newest year in your right ear at the same time. Shortcut: D.</span>
+      </div>
     </header>
 
     <main id="panel-jukebox" class="layout">
@@ -44,7 +51,41 @@
             <figcaption id="frame-caption" class="frame-caption"></figcaption>
           </figure>
           <div class="record" aria-hidden="true"><img id="record-label" alt="" /></div>
+
+          <figure class="deck deck-old">
+            <div class="screen">
+              <img id="duet-old-img" alt="" />
+              <span class="ear-tag old" aria-hidden="true">◀ LEFT · oldest</span>
+              <span class="year-badge" id="duet-old-year" aria-hidden="true"></span>
+              <span class="meter" aria-hidden="true"><i id="duet-old-meter"></i></span>
+            </div>
+            <figcaption id="duet-old-cap" class="frame-caption"></figcaption>
+          </figure>
+          <figure class="deck deck-new">
+            <div class="screen">
+              <img id="duet-new-img" alt="" />
+              <span class="ear-tag new" aria-hidden="true">newest · RIGHT ▶</span>
+              <span class="year-badge" id="duet-new-year" aria-hidden="true"></span>
+              <span class="meter" aria-hidden="true"><i id="duet-new-meter"></i></span>
+            </div>
+            <figcaption id="duet-new-cap" class="frame-caption"></figcaption>
+          </figure>
         </div>
+
+        <section id="duet-panel" class="duet-panel" aria-labelledby="gap-heading" hidden>
+          <div class="listen-modes">
+            <span id="listen-label" class="mini-label">Listen</span>
+            <div id="listen-modes" role="radiogroup" aria-labelledby="listen-label" class="segmented"></div>
+          </div>
+          <h3 id="gap-heading" class="gap-heading">The gap: <span id="gap-years"></span></h3>
+          <p id="gap-sentence" class="gap-sentence"></p>
+          <p id="gap-physical" class="gap-physical"></p>
+          <table class="gap-table">
+            <caption class="sr-only">How each part of the sound changed from the oldest to the newest frame</caption>
+            <thead><tr><th scope="col">Sound</th><th scope="col" class="old">Oldest</th><th scope="col" class="new">Newest</th><th scope="col">Change</th></tr></thead>
+            <tbody id="gap-rows"></tbody>
+          </table>
+        </section>
 
         <div class="transport" role="group" aria-label="Playback">
           <button id="prev" class="icon-btn" type="button" aria-label="Previous year" title="Previous year ( [ )">

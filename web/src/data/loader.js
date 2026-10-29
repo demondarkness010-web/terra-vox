@@ -38,3 +38,55 @@ export function getTheme(id) {
 
 export const oldestFrame = (theme) => theme.frames[0];
 export const newestFrame = (theme) => theme.frames[theme.frames.length - 1];
+
+// ------------------------------------------------------------ real units
+
+// What counts as an "active" pixel per theme (drives notes per bar).
+const ACTIVE = {
+  wildfires: 'map pixels with a detected fire',
+  sea_level: 'ocean at least 10 cm above the mean',
+  air_quality: 'observed air above 5 ×10¹⁵ molec/cm² of NO₂',
+  greenhouse_gases: 'air holding at least 1,900 ppb of methane',
+};
+
+/** "ocean at least 10 cm above the mean" + the frame's share of it, in %. */
+export function activeShare(frame) {
+  return { label: ACTIVE[frame.theme], percent: frame.raw.pixelDensity * 100 };
+}
+
+const PHYSICAL = {
+  wildfires: {
+    short: (v) => `${v.toFixed(1)}% of the map`,
+    spoken: (v) => `fire detections cover ${v.toFixed(1)} percent of the map`,
+    delta: (d) => `${d >= 0 ? '+' : '−'}${Math.abs(d).toFixed(1)} points`,
+  },
+  sea_level: {
+    short: (v) => `${v >= 0 ? '+' : '−'}${Math.abs(v).toFixed(1)} cm`,
+    spoken: (v) => `the average sea surface sits ${Math.abs(v).toFixed(1)} centimetres ${v >= 0 ? 'above' : 'below'} the 1993–2012 mean`,
+    delta: (d) => `${d >= 0 ? '+' : '−'}${Math.abs(d).toFixed(1)} cm`,
+  },
+  air_quality: {
+    short: (v) => `${v.toFixed(2)} ×10¹⁵ molec/cm²`,
+    spoken: (v) => `average nitrogen dioxide is ${v.toFixed(2)} times ten to the fifteen molecules per square centimetre`,
+    delta: (d) => `${d >= 0 ? '+' : '−'}${Math.abs(d).toFixed(2)} ×10¹⁵`,
+  },
+  greenhouse_gases: {
+    short: (v) => `${Math.round(v).toLocaleString('en-US')} ppb`,
+    spoken: (v) => `average methane is ${Math.round(v).toLocaleString('en-US')} parts per billion`,
+    delta: (d) => `${d >= 0 ? '+' : '−'}${Math.abs(Math.round(d))} ppb`,
+  },
+};
+
+/** The frame's headline physical value, e.g. "1,887 ppb" or "+5.3 cm". */
+export function physicalShort(frame) {
+  return PHYSICAL[frame.theme].short(frame.physical.value);
+}
+
+/** The same value as a sentence fragment for speech and captions. */
+export function physicalSpoken(frame) {
+  return PHYSICAL[frame.theme].spoken(frame.physical.value);
+}
+
+export function physicalDelta(a, b) {
+  return PHYSICAL[a.theme].delta(b.physical.value - a.physical.value);
+}

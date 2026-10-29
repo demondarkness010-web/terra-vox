@@ -164,7 +164,12 @@ export class Voice {
     this.panner = new Tone.Panner(0);
     this.trim = new Tone.Gain(1);
     this.filter = new Tone.Filter({ type: 'lowpass', frequency: 6000, Q: 0.7, rolloff: -12 });
-    this.lead = new Tone.Synth({ oscillator: { type: 'sine' }, envelope: TIMBRE.sine.env });
+    // Polyphonic so a note's release tail can overlap the next note's attack
+    // (a mono Tone.Synth throws if a start time is not strictly increasing,
+    // which a scrub-restart can produce, and the throw would kill the loop).
+    this.lead = new Tone.PolySynth(Tone.Synth, { oscillator: { type: 'sine' }, envelope: TIMBRE.sine.env });
+    this.lead.maxPolyphony = 12;
+    this._noteIds = [];
     this.pad = new Tone.PolySynth(Tone.Synth, {
       oscillator: { type: 'sine' },
       envelope: { attack: 0.6, decay: 0.4, sustain: 0.7, release: 2.2 },
@@ -177,7 +182,9 @@ export class Voice {
     this.filter.connect(this.trim);
     this.trim.connect(this.panner);
     this.panner.connect(this.out);
-    this.out.connect(this.meter);
+    // Meter the mono signal before panning: Tone.Meter reads one channel, so
+    // after a hard-right pan it would report silence.
+    this.trim.connect(this.meter);
     this.out.connect(destination ?? getMaster().input);
   }
 
@@ -218,14 +225,17 @@ export class Voice {
     this.out.gain.rampTo(linear, ramp);
   }
 
-  /** Play bars until stopped, or only `bars` bars (e.g. 1 = an audition). */
-  start({ bars = Infinity } = {}) {
+  /**
+   * Play bars until stopped, or only `bars` bars (e.g. 1 = an audition).
+   * `at` is a Transport time in seconds; default is right now.
+   */
+  start({ bars = Infinity, at = null } = {}) {
     if (!this.frame) return;
-    if (this.running) this.stop();
+    this.stop();   // also cancels notes still pending from a finished audition
     this.running = true;
     this.bar = 0;
     this._barsLeft = bars;
-    this._nextBarAt = this.transport.seconds + 0.06;
+    this._nextBarAt = Math.max(at ?? 0, this.transport.seconds + 0.06);
     this._schedule();
   }
 
@@ -233,8 +243,14 @@ export class Voice {
     this.running = false;
     if (this._eventId !== null) this.transport.clear(this._eventId);
     this._eventId = null;
-    this.lead.triggerRelease();
+    this._clearNotes();
+    this.lead.releaseAll();
     this.pad.releaseAll();
+  }
+
+  _clearNotes() {
+    this._noteIds.forEach((id) => this.transport.clear(id));
+    this._noteIds = [];
   }
 
   dispose() {
@@ -252,6 +268,8 @@ export class Voice {
   // waiting up to 3 s for the current bar to finish.
   _restart() {
     if (this._eventId !== null) this.transport.clear(this._eventId);
+    this._clearNotes();
+    this.lead.releaseAll();
     this.pad.releaseAll();
     this._nextBarAt = this.transport.seconds + 0.04;
     this._schedule();
@@ -266,15 +284,21 @@ export class Voice {
     if (this.pending) this._adopt(this.pending);
     const params = this.params;
     const plan = barPlan(params);
+    const barAt = this._nextBarAt;
 
-    plan.notes.forEach((n) => {
-      this.lead.triggerAttackRelease(n.note, n.duration, time + n.offset, params.velocity);
+    // The downbeat plays now; later notes are their own Transport events so a
+    // restart can cancel them instead of letting the old bar bleed through.
+    this._noteIds = [];
+    plan.notes.forEach((n, i) => {
+      const play = (t) => this.lead.triggerAttackRelease(n.note, n.duration, t, params.velocity);
+      if (i === 0) play(time);
+      else this._noteIds.push(this.transport.scheduleOnce(play, barAt + n.offset));
     });
     this.pad.triggerAttackRelease(plan.dyad, plan.barSeconds * 0.92, time, params.velocity * PAD_LEVEL);
 
     // Listeners run now, a lookahead before the bar sounds, so they can queue
     // the next frame in time; for UI work they should use whenHeard(event.time).
-    const event = { voice: this.name, bar: this.bar, frame: this.frame, params, plan, time };
+    const event = { voice: this.name, bar: this.bar, frame: this.frame, params, plan, time, at: this._nextBarAt };
     this.bar += 1;
     this.listeners.forEach((fn) => fn(event));
 

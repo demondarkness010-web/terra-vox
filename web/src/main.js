@@ -2,6 +2,7 @@
 
 import { loadThemes, getTheme } from './data/loader.js';
 import { Voice, startAudio, whenHeard } from './audio/sonify.js';
+import { Duet, LISTEN_MODES, describeGap } from './audio/duet.js';
 import { createThemeTiles } from './ui/themeTiles.js';
 import { createTurntable } from './ui/turntable.js';
 
@@ -11,9 +12,12 @@ const state = {
   theme: themes[0],
   index: 0,          // frame currently shown / sounding
   playing: false,
+  duet: false,
+  listenMode: 'together',
 };
 
 let voice = null;
+let duet = null;
 
 const announcer = document.getElementById('sr-announcer');
 function announce(text) {
@@ -31,7 +35,12 @@ const turntable = createTurntable(document.getElementById('player'), {
   onTogglePlay: togglePlay,
   onScrub: scrubTo,
   onStep: step,
+  listenModes: LISTEN_MODES,
+  onListenMode: setListenMode,
 });
+
+const duetToggle = document.getElementById('duet-toggle');
+duetToggle.addEventListener('click', () => toggleDuet());
 
 function currentFrame() {
   return state.theme.frames[state.index];
@@ -71,12 +80,22 @@ function setPlaying(playing) {
 }
 
 let unlocking = null;
-async function togglePlay() {
+async function unlock() {
   // The first press waits for the browser to unlock audio; ignore repeats
   // until it has, so a double press cannot start and stop in one go.
-  if (unlocking) return;
+  if (unlocking) return false;
   unlocking = startAudio();
   try { await unlocking; } finally { unlocking = null; }
+  return true;
+}
+
+async function togglePlay() {
+  if (!(await unlock())) return;
+  if (state.duet) {
+    if (state.playing) { duet.stop(); setPlaying(false); announce('Duet paused.'); }
+    else { duet.start(); setPlaying(true); announce('Duet playing.'); }
+    return;
+  }
   ensureVoice();
   if (state.playing) {
     voice.stop();
@@ -95,6 +114,14 @@ function selectTheme(id) {
   state.index = 0;
   turntable.setTheme(state.theme);
   render();
+  if (state.duet) {
+    const gap = describeGap(state.theme);
+    turntable.showDuet(gap);
+    duet.setTheme(state.theme);
+    tiles.setPlaying(state.theme.id, state.playing);
+    announce(gap.spoken);
+    return;
+  }
   if (voice) {
     voice.setFrame(currentFrame(), { restart: state.playing });
     if (!state.playing) voice.stop();
@@ -125,8 +152,62 @@ async function scrubTo(index, { final }) {
 }
 
 function step(delta) {
+  if (state.duet) return;
   const n = state.theme.frames.length;
   scrubTo((state.index + delta + n) % n, { final: true });
+}
+
+// ------------------------------------------------------------ duet
+
+// Entering Duet starts it straight away: the oldest and newest year of the
+// current theme, together, one in each ear. Leaving returns to the jukebox,
+// paused where it was.
+async function toggleDuet(on = !state.duet) {
+  if (on === state.duet) return;
+  if (on && !(await unlock())) return;
+  state.duet = on;
+  duetToggle.setAttribute('aria-pressed', String(on));
+  document.body.classList.toggle('is-duet', on);
+  turntable.setDuet(on);
+
+  if (on) {
+    voice?.stop();
+    if (!duet) {
+      duet = new Duet();
+      duet.setMode(state.listenMode);
+    }
+    const gap = describeGap(state.theme);
+    turntable.showDuet(gap);
+    turntable.setListenMode(state.listenMode);
+    duet.setTheme(state.theme);
+    duet.start();
+    setPlaying(true);
+    meterLoop();
+    announce(gap.spoken);
+  } else {
+    duet.stop();
+    setPlaying(false);
+    render();
+    announce(`Duet off. Back to the ${state.theme.name} timeline at ${currentFrame().label}. Press Space to play.`);
+  }
+}
+
+function setListenMode(mode) {
+  state.listenMode = mode;
+  duet?.setMode(mode);
+  const help = {
+    together: 'Oldest in your left ear, newest in your right, at the same time.',
+    turns: 'One bar of the oldest year, then one bar of the newest, centred. Works on one speaker or one earbud.',
+    oldest: 'Only the oldest year, centred.',
+    newest: 'Only the newest year, centred.',
+  };
+  announce(`${LISTEN_MODES[mode]}. ${help[mode]}`);
+}
+
+function meterLoop() {
+  if (!state.duet) return;
+  turntable.setMeters(duet.levels());
+  requestAnimationFrame(meterLoop);
 }
 
 // Minimal global keys (the full keyboard map lands with a11y.js).
@@ -138,6 +219,7 @@ document.addEventListener('keydown', (e) => {
   if (e.key === ' ' && tag !== 'BUTTON') { e.preventDefault(); togglePlay(); }
   else if (e.key === '[') step(-1);
   else if (e.key === ']') step(1);
+  else if (e.key === 'd' || e.key === 'D') toggleDuet();
 });
 
 tiles.select(state.theme.id);
@@ -148,6 +230,12 @@ if (import.meta.env.DEV) {
   window.__terraVox = {
     state,
     themes,
+    gap: (id) => describeGap(getTheme(id ?? state.theme.id)),
+    voices: () => ({ voice, duet }),
+    duetContrast: async (id, seconds) => {
+      const { measureDuet } = await import('./audio/levelCheck.js');
+      return measureDuet(getTheme(id ?? state.theme.id), seconds);
+    },
     audio: () => import('tone').then((Tone) => ({ context: Tone.getContext().state, transport: Tone.getTransport().state, seconds: Tone.getTransport().seconds })),
     levels: async (themeId, indices) => {
       const { measureFrames } = await import('./audio/levelCheck.js');
