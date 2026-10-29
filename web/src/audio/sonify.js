@@ -191,8 +191,11 @@ export class Voice {
     this.trim.connect(this.panner);
     this.panner.connect(this.out);
     // Meter the mono signal before panning: Tone.Meter reads one channel, so
-    // after a hard-right pan it would report silence.
+    // after a hard-right pan it would report silence. Same for the waveform
+    // tap the visualizer draws.
     this.trim.connect(this.meter);
+    this.waveform = new Tone.Waveform(512);
+    this.trim.connect(this.waveform);
     this.out.connect(destination ?? getMaster().input);
   }
 
@@ -264,7 +267,7 @@ export class Voice {
   dispose() {
     this.stop();
     this.listeners.clear();
-    [this.lead, this.pad, this.filter, this.trim, this.panner, this.out, this.meter].forEach((n) => n.dispose());
+    [this.lead, this.pad, this.filter, this.trim, this.panner, this.out, this.meter, this.waveform].forEach((n) => n.dispose());
   }
 
   level() {

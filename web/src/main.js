@@ -1,10 +1,10 @@
 // Terra Vox app entry: owns state and connects data, audio and UI modules.
 
 import { loadThemes, getTheme } from './data/loader.js';
-import { Voice, startAudio, whenHeard } from './audio/sonify.js';
+import { Voice, startAudio, whenHeard, getMaster } from './audio/sonify.js';
 import { Duet, LISTEN_MODES, describeGap } from './audio/duet.js';
 import { createThemeTiles } from './ui/themeTiles.js';
-import { createTurntable } from './ui/turntable.js';
+import { createTurntable, createVisualizer } from './ui/turntable.js';
 import { createMappingReadout } from './ui/mappingReadout.js';
 import { createGuessTheYear } from './ui/guessTheYear.js';
 import { createCaptionTrack, altText, VERBOSITY } from './ui/captions.js';
@@ -58,6 +58,13 @@ const turntable = createTurntable(document.getElementById('player'), {
 });
 
 const readout = createMappingReadout(document.getElementById('mapping-readout'));
+
+createVisualizer(document.getElementById('viz'), () => {
+  if (state.mode !== 'jukebox' || !state.playing) return null;
+  if (state.duet && duet) return { waves: [duet.oldest.waveform, duet.newest.waveform], fft: getMaster().fft };
+  if (voice) return { waves: [voice.waveform], fft: getMaster().fft };
+  return null;
+});
 
 const duetToggle = document.getElementById('duet-toggle');
 duetToggle.addEventListener('click', () => toggleDuet());

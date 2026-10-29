@@ -87,6 +87,26 @@
           </figure>
         </div>
 
+        <canvas id="viz" class="viz" aria-hidden="true"></canvas>
+
+        <div class="transport" role="group" aria-label="Playback">
+          <button id="prev" class="icon-btn" type="button" aria-label="Previous year" title="Previous year ( [ )">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 5h2v14H6zM20 5v14L9 12z" /></svg>
+          </button>
+          <button id="play" class="play-btn" type="button" aria-label="Play">
+            <svg class="i-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4v16l13-8z" /></svg>
+            <svg class="i-pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4h4v16H6zM14 4h4v16h-4z" /></svg>
+          </button>
+          <button id="next" class="icon-btn" type="button" aria-label="Next year" title="Next year ( ] )">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 5h2v14h-2zM4 5v14l11-7z" /></svg>
+          </button>
+          <div class="scrubber">
+            <label for="scrubber" class="scrubber-label">Timeline</label>
+            <input id="scrubber" type="range" min="0" max="0" step="1" value="0" />
+            <div class="scrubber-ends" aria-hidden="true"><span id="scrub-start"></span><span id="scrub-end"></span></div>
+          </div>
+        </div>
+
         <div class="caption-track" id="caption-track" role="group" aria-label="Data caption">
           <p id="cap-data" class="cap-data"></p>
           <p id="cap-sound" class="cap-sound"></p>
@@ -107,23 +127,6 @@
           </table>
         </section>
 
-        <div class="transport" role="group" aria-label="Playback">
-          <button id="prev" class="icon-btn" type="button" aria-label="Previous year" title="Previous year ( [ )">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 5h2v14H6zM20 5v14L9 12z" /></svg>
-          </button>
-          <button id="play" class="play-btn" type="button" aria-label="Play">
-            <svg class="i-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4v16l13-8z" /></svg>
-            <svg class="i-pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4h4v16H6zM14 4h4v16h-4z" /></svg>
-          </button>
-          <button id="next" class="icon-btn" type="button" aria-label="Next year" title="Next year ( ] )">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 5h2v14h-2zM4 5v14l11-7z" /></svg>
-          </button>
-          <div class="scrubber">
-            <label for="scrubber" class="scrubber-label">Timeline</label>
-            <input id="scrubber" type="range" min="0" max="0" step="1" value="0" />
-            <div class="scrubber-ends" aria-hidden="true"><span id="scrub-start"></span><span id="scrub-end"></span></div>
-          </div>
-        </div>
       </section>
 
       <aside class="readout" aria-labelledby="readout-heading">

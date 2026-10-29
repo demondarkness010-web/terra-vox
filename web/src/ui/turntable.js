@@ -171,3 +171,84 @@ const capitalize = (s) => s.charAt(0).toUpperCase() + s.slice(1);
 function defaultAlt(frame, theme) {
   return `${theme.name}, ${frame.label}`;
 }
+
+// ---------------------------------------------------------- visualizer
+//
+// Decorative only (the canvas is aria-hidden): a live waveform over a faint
+// spectrum. In Duet the oldest year draws in blue across the top half and
+// the newest in orange across the bottom, so the gap is visible as well as
+// audible. Honors prefers-reduced-motion by drawing at a few frames a second.
+
+export function createVisualizer(canvas, getSources) {
+  const ctx = canvas.getContext('2d');
+  const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)');
+  const css = getComputedStyle(document.documentElement);
+  const color = (name, fallback) => css.getPropertyValue(name).trim() || fallback;
+  const palette = { accent: color('--accent', '#56b4e9'), old: color('--old', '#56b4e9'), new: color('--new', '#e69f00'), line: 'rgba(150,170,210,0.25)' };
+  let last = 0;
+
+  function resize() {
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const { width, height } = canvas.getBoundingClientRect();
+    canvas.width = Math.max(1, Math.round(width * dpr));
+    canvas.height = Math.max(1, Math.round(height * dpr));
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+  new ResizeObserver(resize).observe(canvas);
+  resize();
+
+  function drawWave(values, top, height, stroke) {
+    const w = canvas.clientWidth;
+    ctx.beginPath();
+    for (let i = 0; i < values.length; i++) {
+      const x = (i / (values.length - 1)) * w;
+      const y = top + height / 2 - values[i] * height * 0.9;
+      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    ctx.strokeStyle = stroke;
+    ctx.lineWidth = 2;
+    ctx.shadowColor = stroke;
+    ctx.shadowBlur = 8;
+    ctx.stroke();
+    ctx.shadowBlur = 0;
+  }
+
+  function frame(now) {
+    requestAnimationFrame(frame);
+    if (reduce?.matches && now - last < 250) return;
+    last = now;
+    const w = canvas.clientWidth;
+    const h = canvas.clientHeight;
+    ctx.clearRect(0, 0, w, h);
+    const src = getSources();
+    if (!src) {
+      ctx.strokeStyle = palette.line;
+      ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.moveTo(0, h / 2); ctx.lineTo(w, h / 2); ctx.stroke();
+      return;
+    }
+
+    if (src.fft) {
+      const bins = src.fft.getValue();
+      const n = 40;
+      const bw = w / n;
+      for (let i = 0; i < n; i++) {
+        const db = bins[Math.floor((i / n) * bins.length * 0.7)];
+        const v = Math.max(0, Math.min(1, (db + 100) / 80));
+        ctx.fillStyle = 'rgba(86,180,233,0.10)';
+        ctx.fillRect(i * bw + 1, h - v * h, bw - 2, v * h);
+      }
+    }
+
+    ctx.strokeStyle = palette.line;
+    ctx.lineWidth = 1;
+    if (src.waves.length === 2) {
+      ctx.beginPath(); ctx.moveTo(0, h / 2); ctx.lineTo(w, h / 2); ctx.stroke();
+      drawWave(src.waves[0].getValue(), 0, h / 2, palette.old);
+      drawWave(src.waves[1].getValue(), h / 2, h / 2, palette.new);
+    } else if (src.waves.length === 1) {
+      drawWave(src.waves[0].getValue(), 0, h, palette.accent);
+    }
+  }
+  requestAnimationFrame(frame);
+}
