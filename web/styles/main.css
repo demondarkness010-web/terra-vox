@@ -9,7 +9,7 @@
   color-scheme: dark;
   --bg: #060912;
   --bg-2: #0b1226;
-  --panel: rgba(16, 24, 46, 0.78);
+  --panel: #0e1528;
   --panel-solid: #101a33;
   --line: rgba(150, 170, 210, 0.18);
   --text: #eef2fa;
@@ -22,6 +22,8 @@
   --radius: 14px;
   --font: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --mono: ui-monospace, "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 * { box-sizing: border-box; }
@@ -34,11 +36,7 @@ body {
   font-size: 16px;
   line-height: 1.5;
   color: var(--text);
-  background:
-    radial-gradient(1200px 700px at 50% -10%, #16224a 0%, transparent 60%),
-    radial-gradient(900px 600px at 100% 100%, #1a1030 0%, transparent 55%),
-    var(--bg);
-  background-attachment: fixed;
+  background: var(--bg);
 }
 
 /* faint star field */
@@ -60,6 +58,9 @@ body::before {
 }
 
 img { max-width: 100%; display: block; }
+
+/* Author display rules (.guess, img) must never override the hidden attribute. */
+[hidden] { display: none !important; }
 
 button, input, select { font: inherit; color: inherit; }
 
@@ -120,12 +121,11 @@ button, input, select { font: inherit; color: inherit; }
 
 .section-title {
   margin: 0 0 12px;
-  font-size: 0.8rem;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+  font-size: 0.95rem;
+  font-weight: 600;
   color: var(--muted);
 }
+#player-heading { font-size: 1.25rem; color: var(--text); letter-spacing: -0.01em; }
 
 /* ------------------------------------------------------------------ tiles */
 
@@ -145,14 +145,16 @@ button, input, select { font: inherit; color: inherit; }
   border: 1px solid var(--line);
   border-radius: var(--radius);
   cursor: pointer;
-  transition: border-color 0.15s, background 0.15s, transform 0.15s;
+  transition: border-color 160ms var(--ease-out), background-color 160ms var(--ease-out), transform 160ms var(--ease-out);
 }
-.tile:hover { border-color: rgba(150, 170, 210, 0.45); }
+.tile:active { transform: scale(0.98); }
 .tile[aria-checked="true"] {
   border-color: var(--accent);
-  background: linear-gradient(135deg, rgba(86, 180, 233, 0.16), rgba(16, 24, 46, 0.85));
+  background: #13233f;
   box-shadow: 0 0 0 1px var(--accent) inset;
 }
+.tile-art { transition: transform 300ms var(--ease-out); }
+.tile[aria-checked="true"] .tile-art { transform: scale(1.04); }
 .tile-art {
   grid-row: 1 / span 2;
   width: 72px; height: 72px;
@@ -226,8 +228,9 @@ button, input, select { font: inherit; color: inherit; }
   height: 72px;
   margin-top: 12px;
   border-radius: 10px;
-  background: linear-gradient(180deg, rgba(6, 9, 18, 0.2), rgba(6, 9, 18, 0.65));
+  background: #070b16;
   border: 1px solid var(--line);
+  transition: height 240ms var(--ease-out);
 }
 body.is-duet .viz { height: 96px; }
 
@@ -246,7 +249,9 @@ body.is-duet .viz { height: 96px; }
   border: 1px solid var(--line);
   background: var(--panel-solid);
   cursor: pointer;
+  transition: transform 140ms var(--ease-out), background-color 160ms var(--ease-out), border-color 160ms var(--ease-out);
 }
+.icon-btn:not(:disabled):active, .play-btn:active { transform: scale(0.94); }
 .icon-btn { width: 44px; height: 44px; border-radius: 50%; }
 .icon-btn svg { width: 20px; height: 20px; fill: var(--text); }
 .icon-btn:disabled { opacity: 0.4; cursor: default; }
@@ -258,6 +263,7 @@ body.is-duet .viz { height: 96px; }
   border: 0;
 }
 .play-btn svg { width: 28px; height: 28px; fill: var(--bg); }
+.play-btn svg { transition: transform 200ms var(--ease-spring); }
 .play-btn .i-pause { display: none; }
 .player.is-playing .play-btn .i-pause { display: block; }
 .player.is-playing .play-btn .i-play { display: none; }
@@ -282,16 +288,19 @@ body.is-duet .scrubber-label::after { content: " · Duet compares the two ends";
   border: 1px solid var(--line);
   background: var(--panel-solid);
   cursor: pointer;
+  transition: transform 140ms var(--ease-out), background-color 200ms var(--ease-out), color 200ms var(--ease-out);
 }
+.duet-toggle:active { transform: scale(0.96); }
 .duet-toggle[aria-pressed="true"] {
   border-color: transparent;
-  background: linear-gradient(90deg, var(--old), var(--new));
-  color: #05070f;
+  background: var(--text);
+  color: var(--bg);
 }
-.duet-dot { width: 10px; height: 10px; border-radius: 50%; }
+.duet-dot { width: 10px; height: 10px; border-radius: 50%; transition: margin 300ms var(--ease-spring); }
 .duet-dot.old { background: var(--old); }
 .duet-dot.new { background: var(--new); margin-left: -12px; }
-.duet-toggle[aria-pressed="true"] .duet-dot { background: #05070f; }
+/* The two ears separate when Duet is on. */
+.duet-toggle[aria-pressed="true"] .duet-dot.new { margin-left: -2px; }
 
 .deck-old, .deck-new { display: none; }
 .stage[data-mode="duet"] { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
@@ -340,7 +349,7 @@ body.is-duet .scrubber-label::after { content: " · Duet compares the two ends";
 .listen-modes { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 10px; }
 .mini-label { font-size: 0.8rem; color: var(--muted); font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
 .segmented { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
-.seg { padding: 7px 12px; background: transparent; border: 0; border-right: 1px solid var(--line); cursor: pointer; font-size: 0.88rem; }
+.seg { padding: 7px 12px; background: transparent; border: 0; border-right: 1px solid var(--line); cursor: pointer; font-size: 0.88rem; transition: background-color 160ms var(--ease-out), color 160ms var(--ease-out); }
 .seg:last-child { border-right: 0; }
 .seg[aria-checked="true"] { background: var(--text); color: var(--bg); font-weight: 700; }
 
@@ -424,7 +433,9 @@ body.is-duet .scrubber-label::after { content: " · Duet compares the two ends";
   background: var(--panel-solid);
   cursor: pointer;
   font-size: 0.88rem;
+  transition: transform 140ms var(--ease-out), background-color 160ms var(--ease-out);
 }
+.chip:active { transform: scale(0.96); }
 .chip[aria-pressed="true"] { background: var(--good); border-color: transparent; color: #05070f; font-weight: 700; }
 .chip kbd { font: 700 0.75rem var(--mono); }
 
@@ -461,7 +472,7 @@ body.is-duet .scrubber-label::after { content: " · Duet compares the two ends";
 /* ------------------------------------------------------------------ mode tabs */
 
 .modes { display: inline-flex; padding: 4px; gap: 4px; border: 1px solid var(--line); border-radius: 999px; background: rgba(6, 9, 18, 0.5); }
-.modes [role="tab"] { padding: 8px 16px; border: 0; border-radius: 999px; background: transparent; cursor: pointer; font-weight: 600; color: var(--muted); }
+.modes [role="tab"] { padding: 8px 16px; border: 0; border-radius: 999px; background: transparent; cursor: pointer; font-weight: 600; color: var(--muted); transition: background-color 200ms var(--ease-out), color 200ms var(--ease-out); }
 .modes [role="tab"][aria-selected="true"] { background: var(--text); color: var(--bg); }
 
 /* ------------------------------------------------------------------ guess the year */
@@ -503,7 +514,9 @@ body.is-duet .scrubber-label::after { content: " · Duet compares the two ends";
   background: var(--panel-solid);
   cursor: pointer;
   font-weight: 600;
+  transition: transform 140ms var(--ease-out), background-color 160ms var(--ease-out), color 160ms var(--ease-out);
 }
+.pill:active { transform: scale(0.96); }
 .pill kbd {
   font: 700 0.72rem var(--mono);
   padding: 1px 6px;
@@ -528,7 +541,10 @@ body.is-duet .scrubber-label::after { content: " · Duet compares the two ends";
   border: 1px solid var(--line);
   background: var(--panel-solid);
   cursor: pointer;
+  font-variant-numeric: tabular-nums;
+  transition: transform 140ms var(--ease-out), border-color 160ms var(--ease-out), background-color 160ms var(--ease-out);
 }
+.option:not(:disabled):active { transform: scale(0.97); }
 .option kbd { font-size: 0.75rem; color: var(--muted); margin-right: 6px; }
 .option:disabled { cursor: default; }
 .option.is-answer { border: 2px solid var(--good); background: rgba(0, 158, 115, 0.22); }
@@ -573,6 +589,26 @@ body.is-duet .scrubber-label::after { content: " · Duet compares the two ends";
   .transport { grid-template-columns: auto auto auto; justify-content: center; }
   .scrubber { grid-column: 1 / -1; }
 }
+
+/* ------------------------------------------------------------------ motion */
+
+/* Hover only where a real pointer can hover, so taps don't leave sticky states. */
+@media (hover: hover) and (pointer: fine) {
+  .tile:hover { border-color: rgba(150, 170, 210, 0.45); }
+  .icon-btn:not(:disabled):hover, .chip:hover, .pill:not(.main):hover, .option:not(:disabled):hover, .duet-toggle:not([aria-pressed="true"]):hover { border-color: rgba(150, 170, 210, 0.5); background-color: #16223f; }
+  .play-btn:hover svg { transform: scale(1.08); }
+  .modes [role="tab"][aria-selected="false"]:hover { color: var(--text); }
+  .seg[aria-checked="false"]:hover { background-color: rgba(255, 255, 255, 0.06); }
+}
+
+/* Panels that appear on demand rise in rather than snapping. */
+@keyframes rise { from { opacity: 0; transform: translateY(8px); } }
+.duet-panel:not([hidden]),
+.guess-result:not([hidden]),
+[role="tabpanel"]:not([hidden]) { animation: rise 320ms var(--ease-out); }
+.stage[data-mode="duet"] .deck { animation: rise 360ms var(--ease-out) both; }
+.stage[data-mode="duet"] .deck-new { animation-delay: 60ms; }
+.help-dialog[open] { animation: rise 220ms var(--ease-out); }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
