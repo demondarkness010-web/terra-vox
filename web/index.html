@@ -2,11 +2,11 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="description" content="Terra Vox turns NASA Earth imagery into real-time, musically constrained sound so anyone, sighted or not, can hear how the planet is changing." />
-    <meta name="theme-color" content="#060912" />
+    <meta name="theme-color" content="#050506" />
     <title>Terra Vox</title>
-    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='15' fill='%23101a33'/%3E%3Ccircle cx='16' cy='16' r='9' fill='none' stroke='%2356B4E9' stroke-width='2'/%3E%3Ccircle cx='16' cy='16' r='3' fill='%23E69F00'/%3E%3C/svg%3E" />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='15' fill='%23050506'/%3E%3Ccircle cx='16' cy='16' r='9' fill='none' stroke='%2356B4E9' stroke-width='2'/%3E%3Ccircle cx='16' cy='16' r='3' fill='%23E69F00'/%3E%3C/svg%3E" />
     <link rel="stylesheet" href="./styles/main.css" />
   </head>
   <body>
@@ -30,156 +30,163 @@
       </div>
       <div class="top-actions">
         <button id="duet-toggle" class="duet-toggle" type="button" aria-pressed="false" aria-describedby="duet-hint">
-          <span class="duet-dot old" aria-hidden="true"></span><span class="duet-dot new" aria-hidden="true"></span>
-          Duet
+          <span class="duet-dots" aria-hidden="true"><span class="duet-dot old"></span><span class="duet-dot new"></span></span>
+          <span>Duet</span>
+          <kbd aria-hidden="true">D</kbd>
         </button>
         <span id="duet-hint" class="sr-only">Plays the oldest year in your left ear and the newest year in your right ear at the same time. Shortcut: D.</span>
-        <label class="describe">
-          <span>Describe</span>
-          <select id="describe" aria-describedby="describe-hint">
-            <option value="off">Off</option>
-            <option value="brief" selected>Brief</option>
-            <option value="full">Full</option>
-          </select>
-        </label>
-        <span id="describe-hint" class="sr-only">How much a screen reader hears on every bar. Brief: the year and its value. Full: the whole caption. Shortcut: C.</span>
-        <button id="speak-toggle" class="chip" type="button" aria-pressed="false" title="Read descriptions aloud with the browser's voice (S)">Speak aloud</button>
-        <button id="help-button" class="chip" type="button" aria-haspopup="dialog" title="Keyboard shortcuts (?)">Keys <kbd>?</kbd></button>
+        <div class="settings">
+          <button id="speak-toggle" class="ghost" type="button" aria-pressed="false" title="Read descriptions aloud with the browser's voice (S)">Speak aloud</button>
+          <label class="describe">
+            <span>Describe</span>
+            <select id="describe" aria-describedby="describe-hint">
+              <option value="off">Off</option>
+              <option value="brief" selected>Brief</option>
+              <option value="full">Full</option>
+            </select>
+          </label>
+          <span id="describe-hint" class="sr-only">How much a screen reader hears on every bar. Brief: the year and its value. Full: the whole caption. Shortcut: C.</span>
+          <button id="help-button" class="ghost" type="button" aria-haspopup="dialog" title="Keyboard shortcuts (?)">Keys <kbd>?</kbd></button>
+        </div>
       </div>
     </header>
 
-    <main id="panel-jukebox" class="layout" role="tabpanel" aria-labelledby="tab-jukebox">
-      <section class="themes" aria-labelledby="themes-heading">
-        <h2 id="themes-heading" class="section-title">Themes</h2>
+    <main id="panel-jukebox" class="jukebox" role="tabpanel" aria-labelledby="tab-jukebox">
+      <section class="crate" aria-labelledby="themes-heading">
+        <h2 id="themes-heading" class="crate-title">Themes</h2>
         <div id="theme-tiles"></div>
       </section>
 
-      <section id="player" class="player" aria-labelledby="player-heading" tabindex="-1">
-        <h2 id="player-heading" class="section-title"><span id="player-theme">Wildfires</span></h2>
-
+      <section id="player" class="player" aria-labelledby="player-heading" tabindex="-1" data-mode="single">
         <div id="stage" class="stage" data-mode="single">
-          <figure class="deck deck-single">
-            <div class="screen">
-              <img id="frame-img" alt="" />
-              <span class="year-badge" id="frame-year" aria-hidden="true"></span>
-            </div>
-            <figcaption id="frame-caption" class="frame-caption"></figcaption>
-          </figure>
-          <div class="record" aria-hidden="true"><img id="record-label" alt="" /></div>
-
-          <figure class="deck deck-old">
-            <div class="screen">
-              <img id="duet-old-img" alt="" />
-              <span class="ear-tag old" aria-hidden="true">◀ LEFT · oldest</span>
-              <span class="year-badge" id="duet-old-year" aria-hidden="true"></span>
-              <span class="meter" aria-hidden="true"><i id="duet-old-meter"></i></span>
-            </div>
-            <figcaption id="duet-old-cap" class="frame-caption"></figcaption>
-          </figure>
-          <figure class="deck deck-new">
-            <div class="screen">
-              <img id="duet-new-img" alt="" />
-              <span class="ear-tag new" aria-hidden="true">newest · RIGHT ▶</span>
-              <span class="year-badge" id="duet-new-year" aria-hidden="true"></span>
-              <span class="meter" aria-hidden="true"><i id="duet-new-meter"></i></span>
-            </div>
-            <figcaption id="duet-new-cap" class="frame-caption"></figcaption>
-          </figure>
+          <div id="globe" class="globe" role="img" aria-label="NASA Earth frame"></div>
+          <div class="duet-overlay" aria-hidden="true">
+            <div class="ear old"><span class="ear-tag">Left ear · oldest</span><div id="year-old" class="ear-year"></div></div>
+            <div class="seam"><span class="meter old"><i id="duet-old-meter"></i></span><span class="meter new"><i id="duet-new-meter"></i></span></div>
+            <div class="ear new"><span class="ear-tag">Right ear · newest</span><div id="year-new" class="ear-year"></div></div>
+          </div>
         </div>
 
-        <canvas id="viz" class="viz" aria-hidden="true"></canvas>
+        <div class="now">
+          <h2 id="player-heading" class="now-theme"><span id="player-theme">Wildfires</span></h2>
+          <div class="now-single">
+            <p id="frame-caption" class="now-label"></p>
+            <div id="year-single" class="now-year"></div>
+            <p id="now-value" class="now-value"></p>
+            <p id="now-share" class="now-share"></p>
+          </div>
+          <div id="duet-now" class="now-duet" hidden>
+            <p id="gap-years" class="gap-years"></p>
+            <p id="gap-sentence" class="gap-sentence"></p>
+            <p id="gap-physical" class="gap-physical"></p>
+          </div>
+          <div class="lyrics" id="caption-track" role="group" aria-label="Data caption">
+            <p id="cap-prev" class="cap-prev" aria-hidden="true"></p>
+            <p id="cap-data" class="cap-data"></p>
+            <p id="cap-sound" class="cap-sound"></p>
+          </div>
+        </div>
 
         <div class="transport" role="group" aria-label="Playback">
           <button id="prev" class="icon-btn" type="button" aria-label="Previous year" title="Previous year ( [ )">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 5h2v14H6zM20 5v14L9 12z" /></svg>
           </button>
-          <button id="play" class="play-btn" type="button" aria-label="Play">
+          <button id="play" class="play-btn" type="button" aria-label="Play" title="Play (Space)">
             <svg class="i-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4v16l13-8z" /></svg>
             <svg class="i-pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4h4v16H6zM14 4h4v16h-4z" /></svg>
           </button>
           <button id="next" class="icon-btn" type="button" aria-label="Next year" title="Next year ( ] )">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 5h2v14h-2zM4 5v14l11-7z" /></svg>
           </button>
-          <div class="scrubber">
-            <label for="scrubber" class="scrubber-label">Timeline</label>
-            <input id="scrubber" type="range" min="0" max="0" step="1" value="0" />
-            <div class="scrubber-ends" aria-hidden="true"><span id="scrub-start"></span><span id="scrub-end"></span></div>
+          <div class="groove">
+            <label for="scrubber" class="sr-only">Timeline</label>
+            <div class="groove-track">
+              <div id="groove-ticks" class="groove-ticks" aria-hidden="true"></div>
+              <input id="scrubber" type="range" min="0" max="0" step="1" value="0" />
+            </div>
+            <div class="scrubber-ends" aria-hidden="true"><span id="scrub-start"></span><span class="groove-note">Each bar is one year · bar height is the year's value</span><span id="scrub-end"></span></div>
           </div>
-        </div>
-
-        <div class="caption-track" id="caption-track" role="group" aria-label="Data caption">
-          <p id="cap-data" class="cap-data"></p>
-          <p id="cap-sound" class="cap-sound"></p>
         </div>
 
         <section id="duet-panel" class="duet-panel" aria-labelledby="gap-heading" hidden>
           <div class="listen-modes">
-            <span id="listen-label" class="mini-label">Listen</span>
-            <div id="listen-modes" role="radiogroup" aria-labelledby="listen-label" class="segmented"></div>
+            <span id="listen-label" class="listen-label">Listen</span>
+            <div id="listen-modes" role="radiogroup" aria-labelledby="listen-label" aria-describedby="listen-help" class="segmented"></div>
+            <p id="listen-help" class="listen-help"></p>
           </div>
-          <h3 id="gap-heading" class="gap-heading">The gap: <span id="gap-years"></span></h3>
-          <p id="gap-sentence" class="gap-sentence"></p>
-          <p id="gap-physical" class="gap-physical"></p>
+          <h3 id="gap-heading" class="sr-only">How the sound changed</h3>
           <table class="gap-table">
             <caption class="sr-only">How each part of the sound changed from the oldest to the newest frame</caption>
             <thead><tr><th scope="col">Sound</th><th scope="col" class="old">Oldest</th><th scope="col" class="new">Newest</th><th scope="col">Change</th></tr></thead>
             <tbody id="gap-rows"></tbody>
           </table>
         </section>
-
       </section>
 
-      <aside class="readout" aria-labelledby="readout-heading">
-        <h2 id="readout-heading" class="section-title">Live mapping</h2>
+      <section class="desk" aria-labelledby="readout-heading">
+        <h2 id="readout-heading" class="desk-title">How the data plays the music</h2>
         <div id="mapping-readout"></div>
-      </aside>
+      </section>
     </main>
 
     <main id="panel-guess" class="guess" role="tabpanel" aria-labelledby="tab-guess" hidden>
       <section class="guess-card" aria-labelledby="guess-heading">
-        <h2 id="guess-heading">Guess the Year</h2>
-        <p class="guess-intro">
-          A NASA frame from a hidden year is playing. Compare it with the oldest and newest years,
-          then guess which year you are hearing. Denser, faster, tenser sound means more of the
-          theme's "active" signal.
-        </p>
+        <div class="guess-head">
+          <div>
+            <h2 id="guess-heading">Guess the Year</h2>
+            <p class="guess-intro">
+              A hidden year is playing. Compare it with the oldest and newest years, then pick the one you hear.
+              Denser, faster, tenser sound means more of the theme's "active" signal.
+            </p>
+          </div>
+          <span class="guess-score" id="guess-score" aria-live="off">Score 0 / 0</span>
+        </div>
 
         <div class="guess-setup">
           <label for="guess-theme">Theme</label>
           <select id="guess-theme"></select>
-          <span class="guess-score" id="guess-score" aria-live="off">Score 0 / 0</span>
         </div>
 
         <div class="guess-stage">
-          <div class="mystery screen" id="mystery-screen">
+          <div class="mystery" id="mystery-screen">
             <img id="mystery-img" alt="" hidden />
-            <div class="mystery-cover" id="mystery-cover" aria-hidden="true"><span>?</span></div>
+            <div class="mystery-cover" id="mystery-cover" aria-hidden="true"><span class="mystery-disc"><span>?</span></span></div>
             <span class="year-badge" id="mystery-year" aria-hidden="true"></span>
           </div>
           <p class="hearing" id="mystery-hearing" aria-hidden="true"></p>
         </div>
 
         <div class="guess-listen" role="group" aria-label="Listen">
-          <button id="guess-oldest" class="pill old" type="button"><kbd>A</kbd> Hear oldest <span></span></button>
-          <button id="guess-play" class="pill main" type="button" aria-pressed="false"><kbd>Space</kbd> <span>Play mystery year</span></button>
-          <button id="guess-newest" class="pill new" type="button"><kbd>B</kbd> Hear newest <span></span></button>
+          <button id="guess-oldest" class="pad old" type="button"><kbd>A</kbd> Hear oldest <span></span></button>
+          <button id="guess-play" class="pad main" type="button" aria-pressed="false"><kbd>Space</kbd> <span>Play mystery year</span></button>
+          <button id="guess-newest" class="pad new" type="button"><kbd>B</kbd> Hear newest <span></span></button>
         </div>
 
         <fieldset class="guess-choices" id="guess-choices">
-          <legend>Which year is the mystery? (keys 1–4)</legend>
+          <legend>Which year is the mystery? Keys 1–4</legend>
           <div id="guess-options" class="options"></div>
         </fieldset>
 
         <div class="guess-result" id="guess-result" hidden>
           <p id="guess-verdict" class="verdict"></p>
           <p id="guess-detail" class="detail"></p>
-          <button id="guess-next" class="pill main" type="button"><kbd>Enter</kbd> Next round</button>
+          <button id="guess-next" class="pad main" type="button"><kbd>Enter</kbd> Next round</button>
         </div>
       </section>
     </main>
 
     <div id="sr-announcer" class="sr-only" aria-live="polite" aria-atomic="true"></div>
     <div id="sr-captions" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+
+    <dialog id="intro" class="intro" aria-labelledby="intro-title" aria-describedby="intro-lead">
+      <h2 id="intro-title">Hear how the planet changed.</h2>
+      <p id="intro-lead" class="intro-lead">NASA satellite data turned into music. The oldest year plays in your left ear, the newest in your right.</p>
+      <div class="intro-actions">
+        <button id="intro-start" class="btn-primary" type="button">Put on headphones and start</button>
+        <button id="intro-skip" class="btn-text" type="button">Explore without sound first</button>
+      </div>
+      <p class="intro-note">Starts with methane, 2003 against 2026. Press <kbd>D</kbd> for Duet any time and <kbd>?</kbd> for every shortcut.</p>
+    </dialog>
 
     <dialog id="help-dialog" class="help-dialog" aria-labelledby="help-title">
       <div class="help-head">
@@ -188,10 +195,11 @@
       </div>
       <p class="help-lead">Every shortcut is also a button on screen. Sound is the main channel; nothing needs the mouse or the visuals.</p>
       <div class="help-body"></div>
+      <button id="intro-again" class="btn-text" type="button">Show the introduction again</button>
     </dialog>
 
     <footer class="credits">
-      Imagery: NASA GIBS / Worldview (MODIS, OMI, AIRS, JPL MEaSUREs). Cover art: NASA SVS Earth Information Center.
+      Imagery: NASA GIBS / Worldview (MODIS, OMI, AIRS, JPL MEaSUREs). Cover art: NASA SVS Earth Information Center. NASA does not endorse this project.
     </footer>
 
     <script type="module" src="./src/main.js"></script>

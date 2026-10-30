@@ -1,10 +1,12 @@
 // Terra Vox app entry: owns state and connects data, audio and UI modules.
 
+import '@fontsource-variable/anybody/standard.css';
+import '@fontsource-variable/atkinson-hyperlegible-next/index.css';
 import { loadThemes, getTheme } from './data/loader.js';
-import { Voice, startAudio, whenHeard, getMaster } from './audio/sonify.js';
+import { Voice, startAudio, whenHeard } from './audio/sonify.js';
 import { Duet, LISTEN_MODES, describeGap } from './audio/duet.js';
 import { createThemeTiles } from './ui/themeTiles.js';
-import { createTurntable, createVisualizer } from './ui/turntable.js';
+import { createTurntable } from './ui/turntable.js';
 import { createMappingReadout } from './ui/mappingReadout.js';
 import { createGuessTheYear } from './ui/guessTheYear.js';
 import { createCaptionTrack, altText, VERBOSITY } from './ui/captions.js';
@@ -29,6 +31,8 @@ let duet = null;
 const captions = createCaptionTrack({
   dataEl: document.getElementById('cap-data'),
   soundEl: document.getElementById('cap-sound'),
+  prevEl: document.getElementById('cap-prev'),
+  trackEl: document.getElementById('caption-track'),
   liveEl: document.getElementById('sr-captions'),
 });
 
@@ -59,13 +63,6 @@ const turntable = createTurntable(document.getElementById('player'), {
 
 const readout = createMappingReadout(document.getElementById('mapping-readout'));
 
-createVisualizer(document.getElementById('viz'), () => {
-  if (state.mode !== 'jukebox' || !state.playing) return null;
-  if (state.duet && duet) return { waves: [duet.oldest.waveform, duet.newest.waveform], fft: getMaster().fft };
-  if (voice) return { waves: [voice.waveform], fft: getMaster().fft };
-  return null;
-});
-
 const duetToggle = document.getElementById('duet-toggle');
 duetToggle.addEventListener('click', () => toggleDuet());
 
@@ -77,6 +74,10 @@ function ensureVoice() {
   if (!voice) {
     voice = new Voice({ name: 'jukebox', level: 0.8 });
     voice.onBar(onBar);
+    // Each note blooms on the globe at a real place in the data, when it is heard.
+    voice.onNote((n) => whenHeard(n.time, () => {
+      if (!state.duet && state.playing && n.frame.theme === state.theme.id) turntable.spark('single', n.frame, n.velocity);
+    }));
   }
   return voice;
 }
@@ -94,12 +95,13 @@ function onBar(event) {
     if (frame.theme !== state.theme.id || state.duet) return;
     state.index = frame.index;
     render();
+    turntable.beat('single', event.params);
     if (playing) captions.bar(frame);
   });
 }
 
-function render() {
-  turntable.showFrame(state.index);
+function render({ instant = false } = {}) {
+  turntable.showFrame(state.index, { instant });
   readout.showFrame(state.theme, currentFrame());
 }
 
@@ -221,10 +223,18 @@ async function toggleDuet(on = !state.duet) {
     if (!duet) {
       duet = new Duet();
       duet.setMode(state.listenMode);
-      duet.onBar((e) => whenHeard(e.time, () => { if (state.duet) readout.pulse(e.voice); }));
+      duet.onBar((e) => whenHeard(e.time, () => {
+        if (!state.duet) return;
+        readout.pulse(e.voice);
+        turntable.beat(e.voice, e.params);
+        turntable.setTurn(e.voice);
+      }));
+      [duet.oldest, duet.newest].forEach((v) => v.onNote((n) => whenHeard(n.time, () => {
+        if (state.duet && state.playing) turntable.spark(n.voice, n.frame, n.velocity);
+      })));
     }
     const gap = renderDuet();
-    turntable.setListenMode(state.listenMode);
+    turntable.setListenMode(state.listenMode, LISTEN_HELP[state.listenMode]);
     duet.setTheme(state.theme);
     duet.start();
     setPlaying(true);
@@ -248,7 +258,7 @@ const LISTEN_HELP = {
 function setListenMode(mode) {
   state.listenMode = mode;
   duet?.setMode(mode);
-  turntable.setListenMode(mode);
+  turntable.setListenMode(mode, LISTEN_HELP[mode]);
   announce(`${LISTEN_MODES[mode]}. ${LISTEN_HELP[mode]}`);
 }
 
@@ -376,14 +386,46 @@ const help = createHelpDialog(document.getElementById('help-dialog'), [document.
   { title: 'Anywhere', items: SHORTCUTS.filter((s) => !s.when) },
 ]);
 
+// ------------------------------------------------------------ introduction
+
+// Shown once. "Start" unlocks audio inside this click and drops straight into
+// the strongest moment: Duet on methane, 2003 against 2026.
+const intro = document.getElementById('intro');
+const INTRO_THEME = 'greenhouse_gases';
+
+function openIntro() {
+  if (help.isOpen) help.close();
+  if (!intro.open) intro.showModal();
+}
+
+function closeIntro() {
+  if (intro.open) intro.close();
+  savePrefs({ introSeen: true });
+}
+
+document.getElementById('intro-start').addEventListener('click', () => {
+  closeIntro();
+  if (state.mode !== 'jukebox') setMode('jukebox');
+  tiles.select(INTRO_THEME, { notify: true });
+  if (state.duet) { if (!state.playing) togglePlay(); } else toggleDuet(true);
+  document.getElementById('player').focus();
+});
+document.getElementById('intro-skip').addEventListener('click', () => {
+  closeIntro();
+  document.getElementById('player').focus();
+});
+intro.addEventListener('cancel', () => savePrefs({ introSeen: true }));
+document.getElementById('intro-again').addEventListener('click', openIntro);
+
 // ------------------------------------------------------------ start
 
 setVerbosity(prefs.verbosity ?? 'brief', { say: false });
 setSpeak(prefs.speak ?? false, { say: false });
 tiles.select(state.theme.id);
 turntable.setTheme(state.theme);
-render();
+render({ instant: true });
 captions.show(currentFrame());
+if (!prefs.introSeen) openIntro();
 
 if (import.meta.env.DEV) {
   window.__terraVox = {

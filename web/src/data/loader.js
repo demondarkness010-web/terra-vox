@@ -7,6 +7,8 @@ import themesMeta from '../../../data/themes.json';
 const featureFiles = import.meta.glob('../../../data/features/*/*.json', { eager: true, import: 'default' });
 const displayImages = import.meta.glob('../../../data/display/*/*.jpg', { eager: true, query: '?url', import: 'default' });
 const thumbnails = import.meta.glob('../../../assets/thumbnails/*.jpg', { eager: true, query: '?url', import: 'default' });
+// Where each frame's signal is (scripts/extract_points.py): drives the note sparks.
+const pointFiles = import.meta.glob('../../../data/points/*.json', { eager: true, import: 'default' });
 
 let cache = null;
 
@@ -14,6 +16,7 @@ let cache = null;
 export function loadThemes() {
   if (cache) return cache;
   cache = themesMeta.themes.map((meta) => {
+    const points = pointFiles[`../../../data/points/${meta.id}.json`] ?? {};
     const frames = meta.frames.map((date) => {
       const features = featureFiles[`../../../data/features/${meta.id}/${date}.json`];
       if (!features) throw new Error(`Missing features for ${meta.id} ${date}; run scripts/extract_features.py`);
@@ -21,6 +24,7 @@ export function loadThemes() {
         ...features,
         themeName: meta.name,
         imageUrl: displayImages[`../../../data/display/${meta.id}/${date}.jpg`],
+        signal: points[date] ?? { kind: 'none', points: [] },
       };
     });
     return {

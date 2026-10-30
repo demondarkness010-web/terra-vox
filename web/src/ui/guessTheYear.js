@@ -198,7 +198,7 @@ export function createGuessTheYear(root, { themes, unlock, announce }) {
     const p = mapFeatures(frame);
     verdict.textContent = right ? `Yes, it was ${frame.year}.` : `It was ${frame.year}. You said ${year}, ${off} year${off === 1 ? '' : 's'} off.`;
     detail.textContent = `${theme.name}, ${frame.label}: ${theme.physical.label} ${physicalShort(frame)}. `
-      + `It played ${p.note}, ${p.notesPerBar} notes per bar at ${p.tempoBPM} BPM on a ${p.timbre}.`;
+      + `It played ${p.note}, ${p.notesPerBar} note${p.notesPerBar === 1 ? '' : 's'} per bar at ${p.tempoBPM} BPM on a ${p.timbre}.`;
     result.hidden = false;
     scoreEl.textContent = `Score ${score.right} / ${score.played}${score.streak > 1 ? ` · streak ${score.streak}` : ''}`;
     nextBtn.focus();

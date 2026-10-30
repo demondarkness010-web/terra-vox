@@ -164,6 +164,7 @@ export class Voice {
     this.running = false;
     this.bar = 0;
     this.listeners = new Set();
+    this.noteListeners = new Set();
     this._eventId = null;
     this._nextBarAt = 0;
 
@@ -202,6 +203,12 @@ export class Voice {
   onBar(fn) {
     this.listeners.add(fn);
     return () => this.listeners.delete(fn);
+  }
+
+  /** Every lead note as it is scheduled: { voice, frame, index, count, time, velocity }. Observation only. */
+  onNote(fn) {
+    this.noteListeners.add(fn);
+    return () => this.noteListeners.delete(fn);
   }
 
   /**
@@ -267,6 +274,7 @@ export class Voice {
   dispose() {
     this.stop();
     this.listeners.clear();
+    this.noteListeners.clear();
     [this.lead, this.pad, this.filter, this.trim, this.panner, this.out, this.meter, this.waveform].forEach((n) => n.dispose());
   }
 
@@ -300,8 +308,13 @@ export class Voice {
     // The downbeat plays now; later notes are their own Transport events so a
     // restart can cancel them instead of letting the old bar bleed through.
     this._noteIds = [];
+    const frame = this.frame;
     plan.notes.forEach((n, i) => {
-      const play = (t) => this.lead.triggerAttackRelease(n.note, n.duration, t, params.velocity);
+      const play = (t) => {
+        this.lead.triggerAttackRelease(n.note, n.duration, t, params.velocity);
+        const note = { voice: this.name, frame, index: i, count: plan.notes.length, time: t, velocity: params.velocity };
+        this.noteListeners.forEach((fn) => fn(note));
+      };
       if (i === 0) play(time);
       else this._noteIds.push(this.transport.scheduleOnce(play, barAt + n.offset));
     });

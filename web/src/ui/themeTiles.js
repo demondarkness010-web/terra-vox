@@ -29,10 +29,24 @@ export function createThemeTiles(container, themes, { onSelect, onActivate, labe
     const descId = `tile-desc-${theme.id}`;
     tile.setAttribute('aria-describedby', descId);
 
+    // A record sleeve (the NASA cover art) with its record behind it; the
+    // selected theme's record slides half out. Decorative: the name and
+    // description carry the meaning.
+    const sleeve = document.createElement('span');
+    sleeve.className = 'sleeve';
+    sleeve.setAttribute('aria-hidden', 'true');
+    const disc = document.createElement('span');
+    disc.className = 'disc';
+    const label = document.createElement('img');
+    label.className = 'disc-label';
+    label.src = theme.thumbnailUrl;
+    label.alt = '';
+    disc.append(label);
     const art = document.createElement('img');
     art.className = 'tile-art';
     art.src = theme.thumbnailUrl;
-    art.alt = '';  // decorative: the name and description carry the meaning
+    art.alt = '';
+    sleeve.append(disc, art);
 
     const name = document.createElement('span');
     name.className = 'tile-name';
@@ -41,14 +55,21 @@ export function createThemeTiles(container, themes, { onSelect, onActivate, labe
     const meta = document.createElement('span');
     meta.className = 'tile-meta';
     meta.id = descId;
-    meta.textContent = `${theme.yearRange[0]}–${theme.yearRange[1]} · ${theme.frameCount} frames · ${theme.signature}`;
+    meta.textContent = `${theme.yearRange[0]}–${theme.yearRange[1]} · ${theme.signature}`;
+    const count = document.createElement('span');
+    count.className = 'sr-only';
+    count.textContent = `, ${theme.frameCount} frames`;
+    meta.append(count);
 
     const eq = document.createElement('span');
     eq.className = 'tile-eq';
     eq.setAttribute('aria-hidden', 'true');
     eq.innerHTML = '<i></i><i></i><i></i>';
 
-    tile.append(art, name, meta, eq);
+    const text = document.createElement('span');
+    text.className = 'tile-text';
+    text.append(name, meta);
+    tile.append(sleeve, text, eq);
     tile.addEventListener('click', () => {
       select(theme.id, { notify: true });
       onActivate?.(theme.id, { toggle: false });

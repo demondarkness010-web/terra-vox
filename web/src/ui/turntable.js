@@ -1,28 +1,36 @@
-// The central play area: the current NASA frame on the "turntable", the
-// transport buttons and the timeline scrubber. This module is view + input
-// only; main.js owns playback state and the audio engine.
+// The stage: the globe, the rolling year, the transport and the groove
+// timeline. View + input only; main.js owns playback state and audio.
 //
-// The scrubber is a native <input type="range">, so arrow keys, Page Up/Down
-// and Home/End work for free and screen readers announce it as a slider.
-// aria-valuetext makes them read "Aug 08-15, 2014, frame 14 of 25" instead
-// of a bare index.
+// The scrubber is a native <input type="range"> laid over the groove, so
+// arrow keys, Page Up/Down and Home/End work for free and screen readers
+// announce it as a slider, with aria-valuetext like "Aug 08-15, 2014, frame
+// 14 of 25". The groove under it draws every year's real value as a tick, so
+// the timeline is also the theme's chart.
+
+import { createGlobe } from './globe.js';
+import { createOdometer } from './odometer.js';
+import { physicalShort, activeShare } from '../data/loader.js';
 
 export function createTurntable(root, { onTogglePlay, onScrub, onStep, onListenMode, listenModes = {}, altFor = defaultAlt }) {
-  const $ = (sel) => root.querySelector(sel);
-  const stage = $('#stage');
-  const img = $('#frame-img');
-  const yearBadge = $('#frame-year');
-  const caption = $('#frame-caption');
-  const recordLabel = $('#record-label');
-  const playBtn = $('#play');
-  const prevBtn = $('#prev');
-  const nextBtn = $('#next');
-  const scrubber = $('#scrubber');
-  const scrubStart = $('#scrub-start');
-  const scrubEnd = $('#scrub-end');
-  const themeTitle = root.querySelector('#player-theme') ?? document.getElementById('player-theme');
+  const $ = (id) => document.getElementById(id);
+  const stage = $('stage');
+  const globeEl = $('globe');
+  const playBtn = $('play');
+  const prevBtn = $('prev');
+  const nextBtn = $('next');
+  const scrubber = $('scrubber');
+  const ticksEl = $('groove-ticks');
+  const themeTitle = $('player-theme');
+  const frameLabel = $('frame-caption');
+  const nowValue = $('now-value');
+  const nowShare = $('now-share');
+
+  const globe = createGlobe(globeEl);
+  const year = createOdometer($('year-single'));
+  const years = { oldest: createOdometer($('year-old')), newest: createOdometer($('year-new')) };
 
   let theme = null;
+  let ticks = [];
 
   playBtn.addEventListener('click', () => onTogglePlay?.());
   prevBtn.addEventListener('click', () => onStep?.(-1));
@@ -35,71 +43,95 @@ export function createTurntable(root, { onTogglePlay, onScrub, onStep, onListenM
     themeTitle.textContent = theme.name;
     scrubber.max = String(theme.frames.length - 1);
     scrubber.setAttribute('aria-label', `${theme.name} timeline, ${theme.yearRange[0]} to ${theme.yearRange[1]}`);
-    scrubStart.textContent = theme.yearRange[0];
-    scrubEnd.textContent = theme.yearRange[1];
-    recordLabel.src = theme.thumbnailUrl;
+    $('scrub-start').textContent = theme.yearRange[0];
+    $('scrub-end').textContent = theme.yearRange[1];
     stage.dataset.theme = theme.id;
+    globe.setTheme(theme);
+
+    const values = theme.frames.map((f) => f.physical.value);
+    const lo = Math.min(...values);
+    const span = Math.max(...values) - lo || 1;
+    // Tick i sits where the range thumb lands for value i.
+    ticksEl.style.setProperty('--n', String(Math.max(1, theme.frames.length - 1)));
+    ticks = theme.frames.map((f, i) => {
+      const t = document.createElement('i');
+      t.style.setProperty('--i', String(i));
+      t.style.setProperty('--h', (0.16 + 0.84 * ((f.physical.value - lo) / span)).toFixed(3));
+      return t;
+    });
+    ticksEl.replaceChildren(...ticks);
+    ticks[0].classList.add('is-oldest');
+    ticks[ticks.length - 1].classList.add('is-newest');
   }
 
-  function showFrame(index) {
+  function showFrame(index, { instant = false } = {}) {
     if (!theme) return;
     const frame = theme.frames[index];
-    if (img.dataset.src !== frame.imageUrl) {
-      img.src = frame.imageUrl;
-      img.dataset.src = frame.imageUrl;
-    }
-    img.alt = altFor(frame, theme);
-    yearBadge.textContent = frame.year;
-    caption.textContent = `${theme.name} · ${frame.label}`;
+    globe.showFrame(frame);
+    globeEl.setAttribute('aria-label', altFor(frame, theme));
+    year.set(frame.year, { instant });
+    frameLabel.textContent = frame.label;
+    nowValue.textContent = `${capitalize(theme.physical.label)}: ${physicalShort(frame)}`;
+    const share = activeShare(frame);
+    nowShare.textContent = share ? `${share.percent < 10 ? share.percent.toFixed(1) : Math.round(share.percent)}% ${share.label}` : '';
     scrubber.value = String(index);
     scrubber.setAttribute('aria-valuetext', `${frame.label}, frame ${index + 1} of ${theme.frames.length}`);
+    ticks.forEach((t, i) => t.classList.toggle('is-current', i === index));
   }
 
   function setPlaying(playing) {
     root.classList.toggle('is-playing', playing);
+    globe.setPlaying(playing);
     const what = stage.dataset.mode === 'duet' ? ' duet' : '';
     playBtn.setAttribute('aria-label', playing ? `Pause${what}` : `Play${what}`);
     playBtn.title = playing ? 'Pause (Space)' : 'Play (Space)';
   }
 
+  // A bar was heard: the play ring pulses and the year's width follows its tempo.
+  function beat(side, params) {
+    globe.setTempo(side, params.tempoBPM);
+    (side === 'single' ? year : years[side]).stretch(params.tempoBPM);
+    playBtn.classList.remove('is-beat');
+    void playBtn.offsetWidth;
+    playBtn.classList.add('is-beat');
+  }
+
+  function spark(side, frame, velocity) {
+    globe.spark(side, frame, velocity);
+  }
+
   // ---------------------------------------------------------- duet view
 
-  const duetPanel = document.getElementById('duet-panel');
-  const old = {
-    img: $('#duet-old-img'), year: $('#duet-old-year'), cap: $('#duet-old-cap'), meter: $('#duet-old-meter'),
-  };
-  const neu = {
-    img: $('#duet-new-img'), year: $('#duet-new-year'), cap: $('#duet-new-cap'), meter: $('#duet-new-meter'),
-  };
-  const listen = createSegmented(document.getElementById('listen-modes'), listenModes, (m) => onListenMode?.(m));
+  const duetPanel = $('duet-panel');
+  const duetNow = $('duet-now');
+  const listen = createSegmented($('listen-modes'), listenModes, (m) => onListenMode?.(m));
 
   function setDuet(on) {
     stage.dataset.mode = on ? 'duet' : 'single';
+    root.dataset.mode = on ? 'duet' : 'single';
     duetPanel.hidden = !on;
+    duetNow.hidden = !on;
     // Duet always compares the two ends of the record, so there is nothing
     // to scrub; say why rather than silently disabling.
     [scrubber, prevBtn, nextBtn].forEach((el) => { el.disabled = on; });
     scrubber.setAttribute('aria-description', on ? 'Unavailable in Duet mode, which always compares the oldest and newest frames.' : '');
-  }
-
-  function fillDeck(deck, frame) {
-    deck.img.src = frame.imageUrl;
-    deck.img.alt = altFor(frame, theme);
-    deck.year.textContent = frame.year;
-    deck.cap.textContent = frame.label;
+    if (!on) globe.setDuet(false);
   }
 
   function showDuet(gap) {
-    fillDeck(old, gap.oldest);
-    fillDeck(neu, gap.newest);
-    document.getElementById('gap-years').textContent = `${gap.oldest.year} → ${gap.newest.year} (${gap.years} years)`;
-    document.getElementById('gap-sentence').textContent = gap.sentence;
+    globe.setDuet(true, gap.oldest, gap.newest);
+    globeEl.setAttribute('aria-label', `Two planets. Left: ${altFor(gap.oldest, theme)} Right: ${altFor(gap.newest, theme)}`);
+    years.oldest.set(gap.oldest.year, { instant: true });
+    years.newest.set(gap.newest.year, { instant: true });
+    years.oldest.stretch(gap.pa.tempoBPM);
+    years.newest.stretch(gap.pb.tempoBPM);
+    $('gap-years').textContent = `${gap.oldest.year} → ${gap.newest.year}, ${gap.years} years apart`;
+    $('gap-sentence').textContent = gap.sentence;
     const p = gap.physical;
-    document.getElementById('gap-physical').textContent =
+    $('gap-physical').textContent =
       `${capitalize(p.label)}: ${p.from} → ${p.to} (${p.delta}).`
       + (p.activeLabel ? ` Share of ${p.activeLabel}: ${p.activeFrom} → ${p.activeTo}.` : '');
-    const rows = document.getElementById('gap-rows');
-    rows.replaceChildren(...gap.items.map((it) => {
+    $('gap-rows').replaceChildren(...gap.items.map((it) => {
       const tr = document.createElement('tr');
       tr.className = it.change === 'same' || it.change === 'about the same' ? 'same' : 'changed';
       [it.aspect, it.from, it.to, it.change].forEach((v, i) => {
@@ -110,21 +142,30 @@ export function createTurntable(root, { onTogglePlay, onScrub, onStep, onListenM
       });
       return tr;
     }));
+    ticks.forEach((t) => t.classList.remove('is-current'));
   }
 
-  function setListenMode(mode) {
+  function setListenMode(mode, help = '') {
     listen.select(mode);
+    stage.dataset.listen = mode;
+    $('listen-help').textContent = help;
   }
 
   // Meters are decorative (aria-hidden); levels arrive in dB.
+  const meters = { oldest: $('duet-old-meter'), newest: $('duet-new-meter') };
   function setMeters({ oldest, newest }) {
     const h = (db) => Math.max(0, Math.min(1, (db + 54) / 48));
-    old.meter.style.transform = `scaleY(${h(oldest)})`;
-    neu.meter.style.transform = `scaleY(${h(newest)})`;
+    meters.oldest.style.transform = `scaleY(${h(oldest)})`;
+    meters.newest.style.transform = `scaleY(${h(newest)})`;
+  }
+
+  // In "Take turns", the side that is sounding brightens.
+  function setTurn(side) {
+    stage.dataset.turn = side;
   }
 
   return {
-    setTheme, showFrame, setPlaying, setDuet, showDuet, setListenMode, setMeters,
+    setTheme, showFrame, setPlaying, beat, spark, setDuet, showDuet, setListenMode, setMeters, setTurn,
     stage, scrubber, playBtn, get theme() { return theme; },
   };
 }
@@ -170,85 +211,4 @@ const capitalize = (s) => s.charAt(0).toUpperCase() + s.slice(1);
 
 function defaultAlt(frame, theme) {
   return `${theme.name}, ${frame.label}`;
-}
-
-// ---------------------------------------------------------- visualizer
-//
-// Decorative only (the canvas is aria-hidden): a live waveform over a faint
-// spectrum. In Duet the oldest year draws in blue across the top half and
-// the newest in orange across the bottom, so the gap is visible as well as
-// audible. Honors prefers-reduced-motion by drawing at a few frames a second.
-
-export function createVisualizer(canvas, getSources) {
-  const ctx = canvas.getContext('2d');
-  const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)');
-  const css = getComputedStyle(document.documentElement);
-  const color = (name, fallback) => css.getPropertyValue(name).trim() || fallback;
-  const palette = { accent: color('--accent', '#56b4e9'), old: color('--old', '#56b4e9'), new: color('--new', '#e69f00'), line: 'rgba(150,170,210,0.25)' };
-  let last = 0;
-
-  function resize() {
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
-    const { width, height } = canvas.getBoundingClientRect();
-    canvas.width = Math.max(1, Math.round(width * dpr));
-    canvas.height = Math.max(1, Math.round(height * dpr));
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-  }
-  new ResizeObserver(resize).observe(canvas);
-  resize();
-
-  function drawWave(values, top, height, stroke) {
-    const w = canvas.clientWidth;
-    ctx.beginPath();
-    for (let i = 0; i < values.length; i++) {
-      const x = (i / (values.length - 1)) * w;
-      const y = top + height / 2 - values[i] * height * 0.9;
-      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
-    }
-    ctx.strokeStyle = stroke;
-    ctx.lineWidth = 2;
-    ctx.shadowColor = stroke;
-    ctx.shadowBlur = 8;
-    ctx.stroke();
-    ctx.shadowBlur = 0;
-  }
-
-  function frame(now) {
-    requestAnimationFrame(frame);
-    if (reduce?.matches && now - last < 250) return;
-    last = now;
-    const w = canvas.clientWidth;
-    const h = canvas.clientHeight;
-    ctx.clearRect(0, 0, w, h);
-    const src = getSources();
-    if (!src) {
-      ctx.strokeStyle = palette.line;
-      ctx.lineWidth = 1.5;
-      ctx.beginPath(); ctx.moveTo(0, h / 2); ctx.lineTo(w, h / 2); ctx.stroke();
-      return;
-    }
-
-    if (src.fft) {
-      const bins = src.fft.getValue();
-      const n = 40;
-      const bw = w / n;
-      for (let i = 0; i < n; i++) {
-        const db = bins[Math.floor((i / n) * bins.length * 0.7)];
-        const v = Math.max(0, Math.min(1, (db + 100) / 80));
-        ctx.fillStyle = 'rgba(86,180,233,0.10)';
-        ctx.fillRect(i * bw + 1, h - v * h, bw - 2, v * h);
-      }
-    }
-
-    ctx.strokeStyle = palette.line;
-    ctx.lineWidth = 1;
-    if (src.waves.length === 2) {
-      ctx.beginPath(); ctx.moveTo(0, h / 2); ctx.lineTo(w, h / 2); ctx.stroke();
-      drawWave(src.waves[0].getValue(), 0, h / 2, palette.old);
-      drawWave(src.waves[1].getValue(), h / 2, h / 2, palette.new);
-    } else if (src.waves.length === 1) {
-      drawWave(src.waves[0].getValue(), 0, h, palette.accent);
-    }
-  }
-  requestAnimationFrame(frame);
 }

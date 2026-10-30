@@ -105,7 +105,7 @@ export const VERBOSITY = { off: 'Off', brief: 'Brief', full: 'Full' };
  * says the same words, cancels anything stale so it never lags behind the
  * music, and ducks the music by ~8 dB while it talks.
  */
-export function createCaptionTrack({ dataEl, soundEl, liveEl }) {
+export function createCaptionTrack({ dataEl, soundEl, liveEl, prevEl = null, trackEl = null }) {
   let verbosity = 'brief';
   let speak = false;
   let describeTimer = null;
@@ -134,10 +134,22 @@ export function createCaptionTrack({ dataEl, soundEl, liveEl }) {
     duckMusic(on);
   }
 
+  // Like lyrics: the line that just played moves up and dims as the next arrives.
+  function setLines(data, sound) {
+    if (dataEl.textContent === data && soundEl.textContent === sound) return;
+    if (prevEl) prevEl.textContent = dataEl.textContent;
+    dataEl.textContent = data;
+    soundEl.textContent = sound;
+    if (trackEl) {
+      trackEl.classList.remove('is-new');
+      void trackEl.offsetWidth;
+      trackEl.classList.add('is-new');
+    }
+  }
+
   function render(frame) {
     const line = captionLine(frame);
-    dataEl.textContent = line.data;
-    soundEl.textContent = `→ ${line.sound}`;
+    setLines(line.data, `→ ${line.sound}`);
   }
 
   return {
@@ -159,8 +171,7 @@ export function createCaptionTrack({ dataEl, soundEl, liveEl }) {
     /** Duet: a static two-sided caption. */
     duet(gap) {
       clearTimeout(describeTimer);
-      dataEl.textContent = `${gap.oldest.year} ${gap.physical.from}  ⟷  ${gap.newest.year} ${gap.physical.to}`;
-      soundEl.textContent = `→ ${gap.sentence}`;
+      setLines(`${gap.oldest.year} ${gap.physical.from}  ⟷  ${gap.newest.year} ${gap.physical.to}`, `→ ${gap.sentence}`);
     },
     /** Speak an arbitrary sentence through the same channel (respects settings). */
     say,
