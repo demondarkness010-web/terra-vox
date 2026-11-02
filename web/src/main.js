@@ -2,20 +2,24 @@
 
 import '@fontsource-variable/anybody/standard.css';
 import '@fontsource-variable/atkinson-hyperlegible-next/index.css';
-import { loadThemes, getTheme } from './data/loader.js';
+import { loadThemes, loadSideB, getTheme, trackFor } from './data/loader.js';
 import { Voice, startAudio, whenHeard } from './audio/sonify.js';
 import { Duet, LISTEN_MODES, describeGap } from './audio/duet.js';
 import { createThemeTiles } from './ui/themeTiles.js';
-import { createTurntable } from './ui/turntable.js';
+import { createTurntable, createSegmented } from './ui/turntable.js';
+import { createFieldGuide } from './ui/fieldGuide.js';
+import { createMapKey } from './ui/mapKey.js';
 import { createMappingReadout } from './ui/mappingReadout.js';
 import { createGuessTheYear } from './ui/guessTheYear.js';
 import { createCaptionTrack, altText, VERBOSITY } from './ui/captions.js';
 import { createAnnouncer, installShortcuts, createHelpDialog } from './ui/a11y.js';
 
 const themes = loadThemes();
+const sidesB = loadSideB();
 
 const state = {
-  theme: themes[0],
+  theme: themes[0],  // the track playing: a theme's side A or side B
+  side: 'a',         // 'a' = year by year (GIBS) | 'b' = NASA EIC visualization
   index: 0,          // frame currently shown / sounding
   playing: false,
   duet: false,
@@ -62,6 +66,29 @@ const turntable = createTurntable(document.getElementById('player'), {
 });
 
 const readout = createMappingReadout(document.getElementById('mapping-readout'));
+const guide = createFieldGuide(document.getElementById('field-guide'));
+const mapKey = createMapKey(document.getElementById('map-key'));
+
+// Side A / side B, like a record: A is the calibrated year-by-year record,
+// B is the theme's NASA Earth Information Center visualization.
+const SIDES = { a: 'Side A, every year', b: 'Side B, NASA EIC' };
+const sideSwitch = document.getElementById('side-switch');
+const sideNote = document.getElementById('side-note');
+const sides = createSegmented(document.getElementById('side-modes'), SIDES, (side) => setSide(side));
+sideSwitch.hidden = Object.keys(sidesB).length === 0;
+
+// Everything that depends on which track is loaded, but not on the frame.
+function showTrack() {
+  const t = state.theme;
+  sides.select(t.side);
+  const b = sidesB[t.parent];
+  sideSwitch.querySelector('[data-value="b"]').disabled = !b;
+  sideNote.textContent = t.side === 'b'
+    ? `NASA EIC visualization ${t.svs}: ${t.title}`
+    : `${t.dataset}, NASA GIBS, ${t.rangeLabel[0]}–${t.rangeLabel[1]}`;
+  mapKey.setTrack(t);
+  guide.setTrack(t, b);
+}
 
 const duetToggle = document.getElementById('duet-toggle');
 duetToggle.addEventListener('click', () => toggleDuet());
@@ -70,13 +97,19 @@ function currentFrame() {
   return state.theme.frames[state.index];
 }
 
+// The interface moves on the music's clock (DESIGN.md, Motion): one beat of
+// the bar just heard, written to --beat for the ring, captions and sparks.
+function setBeat(bpm) {
+  if (bpm > 0) document.documentElement.style.setProperty('--beat', `${Math.round(60000 / bpm)}ms`);
+}
+
 function ensureVoice() {
   if (!voice) {
     voice = new Voice({ name: 'jukebox', level: 0.8 });
     voice.onBar(onBar);
     // Each note blooms on the globe at a real place in the data, when it is heard.
     voice.onNote((n) => whenHeard(n.time, () => {
-      if (!state.duet && state.playing && n.frame.theme === state.theme.id) turntable.spark('single', n.frame, n.velocity);
+      if (!state.duet && state.playing && n.frame.theme === state.theme.id && state.side === 'a') turntable.spark('single', n.frame, n.velocity);
     }));
   }
   return voice;
@@ -95,6 +128,7 @@ function onBar(event) {
     if (frame.theme !== state.theme.id || state.duet) return;
     state.index = frame.index;
     render();
+    setBeat(event.params.tempoBPM);
     turntable.beat('single', event.params);
     if (playing) captions.bar(frame);
   });
@@ -103,6 +137,7 @@ function onBar(event) {
 function render({ instant = false } = {}) {
   turntable.showFrame(state.index, { instant });
   readout.showFrame(state.theme, currentFrame());
+  guide.showFrame(currentFrame());
 }
 
 function renderDuet() {
@@ -110,13 +145,14 @@ function renderDuet() {
   turntable.showDuet(gap);
   readout.showDuet(state.theme, gap.oldest, gap.newest);
   captions.duet(gap);
+  guide.showDuet(gap.oldest, gap.newest);
   return gap;
 }
 
 function setPlaying(playing) {
   state.playing = playing;
   turntable.setPlaying(playing);
-  tiles.setPlaying(state.theme.id, playing);
+  tiles.setPlaying(state.theme.parent, playing);
 }
 
 let unlocking = null;
@@ -151,14 +187,21 @@ async function togglePlay() {
 }
 
 function selectTheme(id) {
-  state.theme = getTheme(id);
+  loadTrack(trackFor(id, state.side));
+}
+
+// Load a track (a theme's side A or B) into the player, keeping play state.
+function loadTrack(track) {
+  state.theme = track;
+  state.side = track.side;
   state.index = 0;
   turntable.setTheme(state.theme);
+  showTrack();
   render();
   if (state.duet) {
     const gap = renderDuet();
     duet.setTheme(state.theme);
-    tiles.setPlaying(state.theme.id, state.playing);
+    tiles.setPlaying(state.theme.parent, state.playing);
     announce(gap.spoken);
     return;
   }
@@ -166,10 +209,21 @@ function selectTheme(id) {
     voice.setFrame(currentFrame(), { restart: state.playing });
     if (!state.playing) voice.stop();
   }
-  tiles.setPlaying(state.theme.id, state.playing);
-  const [y0, y1] = state.theme.yearRange;
-  announce(`${state.theme.name}, ${y0} to ${y1}, ${state.theme.frameCount} frames. ${state.theme.signature} data. ${state.playing ? '' : 'Press Space to play.'}`);
+  tiles.setPlaying(state.theme.parent, state.playing);
+  const [y0, y1] = state.theme.rangeLabel;
+  const what = track.side === 'b' ? `side B, NASA's ${track.title} visualization` : 'side A, year by year';
+  announce(`${state.theme.name}, ${what}: ${y0} to ${y1}, ${state.theme.frameCount} frames. ${state.theme.signature}. ${state.playing ? '' : 'Press Space to play.'}`);
   if (!state.playing) captions.describe(currentFrame(), state.theme, { delay: 2200 });
+}
+
+function setSide(side) {
+  const next = trackFor(state.theme.parent, side);
+  if (next === state.theme) { sides.select(state.side); return; }
+  loadTrack(next);
+}
+
+function flipSide() {
+  setSide(state.side === 'a' ? 'b' : 'a');
 }
 
 // Scrubbing answers immediately: while playing, a fresh bar starts on the new
@@ -226,11 +280,12 @@ async function toggleDuet(on = !state.duet) {
       duet.onBar((e) => whenHeard(e.time, () => {
         if (!state.duet) return;
         readout.pulse(e.voice);
+        setBeat(e.params.tempoBPM);
         turntable.beat(e.voice, e.params);
         turntable.setTurn(e.voice);
       }));
       [duet.oldest, duet.newest].forEach((v) => v.onNote((n) => whenHeard(n.time, () => {
-        if (state.duet && state.playing) turntable.spark(n.voice, n.frame, n.velocity);
+        if (state.duet && state.playing && state.side === 'a') turntable.spark(n.voice, n.frame, n.velocity);
       })));
     }
     const gap = renderDuet();
@@ -317,6 +372,21 @@ modeTabs.forEach((tab, i) => {
 const prefs = loadPrefs();
 const describeSelect = document.getElementById('describe');
 const speakToggle = document.getElementById('speak-toggle');
+const motionToggle = document.getElementById('motion-toggle');
+const osReduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+// Motion: full or reduce on html[data-motion]. Follows the OS setting until
+// the listener chooses; the choice is remembered (WCAG 2.2.2 for the planet).
+function setMotion(mode, { save = true, say = true } = {}) {
+  document.documentElement.dataset.motion = mode;
+  motionToggle.setAttribute('aria-pressed', String(mode === 'reduce'));
+  if (save) savePrefs({ motion: mode });
+  if (say) announce(mode === 'reduce' ? 'Reduce motion on. The planet holds still.' : 'Reduce motion off.');
+}
+motionToggle.addEventListener('click', () => setMotion(document.documentElement.dataset.motion === 'reduce' ? 'full' : 'reduce'));
+osReduce.addEventListener('change', () => {
+  if (!loadPrefs().motion) setMotion(osReduce.matches ? 'reduce' : 'full', { save: false, say: false });
+});
 
 function setVerbosity(v, { say = true } = {}) {
   captions.setVerbosity(v);
@@ -353,6 +423,7 @@ const SHORTCUTS = [
   { keys: ['1', '2', '3', '4'], label: 'Choose theme 1–4 and play', when: jukebox,
     run: (e) => { const t = themes[Number(e.key) - 1]; tiles.select(t.id, { notify: true }); if (!state.playing) togglePlay(); } },
   { keys: ['d'], label: 'Duet on / off (oldest left, newest right)', run: () => toggleDuet(), when: jukebox },
+  { keys: ['f'], label: 'Flip the record: side A (every year) / side B (NASA EIC visualization)', run: flipSide, when: () => jukebox() && Object.keys(sidesB).length > 0 },
   { keys: ['l'], label: 'Duet: next listening mode', run: cycleListenMode, when: () => jukebox() && state.duet },
   { keys: ['r'], label: 'Repeat the description', run: repeatDescription, when: jukebox },
   { keys: ['c'], label: 'Description detail: off / brief / full', run: () => {
@@ -360,6 +431,7 @@ const SHORTCUTS = [
     setVerbosity(order[(order.indexOf(captions.verbosity) + 1) % order.length]);
   } },
   { keys: ['s'], label: 'Speak aloud on / off', run: () => setSpeak(!captions.speak) },
+  { keys: ['m'], label: 'Reduce motion on / off', run: () => motionToggle.click() },
   { keys: ['g'], label: 'Switch Jukebox / Guess the Year', run: () => {
     const m = state.mode === 'jukebox' ? 'guess' : 'jukebox';
     setMode(m);
@@ -371,7 +443,7 @@ const SHORTCUTS = [
 installShortcuts(SHORTCUTS);
 
 const help = createHelpDialog(document.getElementById('help-dialog'), [document.getElementById('help-button')], [
-  { title: 'Jukebox', items: SHORTCUTS.filter((s) => s.when === jukebox || s.keys[0] === 'l') },
+  { title: 'Jukebox', items: SHORTCUTS.filter((s) => s.when === jukebox || ['l', 'f'].includes(s.keys[0])) },
   { title: 'Timeline (when focused)', items: [
     { keys: ['ArrowLeft', 'ArrowRight'], label: 'Step one year (plays it)' },
     { keys: ['Home', 'End'], label: 'Oldest / newest year' },
@@ -419,10 +491,12 @@ document.getElementById('intro-again').addEventListener('click', openIntro);
 
 // ------------------------------------------------------------ start
 
+setMotion(prefs.motion ?? (osReduce.matches ? 'reduce' : 'full'), { save: false, say: false });
 setVerbosity(prefs.verbosity ?? 'brief', { say: false });
 setSpeak(prefs.speak ?? false, { say: false });
 tiles.select(state.theme.id);
 turntable.setTheme(state.theme);
+showTrack();
 render({ instant: true });
 captions.show(currentFrame());
 if (!prefs.introSeen) openIntro();

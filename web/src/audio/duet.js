@@ -15,8 +15,8 @@
 //   oldest / newest   solo either year, centred
 
 import { Voice, mapFeatures } from './sonify.js';
-import { oldestFrame, newestFrame, physicalShort, physicalSpoken, physicalDelta, activeShare } from '../data/loader.js';
-import { speakNote } from './scales.js';
+import { oldestFrame, newestFrame, physicalShort, physicalSpoken, physicalDelta, activeShare, spanBetween } from '../data/loader.js';
+import { speakNote, showNote } from './scales.js';
 
 export const LISTEN_MODES = {
   together: 'Together (stereo)',
@@ -130,7 +130,7 @@ export function describeGap(theme) {
 
   const steps = pb.scaleDegree - pa.scaleDegree;
   const stepWord = (n) => `${n} scale step${n === 1 ? '' : 's'}`;
-  items.push({ aspect: 'Pitch', from: pa.note, to: pb.note, change: steps === 0 ? 'same' : steps > 0 ? `${stepWord(steps)} higher` : `${stepWord(-steps)} lower` });
+  items.push({ aspect: 'Pitch', from: showNote(pa.note), to: showNote(pb.note), change: steps === 0 ? 'same' : steps > 0 ? `${stepWord(steps)} higher` : `${stepWord(-steps)} lower` });
   if (steps) words.push(steps > 0 ? 'higher' : 'lower');
 
   const dn = pb.notesPerBar - pa.notesPerBar;
@@ -170,12 +170,13 @@ export function describeGap(theme) {
   const list = words.length === 0 ? 'nearly the same as'
     : words.length === 1 ? `${words[0]} than`
     : `${words.slice(0, -1).join(', ')} and ${words[words.length - 1]} than`;
-  const sentence = `${b.year} sounds ${list} ${a.year}.`;
-  const spoken = `Duet. ${theme.name}: ${a.year} in your left ear, ${b.year} in your right. `
-    + `In ${a.year}, ${physicalSpoken(a)}. In ${b.year}, ${physicalSpoken(b)}. `
+  const sentence = `${b.short} sounds ${list} ${a.short}.`;
+  const sideWord = theme.side === 'b' ? `NASA's ${theme.title} visualization, ` : '';
+  const spoken = `Duet. ${theme.name}, ${sideWord}${a.short} in your left ear, ${b.short} in your right. `
+    + `In ${a.short}, ${physicalSpoken(a)}. In ${b.short}, ${physicalSpoken(b)}. `
     + (physical.activeLabel ? `The share of ${physical.activeLabel} went from ${physical.activeFrom} to ${physical.activeTo}. ` : '')
     + `Listen: ${sentence} `
     + `Left plays ${speakNote(pa.note)} on a ${TIMBRE_WORD[pa.timbre]}; right plays ${speakNote(pb.note)} on a ${TIMBRE_WORD[pb.timbre]}.`;
 
-  return { oldest: a, newest: b, pa, pb, items, words, physical, sentence, spoken, years: b.year - a.year };
+  return { oldest: a, newest: b, pa, pb, items, words, physical, sentence, spoken, apart: spanBetween(theme, a, b) };
 }

@@ -15,13 +15,17 @@
 
 import { mapFeatures, duckMusic } from '../audio/sonify.js';
 import { physicalShort, physicalSpoken, activeShare } from '../data/loader.js';
-import { speakNote } from '../audio/scales.js';
+import { speakNote, showNote } from '../audio/scales.js';
 
 const MAP_DESCRIPTION = {
   wildfires: 'World map of satellite-detected active fires, drawn as orange dots over the night-time Earth',
   sea_level: 'World map of sea surface height: purple and blue where the ocean sits below its long-term mean, green near it, yellow, red and white above it; land is dark',
   air_quality: 'World map of nitrogen dioxide pollution: pale yellow for clean air, orange to dark red over polluted regions, black gaps where clouds blocked the satellite',
   greenhouse_gases: 'World map of methane in the mid-troposphere: pale green for lower concentrations through orange to deep red for the highest',
+  wildfires_eic: "NASA Earth Information Center map of active fires seen by VIIRS: yellow and white specks of fire radiative power on dark land and a slate-blue ocean, with NASA's date stamp and colour bar in the lower left",
+  sea_level_eic: 'NASA visualization of the sea seen through a porthole: sky above, blue water below, and a ruler in centimetres and inches up the middle with the 1993 sea level marked at zero',
+  air_quality_eic: 'NASA TEMPO map of nitrogen dioxide over North America on a dark globe: light blue for clean air, cream through red to purple over polluted cities, dark where clouds or night hide the ground',
+  greenhouse_gases_eic: 'NASA visualization of the globe wrapped in a purple haze of methane from the GEOS model, with a January-to-December timeline below',
 };
 
 const ACTIVE_NOUN = {
@@ -29,6 +33,10 @@ const ACTIVE_NOUN = {
   sea_level: 'high-water ocean',
   air_quality: 'heavily polluted air',
   greenhouse_gases: 'methane-rich air',
+  wildfires_eic: 'fire activity',
+  sea_level_eic: 'water in the porthole',
+  air_quality_eic: 'heavily polluted air',
+  greenhouse_gases_eic: 'dense methane haze',
 };
 
 const band = (x, words) => words[x < 1 / 3 ? 0 : x < 2 / 3 ? 1 : 2];
@@ -41,7 +49,8 @@ function featureWords(frame) {
     : frame.colorVariance < 0.35 ? 'moderate colour variance' : 'high colour variance';
   const d = frame.pixelDensity;
   const spread = d < 0.2 ? 'sparse' : d < 0.5 ? 'scattered' : d < 0.8 ? 'widespread' : 'dense';
-  const change = band(frame.frameDelta, ['little change from the year before', 'moderate change from the year before', 'sharp change from the year before']);
+  const before = frame.theme.endsWith('_eic') ? 'frame' : 'year';
+  const change = band(frame.frameDelta, ['little', 'moderate', 'sharp']).concat(` change from the ${before} before`);
   const where = frame.latBand === 'north' ? 'centred north of the tropics'
     : frame.latBand === 'south' ? 'centred south of the tropics' : 'centred in the tropics';
   return { tone, light, variance, spread, change, where };
@@ -57,30 +66,33 @@ export function altText(frame, theme) {
   const w = featureWords(frame);
   const share = activeShare(frame);
   const shareText = share ? ` (share of ${share.label}: ${share.percent.toFixed(1)}%)` : '';
-  return `${theme.name}, ${frame.label}. ${MAP_DESCRIPTION[frame.theme]}. `
-    + `Relative to this theme's record: ${w.tone}, ${w.light}, ${w.variance}, `
+  return `${theme.name}${theme.side === 'b' ? ', side B' : ''}, ${frame.label}. ${MAP_DESCRIPTION[frame.theme]}. `
+    + `Relative to this ${theme.side === 'b' ? "visualization's frames" : "theme's record"}: ${w.tone}, ${w.light}, ${w.variance}, `
     + `${w.spread} ${ACTIVE_NOUN[frame.theme]}${shareText}, ${w.where}, ${w.change}. `
     + `${capitalize(theme.physical.label)}: ${physicalShort(frame)}.`;
 }
 
-/** The subtitle for a bar: "2014 · 1,815 ppb · 2% methane-rich air → Bb4 · 1 note/bar · 89 BPM · triangle · calm fifth" */
+/** The subtitle for a bar: "2014: 1,815 ppb, 2.0% methane-rich air" over "B♭4, 1 note a bar, 89 BPM, triangle, calm fifth" */
 export function captionLine(frame) {
   const p = mapFeatures(frame);
   const share = activeShare(frame);
-  const data = [String(frame.year), physicalShort(frame)];
+  const data = [physicalShort(frame)];
   if (share) data.push(`${share.percent < 10 ? share.percent.toFixed(1) : Math.round(share.percent)}% ${ACTIVE_NOUN[frame.theme]}`);
   const sound = [
-    p.note,
-    `${p.notesPerBar} note${p.notesPerBar > 1 ? 's' : ''}/bar`,
+    showNote(p.note),
+    `${p.notesPerBar} note${p.notesPerBar > 1 ? 's' : ''} a bar`,
     `${p.tempoBPM} BPM`,
     p.timbre,
     p.interval.startsWith('minor') ? 'tense third' : 'calm fifth',
   ];
-  return { data: data.join(' · '), sound: sound.join(' · ') };
+  return { data: `${when(frame)}${data.join(', ')}`, sound: sound.join(', ') };
 }
 
+// The porthole has no clock: its label is the water level, so it is not said twice.
+const when = (frame) => (physicalShort(frame).startsWith(frame.short) ? '' : `${frame.short}: `);
+
 function spokenBrief(frame) {
-  return `${frame.year}. ${physicalShort(frame).replace('ppb', 'parts per billion').replace(' cm', ' centimetres')}.`;
+  return `${when(frame).replace(/: $/, '. ')}${physicalShort(frame).replace('ppb', 'parts per billion').replace(' cm', ' centimetres').replace('×10¹⁵ molec/cm²', 'times ten to the fifteen')}.`;
 }
 
 function spokenFull(frame) {
@@ -171,7 +183,7 @@ export function createCaptionTrack({ dataEl, soundEl, liveEl, prevEl = null, tra
     /** Duet: a static two-sided caption. */
     duet(gap) {
       clearTimeout(describeTimer);
-      setLines(`${gap.oldest.year} ${gap.physical.from}  ⟷  ${gap.newest.year} ${gap.physical.to}`, `→ ${gap.sentence}`);
+      setLines(`${when(gap.oldest).replace(/: $/, ' ')}${gap.physical.from}  ⟷  ${when(gap.newest).replace(/: $/, ' ')}${gap.physical.to}`, `→ ${gap.sentence}`);
     },
     /** Speak an arbitrary sentence through the same channel (respects settings). */
     say,

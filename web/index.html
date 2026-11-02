@@ -4,10 +4,19 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="description" content="Terra Vox turns NASA Earth imagery into real-time, musically constrained sound so anyone, sighted or not, can hear how the planet is changing." />
-    <meta name="theme-color" content="#050506" />
+    <meta name="theme-color" content="#15171a" />
     <title>Terra Vox</title>
-    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='15' fill='%23050506'/%3E%3Ccircle cx='16' cy='16' r='9' fill='none' stroke='%2356B4E9' stroke-width='2'/%3E%3Ccircle cx='16' cy='16' r='3' fill='%23E69F00'/%3E%3C/svg%3E" />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%2315171a'/%3E%3Cpath d='M5 24a11 11 0 1 1 22 0' fill='none' stroke='%23f2f4f5' stroke-width='2'/%3E%3Cpath d='M3 24h26' stroke='%236e757e' stroke-width='2'/%3E%3C/svg%3E" />
     <link rel="stylesheet" href="./styles/main.css" />
+    <script>
+      // Motion before first paint: the listener's saved choice, else the OS setting.
+      (() => {
+        let mode = null;
+        try { mode = JSON.parse(localStorage.getItem('terra-vox-prefs') || '{}').motion || null; } catch { /* private mode */ }
+        if (!mode) mode = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'reduce' : 'full';
+        document.documentElement.dataset.motion = mode;
+      })();
+    </script>
   </head>
   <body>
     <a class="skip-link" href="#player">Skip to player</a>
@@ -15,9 +24,8 @@
     <header class="topbar">
       <div class="brand">
         <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true">
-          <circle cx="16" cy="16" r="15" />
-          <circle cx="16" cy="16" r="9" class="ring" />
-          <circle cx="16" cy="16" r="3" class="dot" />
+          <path class="planet" d="M5 24a11 11 0 1 1 22 0" />
+          <path class="horizon" d="M2 24h28" />
         </svg>
         <div>
           <h1>Terra Vox</h1>
@@ -46,6 +54,7 @@
             </select>
           </label>
           <span id="describe-hint" class="sr-only">How much a screen reader hears on every bar. Brief: the year and its value. Full: the whole caption. Shortcut: C.</span>
+          <button id="motion-toggle" class="ghost" type="button" aria-pressed="false" title="Stop the planet turning and other movement (M)">Reduce motion</button>
           <button id="help-button" class="ghost" type="button" aria-haspopup="dialog" title="Keyboard shortcuts (?)">Keys <kbd>?</kbd></button>
         </div>
       </div>
@@ -60,21 +69,31 @@
       <section id="player" class="player" aria-labelledby="player-heading" tabindex="-1" data-mode="single">
         <div id="stage" class="stage" data-mode="single">
           <div id="globe" class="globe" role="img" aria-label="NASA Earth frame"></div>
+          <div id="eic-screen" class="eic-screen" role="img" aria-label="" hidden>
+            <img id="eic-a" class="eic-frame old" alt="" />
+            <img id="eic-b" class="eic-frame new" alt="" hidden />
+          </div>
           <div class="duet-overlay" aria-hidden="true">
-            <div class="ear old"><span class="ear-tag">Left ear · oldest</span><div id="year-old" class="ear-year"></div></div>
+            <div class="ear old"><span class="ear-tag">Left ear, oldest year</span><span id="year-old-sr" class="sr-only"></span><div id="year-old" class="ear-year"></div></div>
             <div class="seam"><span class="meter old"><i id="duet-old-meter"></i></span><span class="meter new"><i id="duet-new-meter"></i></span></div>
-            <div class="ear new"><span class="ear-tag">Right ear · newest</span><div id="year-new" class="ear-year"></div></div>
+            <div class="ear new"><span class="ear-tag">Right ear, newest year</span><span id="year-new-sr" class="sr-only"></span><div id="year-new" class="ear-year"></div></div>
           </div>
         </div>
 
         <div class="now">
           <h2 id="player-heading" class="now-theme"><span id="player-theme">Wildfires</span></h2>
+          <div class="side-switch" id="side-switch" hidden>
+            <span id="side-label" class="sr-only">Record side</span>
+            <div id="side-modes" class="segmented sides" role="radiogroup" aria-labelledby="side-label" aria-describedby="side-note"></div>
+            <p id="side-note" class="side-note"></p>
+          </div>
           <div class="now-single">
             <p id="frame-caption" class="now-label"></p>
             <div id="year-single" class="now-year"></div>
             <p id="now-value" class="now-value"></p>
             <p id="now-share" class="now-share"></p>
           </div>
+          <div id="map-key" class="map-key"></div>
           <div id="duet-now" class="now-duet" hidden>
             <p id="gap-years" class="gap-years"></p>
             <p id="gap-sentence" class="gap-sentence"></p>
@@ -86,6 +105,20 @@
             <p id="cap-sound" class="cap-sound"></p>
           </div>
         </div>
+
+        <section id="duet-panel" class="duet-panel" aria-labelledby="gap-heading" hidden>
+          <div class="listen-modes">
+            <span id="listen-label" class="listen-label">Listen</span>
+            <div id="listen-modes" role="radiogroup" aria-labelledby="listen-label" aria-describedby="listen-help" class="segmented"></div>
+            <p id="listen-help" class="listen-help"></p>
+          </div>
+          <h3 id="gap-heading" class="sr-only">How the sound changed</h3>
+          <table class="gap-table">
+            <caption class="sr-only">How each part of the sound changed from the oldest to the newest frame</caption>
+            <thead><tr><th scope="col">Sound</th><th scope="col" class="old">Oldest</th><th scope="col" class="new">Newest</th><th scope="col">Change</th></tr></thead>
+            <tbody id="gap-rows"></tbody>
+          </table>
+        </section>
 
         <div class="transport" role="group" aria-label="Playback">
           <button id="prev" class="icon-btn" type="button" aria-label="Previous year" title="Previous year ( [ )">
@@ -104,22 +137,49 @@
               <div id="groove-ticks" class="groove-ticks" aria-hidden="true"></div>
               <input id="scrubber" type="range" min="0" max="0" step="1" value="0" />
             </div>
-            <div class="scrubber-ends" aria-hidden="true"><span id="scrub-start"></span><span class="groove-note">Each bar is one year · bar height is the year's value</span><span id="scrub-end"></span></div>
+            <div class="scrubber-ends" aria-hidden="true"><span id="scrub-start"></span><span id="groove-note" class="groove-note">Each bar is one year, its height the year's value</span><span id="scrub-end"></span></div>
           </div>
         </div>
+      </section>
 
-        <section id="duet-panel" class="duet-panel" aria-labelledby="gap-heading" hidden>
-          <div class="listen-modes">
-            <span id="listen-label" class="listen-label">Listen</span>
-            <div id="listen-modes" role="radiogroup" aria-labelledby="listen-label" aria-describedby="listen-help" class="segmented"></div>
-            <p id="listen-help" class="listen-help"></p>
-          </div>
-          <h3 id="gap-heading" class="sr-only">How the sound changed</h3>
-          <table class="gap-table">
-            <caption class="sr-only">How each part of the sound changed from the oldest to the newest frame</caption>
-            <thead><tr><th scope="col">Sound</th><th scope="col" class="old">Oldest</th><th scope="col" class="new">Newest</th><th scope="col">Change</th></tr></thead>
-            <tbody id="gap-rows"></tbody>
-          </table>
+      <section id="field-guide" class="guide" aria-labelledby="guide-heading">
+        <header class="guide-head">
+          <h2 id="guide-heading" class="guide-title">The record behind the sound</h2>
+          <p class="guide-lead"></p>
+          <p class="guide-measures"><strong>What the pixels measure.</strong> <span></span></p>
+        </header>
+        <div class="guide-grid">
+          <figure class="chart-card">
+            <figcaption><h3 class="chart-title"></h3></figcaption>
+            <div class="chart" aria-hidden="true"></div>
+            <ul class="chart-key"></ul>
+            <p class="chart-summary"></p>
+            <p class="chart-note"></p>
+            <details class="numbers">
+              <summary>Show the numbers</summary>
+              <div class="table-wrap"><table class="chart-table"></table></div>
+            </details>
+          </figure>
+          <div class="facts"></div>
+        </div>
+        <div class="guide-row">
+          <section class="sats" aria-labelledby="sats-heading">
+            <h3 id="sats-heading">The instruments</h3>
+            <ol class="sat-list"></ol>
+          </section>
+          <section class="caveats" aria-labelledby="caveats-heading">
+            <h3 id="caveats-heading">Before you quote it</h3>
+            <ul class="caveat-list"></ul>
+          </section>
+        </div>
+        <section class="side-b-card" aria-labelledby="side-b-heading" hidden>
+          <h3 id="side-b-heading" class="side-b-title"></h3>
+          <p class="side-b-text"></p>
+          <a target="_blank" rel="noopener"></a>
+        </section>
+        <section class="sources" aria-labelledby="sources-heading">
+          <h3 id="sources-heading">Sources</h3>
+          <ul class="source-list"></ul>
         </section>
       </section>
 
@@ -163,7 +223,7 @@
         </div>
 
         <fieldset class="guess-choices" id="guess-choices">
-          <legend>Which year is the mystery? Keys 1–4</legend>
+          <legend>Which year is the mystery? Keys 1 to 4</legend>
           <div id="guess-options" class="options"></div>
         </fieldset>
 
@@ -195,11 +255,15 @@
       </div>
       <p class="help-lead">Every shortcut is also a button on screen. Sound is the main channel; nothing needs the mouse or the visuals.</p>
       <div class="help-body"></div>
-      <button id="intro-again" class="btn-text" type="button">Show the introduction again</button>
+      <div class="help-actions">
+        <button id="intro-again" class="btn-text" type="button">Show the introduction again</button>
+      </div>
     </dialog>
 
     <footer class="credits">
-      Imagery: NASA GIBS / Worldview (MODIS, OMI, AIRS, JPL MEaSUREs). Cover art: NASA SVS Earth Information Center. NASA does not endorse this project.
+      <p><strong>Terra Vox</strong> for the NASA Space Apps Challenge 2026, <a href="https://www.spaceappschallenge.org/2026/challenges/the-earth-information-jukebox/" target="_blank" rel="noopener">The Earth Information Jukebox</a>. Open source, MIT licence.</p>
+      <p>Side A imagery: NASA GIBS / Worldview (MODIS on Terra, OMI on Aura, AIRS on Aqua, JPL MEaSUREs sea surface height). Side B and cover art: NASA Scientific Visualization Studio, Earth Information Center visualizations 5113, 5235, 5175 and 5116. Reference records: NOAA Global Monitoring Laboratory; NOAA Laboratory for Satellite Altimetry ("Altimetry data are provided by NOAA Laboratory for Satellite Altimetry"). Facts checked November 1, 2026.</p>
+      <p>NASA and NOAA do not endorse this project.</p>
     </footer>
 
     <script type="module" src="./src/main.js"></script>

@@ -55,7 +55,12 @@ export function createThemeTiles(container, themes, { onSelect, onActivate, labe
     const meta = document.createElement('span');
     meta.className = 'tile-meta';
     meta.id = descId;
-    meta.textContent = `${theme.yearRange[0]}–${theme.yearRange[1]} · ${theme.signature}`;
+    // Two lines, never a middle-dot string: the years, then what to listen for.
+    const years = document.createElement('span');
+    years.textContent = `${theme.yearRange[0]}–${theme.yearRange[1]}`;
+    const listen = document.createElement('span');
+    listen.textContent = theme.signature.charAt(0).toUpperCase() + theme.signature.slice(1);
+    meta.append(years, listen);
     const count = document.createElement('span');
     count.className = 'sr-only';
     count.textContent = `, ${theme.frameCount} frames`;

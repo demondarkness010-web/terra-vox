@@ -38,6 +38,11 @@ export function transpose(note, semitones) {
   return `${INDEX_NOTE[((midi % 12) + 12) % 12]}${Math.floor(midi / 12) - 1}`;
 }
 
+// Printed note name: 'Eb4' -> 'E♭4'.
+export function showNote(note) {
+  return note.replace(/^([A-G])b/, '$1♭');
+}
+
 // Spoken-friendly note name: 'Eb4' -> 'E-flat 4'.
 export function speakNote(note) {
   return note.replace(/^([A-G])b/, '$1-flat ').replace(/([A-G])(\d)/, '$1 $2').replace('  ', ' ');

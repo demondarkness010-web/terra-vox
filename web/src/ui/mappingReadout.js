@@ -11,12 +11,12 @@
 
 import { mapFeatures } from '../audio/sonify.js';
 import { physicalShort, activeShare } from '../data/loader.js';
+import { showNote } from '../audio/scales.js';
 
-const flat = (note) => note.replace(/([A-G])b/, '$1♭');
 const panValue = (pan) => (pan + 1) / 2;
 
 const STRIPS = [
-  { key: 'pitch', sound: 'Pitch', from: 'warmth', value: (f) => f.hue / 360, out: (p) => flat(p.note) },
+  { key: 'pitch', sound: 'Pitch', from: 'warmth', value: (f) => f.hue / 360, out: (p) => showNote(p.note) },
   { key: 'velocity', sound: 'Loudness', from: 'brightness', value: (f) => f.brightness, out: (p) => p.velocity.toFixed(2) },
   { key: 'timbre', sound: 'Tone', from: 'colour variety', value: (f) => f.colorVariance, out: (p) => p.timbre, marks: [0.15, 0.35] },
   { key: 'density', sound: 'Notes per bar', from: 'active area', value: (f) => f.pixelDensity, out: (p) => String(p.notesPerBar) },
@@ -28,7 +28,7 @@ const STRIPS = [
 const ROWS = [
   { key: 'pitch', label: 'hue → pitch', input: (f) => (f.hue / 360).toFixed(2), inputHint: (f) => `${Math.round(f.hue)}° warmth`, output: (p) => p.note, outputHint: (p) => `scale degree ${p.scaleDegree + 1}/10` },
   { key: 'velocity', label: 'brightness → velocity', input: (f) => f.brightness.toFixed(2), output: (p) => p.velocity.toFixed(2), outputHint: () => 'loudness' },
-  { key: 'timbre', label: 'variance → timbre', input: (f) => f.colorVariance.toFixed(2), output: (p) => p.timbre, outputHint: () => '<.15 sine · <.35 tri · saw' },
+  { key: 'timbre', label: 'variance → timbre', input: (f) => f.colorVariance.toFixed(2), output: (p) => p.timbre, outputHint: () => 'under 0.15 sine, under 0.35 triangle, else saw' },
   { key: 'density', label: 'density → notesPerBar', input: (f) => f.pixelDensity.toFixed(2), output: (p) => String(p.notesPerBar), outputHint: () => 'range 1–8' },
   { key: 'tempo', label: 'frameDelta → tempo', input: (f) => f.frameDelta.toFixed(2), output: (p) => `${p.tempoBPM} BPM`, outputHint: () => 'range 80–160' },
   { key: 'interval', label: 'frameDelta → interval', input: (f) => (f.frameDelta > 0.5 ? '> 0.5' : '≤ 0.5'), output: (p) => (p.interval.startsWith('minor') ? 'minor 3rd' : 'perfect 5th'), outputHint: (p) => (p.interval.startsWith('minor') ? 'tense' : 'consonant') },
@@ -63,8 +63,8 @@ export function createMappingReadout(container) {
 
   const board = el('ul', 'desk-board');
   STRIPS.forEach((s) => {
-    const li = el('li', `strip strip-${s.key}`);
-    const sound = el('p', 'strip-sound');
+    const li = el('li', `channel channel-${s.key}`);
+    const sound = el('p', 'channel-sound');
     sound.textContent = s.sound;
     const ctl = el('div', s.knob ? 'knob' : 'fader');
     ctl.setAttribute('aria-hidden', 'true');
@@ -75,10 +75,10 @@ export function createMappingReadout(container) {
     });
     const caps = { single: el('i', 'cap single'), oldest: el('i', 'cap old'), newest: el('i', 'cap new') };
     ctl.append(caps.single, caps.oldest, caps.newest);
-    const out = el('p', 'strip-out');
+    const out = el('p', 'channel-out');
     const outs = { single: el('span', 'v single'), oldest: el('span', 'v old'), newest: el('span', 'v new') };
     out.append(outs.single, outs.oldest, outs.newest);
-    const from = el('p', 'strip-in');
+    const from = el('p', 'channel-in');
     li.append(sound, ctl, out, from);
     board.append(li);
     strips.set(s.key, { li, caps, outs, from });
@@ -192,7 +192,8 @@ export function createMappingReadout(container) {
   }
 
   function inputWords(s, f) {
-    return s.input ? `from ${s.input(f)}` : `from ${s.from} ${s.value(f).toFixed(2)}`;
+    const from = f.theme.endsWith('_eic') ? s.from.replace('year-on-year', 'frame-to-frame') : s.from;
+    return s.input ? `from ${s.input(f)}` : `from ${from} ${s.value(f).toFixed(2)}`;
   }
 
   /** Single mode: show the frame now sounding. */
@@ -200,9 +201,9 @@ export function createMappingReadout(container) {
     theme = nextTheme;
     if (mode !== 'single') build('single');
     const p = mapFeatures(frame);
-    frameLine.textContent = `${theme.name} · ${frame.label}`;
+    frameLine.textContent = `${theme.name}, ${frame.label}`;
     const share = activeShare(frame);
-    physLine.textContent = `${capitalize(theme.physical.label)}: ${physicalShort(frame)}${share ? ` · ${share.percent.toFixed(1)}% ${share.label}` : ''}`;
+    physLine.textContent = `${capitalize(theme.physical.label)}: ${physicalShort(frame)}${share ? `, ${share.percent.toFixed(1)}% ${share.label}` : ''}`;
     STRIPS.forEach((s) => {
       setStrip(s.key, 'single', s.value(frame, p), s.out(p));
       strips.get(s.key).from.textContent = inputWords(s, frame);
@@ -218,7 +219,7 @@ export function createMappingReadout(container) {
   function showDuet(nextTheme, oldest, newest) {
     theme = nextTheme;
     if (mode !== 'duet') build('duet');
-    frameLine.textContent = `${theme.name} · ${oldest.year} and ${newest.year}`;
+    frameLine.textContent = `${theme.name}${theme.side === 'b' ? ', side B' : ''}: ${oldest.short} and ${newest.short}`;
     physLine.textContent = `${capitalize(theme.physical.label)}: ${physicalShort(oldest)} → ${physicalShort(newest)}`;
     const sides = { oldest: [oldest, mapFeatures(oldest)], newest: [newest, mapFeatures(newest)] };
     STRIPS.forEach((s) => {

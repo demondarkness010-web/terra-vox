@@ -1,38 +1,54 @@
-// The globe: the NASA frame now playing, on a turning planet. Decorative
+// The globe: the NASA frame now playing, photographed from orbit. Decorative
 // (the stage around it carries the alt text), so everything here is optional
 // for a screen-reader or keyboard user.
 //
 //   setTheme(theme)            jump to a theme, facing where its data is
 //   showFrame(frame)           crossfade to a frame (single mode)
-//   setDuet(on, old, new)      split into two planets, oldest left, newest right
+//   setDuet(on, old, new)      the Duet split: a seam cuts the planet from top
+//                              to bottom, oldest year on the left half, newest
+//                              on the right, then the halves part on the seam
 //   spark(side, frame, vel)    one note: rings bloom at real active locations
 //   setTempo(side, bpm)        spin speed follows tempo (80-160 BPM -> 6-12 deg/s)
-//   setPlaying(on)             idle drift when paused
+//   setPlaying(on)             idle drift when paused, still after five seconds
 //
+// Framing (DESIGN.md, Layout): the planet's diameter is 1.15x the stage
+// height and its lower limb is cropped by the horizon, as seen from orbit.
+// Colours, durations and easings are read from the CSS tokens.
 // Spark locations come from data/points (scripts/extract_points.py): pixels
 // that count as "active" for the theme, the same rule that sets notes per bar.
-// prefers-reduced-motion: the planet stops turning and faces the data, sparks
-// fade in place instead of blooming, and the split happens without travel.
-// Without WebGL it falls back to the flat frame as an <img>.
+// Reduced motion (html[data-motion="reduce"]): the planet stops turning and
+// faces its data, sparks fade in place, and the split happens without travel.
+// The render loop pauses while the stage is off screen and idles when nothing
+// moves. Without WebGL it falls back to the flat frame as an <img>.
 
 import * as THREE from 'three';
+import { color, ms, easing, motionReduced } from './tokens.js';
 
 const TAU = Math.PI * 2;
 const DEG = Math.PI / 180;
-const SPARK_LIFE = 700;
-const FADE_MS = 380;
-const SPLIT_MS = 760;
-const POOL = 56;
-const COLORS = { single: 0xfff1d6, oldest: 0x56b4e9, newest: 0xe69f00 };
-const RIMS = { single: 0x8fa6c8, oldest: 0x56b4e9, newest: 0xe69f00 };
+const POOL = 96;
+const IDLE_MS = 5000;     // DESIGN.md: loops stop after five seconds paused
+const DIAMETER = 1.15;    // planet diameter as a share of stage height
+const HEADROOM = 0.07;    // space above the planet, as a share of stage height
+const PART = 0.075;       // how far each Duet half leaves the seam, in planet radii
+const SWEEP_PAD = 0.15;   // the cut starts above the limb and ends below the horizon
+
+// The cut: uHalf -1 keeps the left half above the sweep line (and the whole
+// planet below it), +1 keeps only the right half above the line, 0 is whole.
+const CUT = /* glsl */ `
+    if (uHalf < 0.0 && vView.y > uSweep && vN.x > 0.0) discard;
+    if (uHalf > 0.0 && (vView.y <= uSweep || vN.x < 0.0)) discard;`;
 
 const SPHERE_VERT = /* glsl */ `
   varying vec2 vUv;
   varying vec3 vN;
+  varying vec3 vView;
   void main() {
     vUv = uv;
     vN = normalize(normalMatrix * normal);
-    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+    vec4 mv = modelViewMatrix * vec4(position, 1.0);
+    vView = mv.xyz;
+    gl_Position = projectionMatrix * mv;
   }`;
 
 const SPHERE_FRAG = /* glsl */ `
@@ -41,9 +57,13 @@ const SPHERE_FRAG = /* glsl */ `
   uniform float uMix;
   uniform vec3 uTint;
   uniform float uTintAmt;
+  uniform float uHalf;
+  uniform float uSweep;
   varying vec2 vUv;
   varying vec3 vN;
+  varying vec3 vView;
   void main() {
+    ${CUT}
     vec3 c = mix(texture2D(uFrom, vUv).rgb, texture2D(uTo, vUv).rgb, uMix);
     float facing = clamp(vN.z, 0.0, 1.0);
     c *= 0.4 + 0.6 * pow(facing, 0.55);
@@ -52,18 +72,15 @@ const SPHERE_FRAG = /* glsl */ `
     #include <colorspace_fragment>
   }`;
 
-const RIM_VERT = /* glsl */ `
-  varying vec3 vN;
-  void main() {
-    vN = normalize(normalMatrix * normal);
-    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-  }`;
-
 const RIM_FRAG = /* glsl */ `
   uniform vec3 uColor;
   uniform float uStrength;
+  uniform float uHalf;
+  uniform float uSweep;
   varying vec3 vN;
+  varying vec3 vView;
   void main() {
+    ${CUT}
     float a = pow(smoothstep(0.0, 0.5, -vN.z), 1.6) * uStrength;
     gl_FragColor = vec4(uColor * a, a);
     #include <colorspace_fragment>
@@ -80,7 +97,8 @@ const lonFor = (spin) => {
   const lon = ((Math.PI / 2 - spin) / TAU) * 360 - 180;
   return ((((lon + 180) % 360) + 360) % 360) - 180;
 };
-const lonGap = (a, b) => Math.abs(((((a - b) % 360) + 540) % 360) - 180);
+/** Signed east-west distance in degrees, -180..180 (east of `b` is positive, and on screen right). */
+const lonDiff = (a, b) => ((((a - b) % 360) + 540) % 360) - 180;
 
 /** Circular mean longitude of a frame's signal, so the planet can face its data. */
 function dataLon(frame) {
@@ -92,8 +110,12 @@ function dataLon(frame) {
   return Math.atan2(y, x) / DEG;
 }
 
-const easeOut = (t) => 1 - (1 - t) ** 3;
-const easeBack = (t) => { const c = 1.35; return 1 + (c + 1) * (t - 1) ** 3 + c * (t - 1) ** 2; };
+function tokenColor(name) {
+  const c = new THREE.Color();
+  const v = color(name);
+  if (v) c.setStyle(v);
+  return c;
+}
 
 // The public globe. WebGL can be refused or lost (a GPU reset, or the browser
 // blocking a page after a context loss), so this keeps the latest state,
@@ -146,9 +168,6 @@ export function createGlobe(container) {
 }
 
 function createWebGLGlobe(container, onLost) {
-  const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)');
-  const still = () => Boolean(reduce?.matches);
-
   let renderer;
   try {
     renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
@@ -168,6 +187,12 @@ function createWebGLGlobe(container, onLost) {
   });
   renderer.domElement.addEventListener('webglcontextrestored', () => clearTimeout(lostTimer));
 
+  const COLORS = {
+    limb: tokenColor('--limb'), ink: tokenColor('--ink'), old: tokenColor('--old'), new: tokenColor('--new'),
+  };
+  const TINTS = { single: COLORS.limb, oldest: COLORS.old, newest: COLORS.new };
+  const SPARK = { single: COLORS.ink, oldest: COLORS.old, newest: COLORS.new };
+
   const scene = new THREE.Scene();
   const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.1, 20);
   camera.position.set(0, 0, 6);
@@ -177,13 +202,15 @@ function createWebGLGlobe(container, onLost) {
   const ringGeo = new THREE.RingGeometry(0.8, 1, 40);
   const dotGeo = new THREE.CircleGeometry(1, 16);
   const Z = new THREE.Vector3(0, 0, 1);
+  const tmp = new THREE.Vector3();
 
-  const blank = new THREE.DataTexture(new Uint8Array([8, 10, 14, 255]), 1, 1);
+  const blank = new THREE.DataTexture(new Uint8Array([0, 0, 0, 255]), 1, 1);
   blank.needsUpdate = true;
 
   const loader = new THREE.TextureLoader();
   const cache = new Map();
   const maxAniso = renderer.capabilities.getMaxAnisotropy();
+  let dirty = true;
 
   function texture(url) {
     let tex = cache.get(url);
@@ -204,14 +231,15 @@ function createWebGLGlobe(container, onLost) {
     const tilt = new THREE.Group();
     tilt.rotation.x = 0.32;     // lean north toward the viewer, where most data sits
     const spinner = new THREE.Group();
+    const cut = { uHalf: { value: 0 }, uSweep: { value: 0 } };
     const uniforms = {
       uFrom: { value: blank }, uTo: { value: blank }, uMix: { value: 1 },
-      uTint: { value: new THREE.Color(RIMS[side]) }, uTintAmt: { value: 0.22 },
+      uTint: { value: TINTS[side].clone() }, uTintAmt: { value: 0.22 }, ...cut,
     };
     spinner.add(new THREE.Mesh(sphereGeo, new THREE.ShaderMaterial({ uniforms, vertexShader: SPHERE_VERT, fragmentShader: SPHERE_FRAG })));
-    const rimUniforms = { uColor: { value: new THREE.Color(RIMS[side]) }, uStrength: { value: 0.42 } };
+    const rimUniforms = { uColor: { value: TINTS[side].clone() }, uStrength: { value: 0.42 }, ...cut };
     const rim = new THREE.Mesh(rimGeo, new THREE.ShaderMaterial({
-      uniforms: rimUniforms, vertexShader: RIM_VERT, fragmentShader: RIM_FRAG,
+      uniforms: rimUniforms, vertexShader: SPHERE_VERT, fragmentShader: RIM_FRAG,
       side: THREE.BackSide, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
     }));
     const sparks = Array.from({ length: POOL }, () => {
@@ -220,24 +248,22 @@ function createWebGLGlobe(container, onLost) {
       const dot = new THREE.Mesh(dotGeo, mat());
       ring.visible = dot.visible = false;
       spinner.add(ring, dot);
-      return { ring, dot, born: -1 };
+      return { ring, dot, born: -1, life: 1 };
     });
     tilt.add(spinner);
     group.add(rim, tilt);
     scene.add(group);
-    return { side, group, spinner, uniforms, rimUniforms, sparks, next: 0, spin: spinFor(20), speed: 3, url: null, fadeStart: -1 };
+    return { group, spinner, uniforms, rimUniforms, cut, sparks, next: 0, url: null, fadeStart: -1, fadeMs: 0 };
   }
 
-  const planets = { oldest: makePlanet('single'), newest: makePlanet('newest') };
-  const main = planets.oldest;
-  planets.newest.group.visible = false;
+  const main = makePlanet('single');
+  const other = makePlanet('newest');
+  other.group.visible = false;
 
   function setTint(planet, side) {
-    planet.uniforms.uTint.value.setHex(RIMS[side]);
-    planet.rimUniforms.uColor.value.setHex(RIMS[side]);
-    planet.colorSide = side;
+    planet.uniforms.uTint.value.copy(TINTS[side]);
+    planet.rimUniforms.uColor.value.copy(TINTS[side]);
   }
-  setTint(main, 'single');
 
   function show(planet, url) {
     if (!url || planet.url === url) return;
@@ -249,63 +275,104 @@ function createWebGLGlobe(container, onLost) {
       u.uFrom.value = u.uMix.value >= 0.5 ? u.uTo.value : u.uFrom.value;
       u.uTo.value = tex;
       u.uMix.value = 0;
+      planet.fadeMs = motionReduced() ? ms('--dur-state') : ms('--dur-travel');
       planet.fadeStart = performance.now();
+      dirty = true;
     };
     if (tex.userData.ready) go(); else tex.userData.waiters.push(go);
-  }
-
-  function face(planet, frame) {
-    planet.spin = spinFor(dataLon(frame));
   }
 
   // ---------------------------------------------------------- state
 
   let theme = null;
   let playing = false;
-  let split = { value: 0, from: 0, to: 0, start: -1 };
-  let axis = 'x';
+  let pausedAt = performance.now();
+  let spin = spinFor(20);        // shared, so both Duet halves show the same face of the planet
+  let duetOn = false;
+  const cut = { value: 0, tw: null };     // 0 whole .. 1 the seam has cut top to bottom
+  const part = { value: 0, tw: null };    // 0 halves joined .. 1 parted
+
+  function tween(from, to, delay, dur, ease) {
+    return { from, to, start: performance.now() + delay, dur, ease };
+  }
+  function advance(state, now) {
+    const tw = state.tw;
+    if (!tw) return false;
+    const t = tw.dur > 0 ? (now - tw.start) / tw.dur : (now >= tw.start ? 1 : -1);
+    if (t < 0) return true;            // still waiting out its delay
+    if (t >= 1) {
+      state.value = tw.to;
+      state.tw = null;
+      tw.done?.();
+      return true;
+    }
+    state.value = tw.from + (tw.to - tw.from) * tw.ease(t);
+    return true;
+  }
 
   function setTheme(next) {
     theme = next;
     const keep = new Set(next.frames.map((f) => f.imageUrl));
     for (const [url, tex] of cache) {
-      if (!keep.has(url) && url !== main.url && url !== planets.newest.url) { tex.dispose(); cache.delete(url); }
+      if (!keep.has(url) && url !== main.url && url !== other.url) { tex.dispose(); cache.delete(url); }
     }
-    face(main, next.frames[0]);
-    face(planets.newest, next.frames[next.frames.length - 1]);
+    spin = spinFor(dataLon(next.frames[0]));
+    dirty = true;
   }
 
   function showFrame(frame) {
     show(main, frame.imageUrl);
-    if (still()) face(main, frame);
+    if (motionReduced()) { spin = spinFor(dataLon(frame)); dirty = true; }
     // warm the next two years so playback never waits on a download
     const i = theme?.frames.indexOf(frame) ?? -1;
     if (i >= 0) [1, 2].forEach((d) => texture(theme.frames[(i + d) % theme.frames.length].imageUrl));
   }
 
+  // The one orchestrated moment (DESIGN.md, Motion): the seam cuts at 0,
+  // the halves part one step later. Leaving runs it backwards at 0.7x.
   function setDuet(on, oldest, newest) {
+    const step = ms('--split-step');
     if (on) {
+      duetOn = true;
       setTint(main, 'oldest');
+      setTint(other, 'newest');
       show(main, oldest.imageUrl);
-      show(planets.newest, newest.imageUrl);
-      face(main, oldest);
-      face(planets.newest, newest);
-      planets.newest.group.visible = true;
+      show(other, newest.imageUrl);
+      if (motionReduced()) spin = spinFor(dataLon(newest));
+      main.cut.uHalf.value = -1;
+      other.cut.uHalf.value = 1;
+      other.group.visible = true;
+      cut.tw = tween(cut.value, 1, 0, ms('--dur-settle'), easing('--ease-settle'));
+      part.tw = tween(part.value, 1, step, ms('--dur-split'), easing('--ease-part'));
     } else {
-      setTint(main, 'single');
+      duetOn = false;
+      const k = 0.7;
+      part.tw = tween(part.value, 0, step * 4 * k, ms('--dur-split') * k, easing('--ease-settle'));
+      cut.tw = tween(cut.value, 0, step * 5 * k, ms('--dur-settle') * k, easing('--ease-settle'));
+      cut.tw.done = () => {
+        if (duetOn) return;
+        main.cut.uHalf.value = 0;
+        other.cut.uHalf.value = 0;
+        other.group.visible = false;
+        setTint(main, 'single');
+      };
     }
-    split = { value: split.value, from: split.value, to: on ? 1 : 0, start: performance.now() };
+    dirty = true;
   }
 
   function spark(side, frame, velocity = 0.7) {
-    const planet = side === 'newest' ? planets.newest : main;
+    const planet = side === 'newest' ? other : main;
     const pts = frame?.signal?.points ?? [];
     if (!pts.length || !planet.group.visible) return;
-    const centre = lonFor(planet.spin);
-    const facing = pts.filter(([, lon]) => lonGap(lon, centre) < 72);
-    const pool = facing.length >= 3 ? facing : pts;
+    const centre = lonFor(spin);
+    const facing = pts.filter(([, lon]) => Math.abs(lonDiff(lon, centre)) < 72);
+    // In Duet each half only shows its own side of the seam.
+    const own = side === 'oldest' ? facing.filter(([, lon]) => lonDiff(lon, centre) < 4)
+      : side === 'newest' ? facing.filter(([, lon]) => lonDiff(lon, centre) > -4) : facing;
+    const pool = own.length >= 3 ? own : facing.length >= 3 ? facing : pts;
     const n = 2 + Math.round(velocity * 3);
-    const colour = COLORS[side === 'single' ? 'single' : side];
+    const tint = SPARK[side] ?? SPARK.single;
+    const life = ms('--beat') * 4;     // a spark lives one bar
     const now = performance.now();
     for (let k = 0; k < n; k++) {
       const [lat, lon] = pool[Math.floor(Math.random() * pool.length)];
@@ -316,16 +383,21 @@ function createWebGLGlobe(container, onLost) {
       [s.ring, s.dot].forEach((m) => {
         m.position.copy(v);
         m.quaternion.copy(q);
-        m.material.color.setHex(colour);
+        m.material.color.copy(tint);
         m.visible = true;
       });
       s.born = now + k * 28;       // a short ripple rather than one flash
+      s.life = life;
     }
   }
 
   const tempo = { single: 0, oldest: 0, newest: 0 };
   function setTempo(side, bpm) { tempo[side] = bpm; }
-  function setPlaying(on) { playing = on; }
+  function setPlaying(on) {
+    if (playing && !on) pausedAt = performance.now();
+    playing = on;
+    dirty = true;
+  }
 
   // ---------------------------------------------------------- frame loop
 
@@ -335,93 +407,102 @@ function createWebGLGlobe(container, onLost) {
     size.w = Math.round(width);
     size.h = Math.round(height);
     if (size.w && size.h) renderer.setSize(size.w, size.h, false);
+    dirty = true;
   });
   resizer.observe(container);
 
-  function degPerSecond(side) {
-    const bpm = tempo[side];
-    if (!playing || !bpm) return 2.5;
+  function degPerSecond(now) {
+    if (motionReduced()) return 0;
+    if (!playing) return now - pausedAt > IDLE_MS ? 0 : 2.5;
+    const bpm = duetOn ? (tempo.oldest + tempo.newest) / 2 : tempo.single;
+    if (!bpm) return 2.5;
     return 6 + ((Math.min(160, Math.max(80, bpm)) - 80) / 80) * 6;
   }
 
   function updateSparks(planet, now) {
-    const calm = still();
+    const calm = motionReduced();
+    const half = planet.cut.uHalf.value;
+    let alive = false;
     planet.sparks.forEach((s) => {
       if (!s.ring.visible) return;
-      const t = (now - s.born) / SPARK_LIFE;
+      alive = true;
+      const t = (now - s.born) / s.life;
       if (t < 0) { s.ring.material.opacity = 0; s.dot.material.opacity = 0; return; }
       if (t >= 1) { s.ring.visible = s.dot.visible = false; return; }
-      const r = calm ? 0.05 : 0.014 + 0.075 * easeOut(t);
+      const r = calm ? 0.05 : 0.014 + 0.075 * (1 - (1 - Math.min(1, t * 2.5)) ** 3);
       s.ring.scale.setScalar(r);
       s.ring.material.opacity = (1 - t) ** 1.6 * (calm ? 0.6 : 0.95);
       s.dot.scale.setScalar(0.013);
       s.dot.material.opacity = 1 - t * t;
+      if (half) {
+        s.dot.getWorldPosition(tmp);
+        if ((tmp.x - planet.group.position.x) * half < 0) { s.ring.material.opacity = 0; s.dot.material.opacity = 0; }
+      }
     });
+    return alive;
   }
 
-  let last = performance.now();
+  let visible = true;
+  let lastTime = performance.now();
   let raf = 0;
   function frame(now) {
-    raf = requestAnimationFrame(frame);
-    const dt = Math.min(0.05, (now - last) / 1000);
-    last = now;
+    raf = visible ? requestAnimationFrame(frame) : 0;
+    const dt = Math.min(0.05, (now - lastTime) / 1000);
+    lastTime = now;
     if (!size.w || !size.h) return;
 
-    if (split.start >= 0) {
-      const t = Math.min(1, (now - split.start) / SPLIT_MS);
-      split.value = still() ? split.to : split.from + (split.to - split.from) * (split.to > split.from ? easeBack(t) : easeOut(t));
-      if (t >= 1) {
-        split.start = -1;
-        split.value = split.to;
-        if (split.to === 0) planets.newest.group.visible = false;
-      }
-    }
-
-    const sides = { [main.side]: main, newest: planets.newest };
-    Object.values(sides).forEach((p) => {
-      const side = split.to === 1 ? (p === main ? 'oldest' : 'newest') : 'single';
-      if (!still()) p.spin += degPerSecond(side) * DEG * dt;
-      p.spinner.rotation.y = p.spin;
+    let active = dirty;
+    dirty = false;
+    if (advance(cut, now)) active = true;
+    if (advance(part, now)) active = true;
+    const speed = degPerSecond(now);
+    if (speed > 0) { spin += speed * DEG * dt; active = true; }
+    [main, other].forEach((p) => {
+      p.spinner.rotation.y = spin;
       if (p.fadeStart >= 0) {
-        const f = Math.min(1, (now - p.fadeStart) / (still() ? 160 : FADE_MS));
+        const f = p.fadeMs > 0 ? Math.min(1, (now - p.fadeStart) / p.fadeMs) : 1;
         p.uniforms.uMix.value = f;
         if (f >= 1) p.fadeStart = -1;
+        active = true;
       }
-      updateSparks(p, now);
+      if (updateSparks(p, now)) active = true;
     });
+    if (!active) return;
 
-    // layout: one planet, or two side by side (stacked when the stage is tall)
-    axis = size.w / size.h < 0.92 ? 'y' : 'x';
-    container.dataset.axis = axis;
-    const s = split.value;
-    const gap = 1.02 * s;
-    const scaleA = 1 - 0.12 * Math.min(1, s);
-    const scaleB = 0.88 * Math.min(1, Math.max(0, s * 1.6));
-    main.group.scale.setScalar(scaleA);
-    planets.newest.group.scale.setScalar(Math.max(0.0001, scaleB));
-    if (axis === 'x') {
-      main.group.position.set(-gap, 0, 0);
-      planets.newest.group.position.set(gap, 0, 0);
-    } else {
-      main.group.position.set(0, gap, 0);
-      planets.newest.group.position.set(0, -gap, 0);
-    }
-
-    const aspect = size.w / size.h;
-    const needW = axis === 'x' ? 1.2 + 0.88 * s : 1.2;
-    const needH = axis === 'y' ? 1.2 + 0.88 * s : 1.2;
-    const halfH = Math.max(needH, needW / aspect);
-    const halfW = halfH * aspect;
+    // Radius 1 is drawn at 1.15 x half the stage height; the planet's top
+    // sits HEADROOM below the top edge and its lower limb falls under the horizon.
+    const halfH = 1 / DIAMETER;
+    const halfW = (halfH * size.w) / size.h;
     camera.left = -halfW; camera.right = halfW; camera.top = halfH; camera.bottom = -halfH;
     camera.updateProjectionMatrix();
+    const cy = halfH * (1 - 2 * HEADROOM) - 1;
+    const gap = PART * part.value;
+    main.group.position.set(-gap, cy, 0);
+    other.group.position.set(gap, cy, 0);
+    const top = halfH + SWEEP_PAD;
+    const sweep = top - (top + halfH + SWEEP_PAD) * cut.value;
+    main.cut.uSweep.value = sweep;
+    other.cut.uSweep.value = sweep;
     renderer.render(scene, camera);
   }
   raf = requestAnimationFrame(frame);
+
+  // Off screen, the loop stops; scrolling back starts it again.
+  const watcher = new IntersectionObserver(([entry]) => {
+    visible = entry.isIntersecting;
+    if (visible && !raf) {
+      lastTime = performance.now();
+      dirty = true;
+      raf = requestAnimationFrame(frame);
+    }
+  });
+  watcher.observe(container);
 
   function destroy() {
     cancelAnimationFrame(raf);
     clearTimeout(lostTimer);
     resizer.disconnect();
+    watcher.disconnect();
     cache.forEach((tex) => tex.dispose());
     renderer.dispose();
     renderer.domElement.remove();

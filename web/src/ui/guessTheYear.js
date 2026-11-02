@@ -12,7 +12,7 @@
 
 import { Voice, mapFeatures } from '../audio/sonify.js';
 import { oldestFrame, newestFrame, physicalShort, physicalSpoken } from '../data/loader.js';
-import { speakNote } from '../audio/scales.js';
+import { speakNote, showNote } from '../audio/scales.js';
 
 const ANCHOR_BARS = 2;
 
@@ -142,7 +142,7 @@ export function createGuessTheYear(root, { themes, unlock, announce }) {
   // who cannot hear well still play from the mapped sound parameters.
   function describeHearing(frame) {
     const p = mapFeatures(frame);
-    hearing.textContent = `Hearing: ${p.note} · ${p.notesPerBar} note${p.notesPerBar > 1 ? 's' : ''}/bar · ${p.tempoBPM} BPM · ${p.timbre} · ${p.interval.startsWith('minor') ? 'tense' : 'calm'}`;
+    hearing.textContent = `Hearing ${showNote(p.note)}, ${p.notesPerBar} note${p.notesPerBar > 1 ? 's' : ''} a bar, ${p.tempoBPM} BPM, ${p.timbre}, ${p.interval.startsWith('minor') ? 'tense' : 'calm'}`;
   }
 
   async function toggleMystery(force) {
@@ -198,9 +198,9 @@ export function createGuessTheYear(root, { themes, unlock, announce }) {
     const p = mapFeatures(frame);
     verdict.textContent = right ? `Yes, it was ${frame.year}.` : `It was ${frame.year}. You said ${year}, ${off} year${off === 1 ? '' : 's'} off.`;
     detail.textContent = `${theme.name}, ${frame.label}: ${theme.physical.label} ${physicalShort(frame)}. `
-      + `It played ${p.note}, ${p.notesPerBar} note${p.notesPerBar === 1 ? '' : 's'} per bar at ${p.tempoBPM} BPM on a ${p.timbre}.`;
+      + `It played ${showNote(p.note)}, ${p.notesPerBar} note${p.notesPerBar === 1 ? '' : 's'} per bar at ${p.tempoBPM} BPM on a ${p.timbre}.`;
     result.hidden = false;
-    scoreEl.textContent = `Score ${score.right} / ${score.played}${score.streak > 1 ? ` · streak ${score.streak}` : ''}`;
+    scoreEl.textContent = `Score ${score.right} / ${score.played}${score.streak > 1 ? `, streak ${score.streak}` : ''}`;
     nextBtn.focus();
 
     const lean = frame.year - (theme.yearRange[0] + theme.yearRange[1]) / 2 > 0 ? 'the newer half' : 'the older half';
