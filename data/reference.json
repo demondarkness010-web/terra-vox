@@ -1,0 +1,1261 @@
+{
+ "generatedAt": "2026-11-01T17:33:23+00:00",
+ "greenhouse_gases": {
+  "id": "noaa_gml_ch4",
+  "title": "Global surface methane (NOAA marine boundary layer network)",
+  "units": "ppb",
+  "kind": "annual",
+  "series": [
+   {
+    "year": 1984,
+    "value": 1644.84,
+    "unc": 0.6
+   },
+   {
+    "year": 1985,
+    "value": 1657.29,
+    "unc": 0.55
+   },
+   {
+    "year": 1986,
+    "value": 1670.09,
+    "unc": 0.77
+   },
+   {
+    "year": 1987,
+    "value": 1682.71,
+    "unc": 0.51
+   },
+   {
+    "year": 1988,
+    "value": 1693.19,
+    "unc": 0.62
+   },
+   {
+    "year": 1989,
+    "value": 1704.53,
+    "unc": 0.53
+   },
+   {
+    "year": 1990,
+    "value": 1714.46,
+    "unc": 0.69
+   },
+   {
+    "year": 1991,
+    "value": 1724.79,
+    "unc": 0.68
+   },
+   {
+    "year": 1992,
+    "value": 1735.47,
+    "unc": 0.58
+   },
+   {
+    "year": 1993,
+    "value": 1736.48,
+    "unc": 0.47
+   },
+   {
+    "year": 1994,
+    "value": 1742.06,
+    "unc": 0.57
+   },
+   {
+    "year": 1995,
+    "value": 1748.88,
+    "unc": 0.52
+   },
+   {
+    "year": 1996,
+    "value": 1751.31,
+    "unc": 0.63
+   },
+   {
+    "year": 1997,
+    "value": 1754.51,
+    "unc": 0.38
+   },
+   {
+    "year": 1998,
+    "value": 1765.57,
+    "unc": 0.61
+   },
+   {
+    "year": 1999,
+    "value": 1772.31,
+    "unc": 0.56
+   },
+   {
+    "year": 2000,
+    "value": 1773.22,
+    "unc": 0.7
+   },
+   {
+    "year": 2001,
+    "value": 1771.29,
+    "unc": 0.52
+   },
+   {
+    "year": 2002,
+    "value": 1772.68,
+    "unc": 0.46
+   },
+   {
+    "year": 2003,
+    "value": 1777.33,
+    "unc": 0.51
+   },
+   {
+    "year": 2004,
+    "value": 1777.13,
+    "unc": 0.49
+   },
+   {
+    "year": 2005,
+    "value": 1774.25,
+    "unc": 0.59
+   },
+   {
+    "year": 2006,
+    "value": 1774.94,
+    "unc": 0.5
+   },
+   {
+    "year": 2007,
+    "value": 1781.33,
+    "unc": 0.56
+   },
+   {
+    "year": 2008,
+    "value": 1787.01,
+    "unc": 0.56
+   },
+   {
+    "year": 2009,
+    "value": 1793.54,
+    "unc": 0.59
+   },
+   {
+    "year": 2010,
+    "value": 1798.89,
+    "unc": 0.71
+   },
+   {
+    "year": 2011,
+    "value": 1803.04,
+    "unc": 0.56
+   },
+   {
+    "year": 2012,
+    "value": 1808.07,
+    "unc": 0.58
+   },
+   {
+    "year": 2013,
+    "value": 1813.43,
+    "unc": 0.57
+   },
+   {
+    "year": 2014,
+    "value": 1822.59,
+    "unc": 0.56
+   },
+   {
+    "year": 2015,
+    "value": 1834.19,
+    "unc": 0.49
+   },
+   {
+    "year": 2016,
+    "value": 1843.18,
+    "unc": 0.58
+   },
+   {
+    "year": 2017,
+    "value": 1849.62,
+    "unc": 0.69
+   },
+   {
+    "year": 2018,
+    "value": 1857.34,
+    "unc": 0.77
+   },
+   {
+    "year": 2019,
+    "value": 1866.62,
+    "unc": 0.57
+   },
+   {
+    "year": 2020,
+    "value": 1878.78,
+    "unc": 0.66
+   },
+   {
+    "year": 2021,
+    "value": 1894.87,
+    "unc": 0.63
+   },
+   {
+    "year": 2022,
+    "value": 1911.01,
+    "unc": 0.89
+   },
+   {
+    "year": 2023,
+    "value": 1921.46,
+    "unc": 0.7
+   },
+   {
+    "year": 2024,
+    "value": 1929.47,
+    "unc": 0.59
+   },
+   {
+    "year": 2025,
+    "value": 1936.03,
+    "unc": 0.48
+   }
+  ],
+  "growth": [
+   {
+    "year": 1984,
+    "value": 12.88
+   },
+   {
+    "year": 1985,
+    "value": 12.2
+   },
+   {
+    "year": 1986,
+    "value": 12.89
+   },
+   {
+    "year": 1987,
+    "value": 11.44
+   },
+   {
+    "year": 1988,
+    "value": 10.72
+   },
+   {
+    "year": 1989,
+    "value": 11.17
+   },
+   {
+    "year": 1990,
+    "value": 8.67
+   },
+   {
+    "year": 1991,
+    "value": 14.0
+   },
+   {
+    "year": 1992,
+    "value": 2.43
+   },
+   {
+    "year": 1993,
+    "value": 3.85
+   },
+   {
+    "year": 1994,
+    "value": 7.27
+   },
+   {
+    "year": 1995,
+    "value": 3.85
+   },
+   {
+    "year": 1996,
+    "value": 2.48
+   },
+   {
+    "year": 1997,
+    "value": 6.35
+   },
+   {
+    "year": 1998,
+    "value": 12.14
+   },
+   {
+    "year": 1999,
+    "value": 2.25
+   },
+   {
+    "year": 2000,
+    "value": -1.34
+   },
+   {
+    "year": 2001,
+    "value": -0.66
+   },
+   {
+    "year": 2002,
+    "value": 3.18
+   },
+   {
+    "year": 2003,
+    "value": 4.83
+   },
+   {
+    "year": 2004,
+    "value": -4.71
+   },
+   {
+    "year": 2005,
+    "value": 0.23
+   },
+   {
+    "year": 2006,
+    "value": 1.84
+   },
+   {
+    "year": 2007,
+    "value": 7.83
+   },
+   {
+    "year": 2008,
+    "value": 6.56
+   },
+   {
+    "year": 2009,
+    "value": 4.72
+   },
+   {
+    "year": 2010,
+    "value": 5.04
+   },
+   {
+    "year": 2011,
+    "value": 5.01
+   },
+   {
+    "year": 2012,
+    "value": 5.02
+   },
+   {
+    "year": 2013,
+    "value": 5.67
+   },
+   {
+    "year": 2014,
+    "value": 12.74
+   },
+   {
+    "year": 2015,
+    "value": 10.0
+   },
+   {
+    "year": 2016,
+    "value": 7.13
+   },
+   {
+    "year": 2017,
+    "value": 6.83
+   },
+   {
+    "year": 2018,
+    "value": 8.73
+   },
+   {
+    "year": 2019,
+    "value": 9.67
+   },
+   {
+    "year": 2020,
+    "value": 14.81
+   },
+   {
+    "year": 2021,
+    "value": 17.69
+   },
+   {
+    "year": 2022,
+    "value": 13.01
+   },
+   {
+    "year": 2023,
+    "value": 8.29
+   },
+   {
+    "year": 2024,
+    "value": 8.04
+   },
+   {
+    "year": 2025,
+    "value": 4.77
+   }
+  ],
+  "latestMonth": {
+   "year": 2026,
+   "month": 6,
+   "value": 1934.57,
+   "trend": 1942.12
+  },
+  "context": {
+   "co2": {
+    "year": 2025,
+    "value": 425.62,
+    "units": "ppm",
+    "url": "https://gml.noaa.gov/webdata/ccgg/trends/co2/co2_annmean_gl.csv"
+   },
+   "n2o": {
+    "year": 2025,
+    "value": 338.86,
+    "units": "ppb",
+    "url": "https://gml.noaa.gov/webdata/ccgg/trends/n2o/n2o_annmean_gl.csv"
+   }
+  },
+  "note": "Surface air. AIRS frames measure the mid-troposphere (400 hPa, about 7 km up), where methane is lower, so the app's values sit below this line; the trend is what to compare.",
+  "source": {
+   "name": "NOAA Global Monitoring Laboratory",
+   "url": "https://gml.noaa.gov/webdata/ccgg/trends/ch4/ch4_annmean_gl.csv",
+   "monthly": "https://gml.noaa.gov/webdata/ccgg/trends/ch4/ch4_mm_gl.csv",
+   "growth": "https://gml.noaa.gov/webdata/ccgg/trends/ch4/ch4_gr_gl.csv",
+   "page": "https://gml.noaa.gov/ccgg/trends_ch4/",
+   "fileCreated": "Fri Oct  9 13:09:45 2026",
+   "retrieved": "2026-11-01T17:33:24+00:00",
+   "credit": "Lan, X., K.W. Thoning, and E.J. Dlugokencky: Trends in globally-averaged CH4, N2O, and SF6 determined from NOAA Global Monitoring Laboratory measurements."
+  }
+ },
+ "sea_level": {
+  "id": "noaa_lsa_gmsl",
+  "title": "Global mean sea level (satellite altimetry)",
+  "units": "mm",
+  "kind": "annual",
+  "series": [
+   {
+    "year": 1992,
+    "value": -21.0,
+    "samples": 2,
+    "partial": true
+   },
+   {
+    "year": 1993,
+    "value": -19.4,
+    "samples": 34,
+    "partial": false
+   },
+   {
+    "year": 1994,
+    "value": -14.8,
+    "samples": 34,
+    "partial": false
+   },
+   {
+    "year": 1995,
+    "value": -9.2,
+    "samples": 31,
+    "partial": false
+   },
+   {
+    "year": 1996,
+    "value": -5.8,
+    "samples": 34,
+    "partial": false
+   },
+   {
+    "year": 1997,
+    "value": -1.8,
+    "samples": 33,
+    "partial": false
+   },
+   {
+    "year": 1998,
+    "value": -2.7,
+    "samples": 33,
+    "partial": false
+   },
+   {
+    "year": 1999,
+    "value": -3.5,
+    "samples": 33,
+    "partial": false
+   },
+   {
+    "year": 2000,
+    "value": 0.7,
+    "samples": 34,
+    "partial": false
+   },
+   {
+    "year": 2001,
+    "value": 6.0,
+    "samples": 36,
+    "partial": false
+   },
+   {
+    "year": 2002,
+    "value": 7.5,
+    "samples": 59,
+    "partial": false
+   },
+   {
+    "year": 2003,
+    "value": 10.7,
+    "samples": 61,
+    "partial": false
+   },
+   {
+    "year": 2004,
+    "value": 12.5,
+    "samples": 61,
+    "partial": false
+   },
+   {
+    "year": 2005,
+    "value": 15.8,
+    "samples": 58,
+    "partial": false
+   },
+   {
+    "year": 2006,
+    "value": 18.2,
+    "samples": 36,
+    "partial": false
+   },
+   {
+    "year": 2007,
+    "value": 18.1,
+    "samples": 37,
+    "partial": false
+   },
+   {
+    "year": 2008,
+    "value": 22.1,
+    "samples": 43,
+    "partial": false
+   },
+   {
+    "year": 2009,
+    "value": 25.7,
+    "samples": 71,
+    "partial": false
+   },
+   {
+    "year": 2010,
+    "value": 27.1,
+    "samples": 74,
+    "partial": false
+   },
+   {
+    "year": 2011,
+    "value": 25.5,
+    "samples": 73,
+    "partial": false
+   },
+   {
+    "year": 2012,
+    "value": 35.8,
+    "samples": 69,
+    "partial": false
+   },
+   {
+    "year": 2013,
+    "value": 38.2,
+    "samples": 52,
+    "partial": false
+   },
+   {
+    "year": 2014,
+    "value": 41.0,
+    "samples": 36,
+    "partial": false
+   },
+   {
+    "year": 2015,
+    "value": 49.7,
+    "samples": 37,
+    "partial": false
+   },
+   {
+    "year": 2016,
+    "value": 53.1,
+    "samples": 54,
+    "partial": false
+   },
+   {
+    "year": 2017,
+    "value": 53.8,
+    "samples": 51,
+    "partial": false
+   },
+   {
+    "year": 2018,
+    "value": 56.6,
+    "samples": 37,
+    "partial": false
+   },
+   {
+    "year": 2019,
+    "value": 63.0,
+    "samples": 37,
+    "partial": false
+   },
+   {
+    "year": 2020,
+    "value": 65.7,
+    "samples": 37,
+    "partial": false
+   },
+   {
+    "year": 2021,
+    "value": 70.0,
+    "samples": 49,
+    "partial": false
+   },
+   {
+    "year": 2022,
+    "value": 72.7,
+    "samples": 67,
+    "partial": false
+   },
+   {
+    "year": 2023,
+    "value": 78.5,
+    "samples": 74,
+    "partial": false
+   },
+   {
+    "year": 2024,
+    "value": 81.9,
+    "samples": 74,
+    "partial": false
+   },
+   {
+    "year": 2025,
+    "value": 83.1,
+    "samples": 6,
+    "partial": true
+   }
+  ],
+  "riseFirstToLast": {
+   "from": 1993,
+   "to": 2024,
+   "mm": 101.3
+  },
+  "trendMmPerYear": 3.11,
+  "accelerationMmPerYear2": 0.076,
+  "publishedTrend": 3.11,
+  "missions": [
+   {
+    "name": "TOPEX/Poseidon",
+    "from": 1992.96,
+    "to": 2005.75
+   },
+   {
+    "name": "Jason-1",
+    "from": 2002.05,
+    "to": 2013.46
+   },
+   {
+    "name": "Jason-2",
+    "from": 2008.54,
+    "to": 2017.37
+   },
+   {
+    "name": "Jason-3",
+    "from": 2016.12,
+    "to": 2025.02
+   },
+   {
+    "name": "Sentinel-6MF",
+    "from": 2020.98,
+    "to": 2025.13
+   }
+  ],
+  "note": "Seasonal cycle removed; no glacial isostatic adjustment, so the trend is about 0.3 mm/yr below NASA's GIA-corrected figure.",
+  "source": {
+   "name": "NOAA Laboratory for Satellite Altimetry",
+   "url": "https://www.star.nesdis.noaa.gov/socd/lsa/SeaLevelRise/slr/slr_sla_gbl_free_ref_90.csv",
+   "page": "https://www.star.nesdis.noaa.gov/socd/lsa/SeaLevelRise/",
+   "retrieved": "2026-11-01T17:33:24+00:00",
+   "credit": "Altimetry data are provided by NOAA Laboratory for Satellite Altimetry."
+  }
+ },
+ "air_quality": {
+  "id": "omi_no2_march",
+  "title": "March mean tropospheric NO2 by region (OMI / Aura)",
+  "units": "x10^15 molecules/cm2",
+  "kind": "annual-regions",
+  "regions": [
+   {
+    "id": "global",
+    "name": "Whole globe",
+    "series": [
+     {
+      "year": 2005,
+      "value": 0.467
+     },
+     {
+      "year": 2006,
+      "value": 0.467
+     },
+     {
+      "year": 2007,
+      "value": 0.477
+     },
+     {
+      "year": 2008,
+      "value": 0.48
+     },
+     {
+      "year": 2009,
+      "value": 0.47
+     },
+     {
+      "year": 2010,
+      "value": 0.469
+     },
+     {
+      "year": 2011,
+      "value": 0.493
+     },
+     {
+      "year": 2012,
+      "value": 0.472
+     },
+     {
+      "year": 2013,
+      "value": 0.467
+     },
+     {
+      "year": 2014,
+      "value": 0.461
+     },
+     {
+      "year": 2015,
+      "value": 0.457
+     },
+     {
+      "year": 2016,
+      "value": 0.468
+     },
+     {
+      "year": 2017,
+      "value": 0.463
+     },
+     {
+      "year": 2018,
+      "value": 0.442
+     },
+     {
+      "year": 2019,
+      "value": 0.449
+     },
+     {
+      "year": 2020,
+      "value": 0.432
+     },
+     {
+      "year": 2021,
+      "value": 0.434
+     },
+     {
+      "year": 2022,
+      "value": 0.464
+     },
+     {
+      "year": 2023,
+      "value": 0.493
+     },
+     {
+      "year": 2024,
+      "value": 0.496
+     },
+     {
+      "year": 2025,
+      "value": 0.508
+     }
+    ],
+    "first": {
+     "year": 2005,
+     "value": 0.467
+    },
+    "last": {
+     "year": 2025,
+     "value": 0.508
+    },
+    "peak": {
+     "year": 2025,
+     "value": 0.508
+    },
+    "changePct": 8.8,
+    "fromPeakPct": 0.0
+   },
+   {
+    "id": "eastern_us",
+    "name": "Eastern United States",
+    "box": {
+     "south": 32,
+     "north": 43,
+     "west": -92,
+     "east": -72
+    },
+    "series": [
+     {
+      "year": 2005,
+      "value": 3.895
+     },
+     {
+      "year": 2006,
+      "value": 3.759
+     },
+     {
+      "year": 2007,
+      "value": 3.095
+     },
+     {
+      "year": 2008,
+      "value": 2.829
+     },
+     {
+      "year": 2009,
+      "value": 2.776
+     },
+     {
+      "year": 2010,
+      "value": 2.901
+     },
+     {
+      "year": 2011,
+      "value": 2.464
+     },
+     {
+      "year": 2012,
+      "value": 2.0
+     },
+     {
+      "year": 2013,
+      "value": 2.475
+     },
+     {
+      "year": 2014,
+      "value": 2.199
+     },
+     {
+      "year": 2015,
+      "value": 1.939
+     },
+     {
+      "year": 2016,
+      "value": 2.132
+     },
+     {
+      "year": 2017,
+      "value": 2.029
+     },
+     {
+      "year": 2018,
+      "value": 1.995
+     },
+     {
+      "year": 2019,
+      "value": 2.142
+     },
+     {
+      "year": 2020,
+      "value": 1.599
+     },
+     {
+      "year": 2021,
+      "value": 1.79
+     },
+     {
+      "year": 2022,
+      "value": 2.006
+     },
+     {
+      "year": 2023,
+      "value": 1.921
+     },
+     {
+      "year": 2024,
+      "value": 2.233
+     },
+     {
+      "year": 2025,
+      "value": 1.919
+     }
+    ],
+    "first": {
+     "year": 2005,
+     "value": 3.895
+    },
+    "last": {
+     "year": 2025,
+     "value": 1.919
+    },
+    "peak": {
+     "year": 2005,
+     "value": 3.895
+    },
+    "changePct": -50.7,
+    "fromPeakPct": -50.7
+   },
+   {
+    "id": "western_europe",
+    "name": "Western Europe",
+    "box": {
+     "south": 45,
+     "north": 55,
+     "west": -2,
+     "east": 16
+    },
+    "series": [
+     {
+      "year": 2005,
+      "value": 3.602
+     },
+     {
+      "year": 2006,
+      "value": 3.485
+     },
+     {
+      "year": 2007,
+      "value": 5.052
+     },
+     {
+      "year": 2008,
+      "value": 3.182
+     },
+     {
+      "year": 2009,
+      "value": 3.884
+     },
+     {
+      "year": 2010,
+      "value": 3.774
+     },
+     {
+      "year": 2011,
+      "value": 5.332
+     },
+     {
+      "year": 2012,
+      "value": 4.609
+     },
+     {
+      "year": 2013,
+      "value": 2.992
+     },
+     {
+      "year": 2014,
+      "value": 4.765
+     },
+     {
+      "year": 2015,
+      "value": 4.712
+     },
+     {
+      "year": 2016,
+      "value": 3.512
+     },
+     {
+      "year": 2017,
+      "value": 3.759
+     },
+     {
+      "year": 2018,
+      "value": 2.981
+     },
+     {
+      "year": 2019,
+      "value": 3.447
+     },
+     {
+      "year": 2020,
+      "value": 2.621
+     },
+     {
+      "year": 2021,
+      "value": 2.796
+     },
+     {
+      "year": 2022,
+      "value": 3.481
+     },
+     {
+      "year": 2023,
+      "value": 2.827
+     },
+     {
+      "year": 2024,
+      "value": 2.987
+     },
+     {
+      "year": 2025,
+      "value": 3.067
+     }
+    ],
+    "first": {
+     "year": 2005,
+     "value": 3.602
+    },
+    "last": {
+     "year": 2025,
+     "value": 3.067
+    },
+    "peak": {
+     "year": 2011,
+     "value": 5.332
+    },
+    "changePct": -14.9,
+    "fromPeakPct": -42.5
+   },
+   {
+    "id": "north_china",
+    "name": "North China Plain",
+    "box": {
+     "south": 32,
+     "north": 41,
+     "west": 112,
+     "east": 121
+    },
+    "series": [
+     {
+      "year": 2005,
+      "value": 9.276
+     },
+     {
+      "year": 2006,
+      "value": 10.029
+     },
+     {
+      "year": 2007,
+      "value": 8.915
+     },
+     {
+      "year": 2008,
+      "value": 11.368
+     },
+     {
+      "year": 2009,
+      "value": 9.94
+     },
+     {
+      "year": 2010,
+      "value": 11.107
+     },
+     {
+      "year": 2011,
+      "value": 12.972
+     },
+     {
+      "year": 2012,
+      "value": 12.166
+     },
+     {
+      "year": 2013,
+      "value": 12.12
+     },
+     {
+      "year": 2014,
+      "value": 11.133
+     },
+     {
+      "year": 2015,
+      "value": 10.422
+     },
+     {
+      "year": 2016,
+      "value": 9.985
+     },
+     {
+      "year": 2017,
+      "value": 9.826
+     },
+     {
+      "year": 2018,
+      "value": 8.888
+     },
+     {
+      "year": 2019,
+      "value": 9.259
+     },
+     {
+      "year": 2020,
+      "value": 8.068
+     },
+     {
+      "year": 2021,
+      "value": 7.547
+     },
+     {
+      "year": 2022,
+      "value": 7.394
+     },
+     {
+      "year": 2023,
+      "value": 9.053
+     },
+     {
+      "year": 2024,
+      "value": 7.549
+     },
+     {
+      "year": 2025,
+      "value": 7.015
+     }
+    ],
+    "first": {
+     "year": 2005,
+     "value": 9.276
+    },
+    "last": {
+     "year": 2025,
+     "value": 7.015
+    },
+    "peak": {
+     "year": 2011,
+     "value": 12.972
+    },
+    "changePct": -24.4,
+    "fromPeakPct": -45.9
+   },
+   {
+    "id": "northern_india",
+    "name": "Northern India",
+    "box": {
+     "south": 21,
+     "north": 30,
+     "west": 77,
+     "east": 88
+    },
+    "series": [
+     {
+      "year": 2005,
+      "value": 2.13
+     },
+     {
+      "year": 2006,
+      "value": 2.062
+     },
+     {
+      "year": 2007,
+      "value": 1.927
+     },
+     {
+      "year": 2008,
+      "value": 2.46
+     },
+     {
+      "year": 2009,
+      "value": 2.889
+     },
+     {
+      "year": 2010,
+      "value": 2.607
+     },
+     {
+      "year": 2011,
+      "value": 2.693
+     },
+     {
+      "year": 2012,
+      "value": 2.279
+     },
+     {
+      "year": 2013,
+      "value": 2.51
+     },
+     {
+      "year": 2014,
+      "value": 2.347
+     },
+     {
+      "year": 2015,
+      "value": 2.106
+     },
+     {
+      "year": 2016,
+      "value": 3.191
+     },
+     {
+      "year": 2017,
+      "value": 2.883
+     },
+     {
+      "year": 2018,
+      "value": 3.265
+     },
+     {
+      "year": 2019,
+      "value": 2.632
+     },
+     {
+      "year": 2020,
+      "value": 2.084
+     },
+     {
+      "year": 2021,
+      "value": 3.216
+     },
+     {
+      "year": 2022,
+      "value": 2.997
+     },
+     {
+      "year": 2023,
+      "value": 2.983
+     },
+     {
+      "year": 2024,
+      "value": 2.865
+     },
+     {
+      "year": 2025,
+      "value": 3.439
+     }
+    ],
+    "first": {
+     "year": 2005,
+     "value": 2.13
+    },
+    "last": {
+     "year": 2025,
+     "value": 3.439
+    },
+    "peak": {
+     "year": 2025,
+     "value": 3.439
+    },
+    "changePct": 61.5,
+    "fromPeakPct": 0.0
+   }
+  ],
+  "daysUsed": {
+   "2005": 31,
+   "2006": 29,
+   "2007": 31,
+   "2008": 31,
+   "2009": 31,
+   "2010": 31,
+   "2011": 31,
+   "2012": 31,
+   "2013": 31,
+   "2014": 31,
+   "2015": 31,
+   "2016": 31,
+   "2017": 27,
+   "2018": 31,
+   "2019": 31,
+   "2020": 31,
+   "2021": 31,
+   "2022": 31,
+   "2023": 31,
+   "2024": 31,
+   "2025": 31
+  },
+  "method": "Every day of March, GIBS layer OMI_Nitrogen_Dioxide_Tropo_Column at 0.5 degrees, colours inverted through the GIBS colormap, cloud and swath gaps skipped, means weighted by cos(latitude).",
+  "note": "Derived by Terra Vox from NASA's OMI layer, not an official NASA product. The top of the GIBS palette saturates, so the most polluted cells are under-counted and peaks read low.",
+  "source": {
+   "name": "NASA OMI / Aura via NASA GIBS (derived by Terra Vox)",
+   "layer": "OMI_Nitrogen_Dioxide_Tropo_Column",
+   "url": "https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi?SERVICE=WMS&REQUEST=GetMap&VERSION=1.1.1&SRS=EPSG:4326&BBOX=-180,-90,180,90&WIDTH=720&HEIGHT=360&FORMAT=image/png&TRANSPARENT=TRUE&STYLES=&LAYERS=OMI_Nitrogen_Dioxide_Tropo_Column&TIME=2025-03-01",
+   "page": "https://www.earthdata.nasa.gov/data/instruments/omi",
+   "retrieved": "2026-11-01T17:47:03+00:00"
+  }
+ }
+}

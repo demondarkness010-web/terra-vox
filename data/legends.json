@@ -1,0 +1,373 @@
+{
+ "wildfires": {
+  "kind": "marker",
+  "title": "Active fire detected",
+  "color": "#ff7a1a",
+  "note": "Each dot is a 1 km MODIS pixel where a fire burned during the 8-day window."
+ },
+ "sea_level": {
+  "kind": "gradient",
+  "title": "Sea Surface Height Anomaly",
+  "units": "cm",
+  "stops": [
+   {
+    "at": 0.0,
+    "color": "#9e04ae"
+   },
+   {
+    "at": 0.0492,
+    "color": "#e800fc"
+   },
+   {
+    "at": 0.082,
+    "color": "#af00ff"
+   },
+   {
+    "at": 0.1311,
+    "color": "#6b00fc"
+   },
+   {
+    "at": 0.1803,
+    "color": "#1600fe"
+   },
+   {
+    "at": 0.2131,
+    "color": "#0001ff"
+   },
+   {
+    "at": 0.2623,
+    "color": "#004eff"
+   },
+   {
+    "at": 0.3115,
+    "color": "#29a0fe"
+   },
+   {
+    "at": 0.3443,
+    "color": "#3ed1ff"
+   },
+   {
+    "at": 0.3934,
+    "color": "#52fdd7"
+   },
+   {
+    "at": 0.4426,
+    "color": "#55fe7d"
+   },
+   {
+    "at": 0.4754,
+    "color": "#53f929"
+   },
+   {
+    "at": 0.5246,
+    "color": "#55fb00"
+   },
+   {
+    "at": 0.5574,
+    "color": "#59fa00"
+   },
+   {
+    "at": 0.6066,
+    "color": "#79fd00"
+   },
+   {
+    "at": 0.6557,
+    "color": "#bbfd00"
+   },
+   {
+    "at": 0.6885,
+    "color": "#e6f900"
+   },
+   {
+    "at": 0.7377,
+    "color": "#f2ba00"
+   },
+   {
+    "at": 0.7869,
+    "color": "#ef6c00"
+   },
+   {
+    "at": 0.8197,
+    "color": "#ef3c00"
+   },
+   {
+    "at": 0.8689,
+    "color": "#ec200c"
+   },
+   {
+    "at": 0.918,
+    "color": "#f1655c"
+   },
+   {
+    "at": 0.9508,
+    "color": "#f09a92"
+   },
+   {
+    "at": 1.0,
+    "color": "#f9e1df"
+   }
+  ],
+  "ticks": [
+   {
+    "at": 0.1803,
+    "label": "-20"
+   },
+   {
+    "at": 0.3443,
+    "label": "-10"
+   },
+   {
+    "at": 0.5082,
+    "label": "+0"
+   },
+   {
+    "at": 0.6721,
+    "label": "+10"
+   },
+   {
+    "at": 0.8361,
+    "label": "+20"
+   }
+  ],
+  "min": -30.0,
+  "max": 30.0
+ },
+ "air_quality": {
+  "kind": "gradient",
+  "title": "Nitrogen Dioxide",
+  "units": "×10¹⁵ molec/cm²",
+  "stops": [
+   {
+    "at": 0.0,
+    "color": "#fffcc7"
+   },
+   {
+    "at": 0.0421,
+    "color": "#fff69e"
+   },
+   {
+    "at": 0.0895,
+    "color": "#ffef8e"
+   },
+   {
+    "at": 0.1316,
+    "color": "#ffea80"
+   },
+   {
+    "at": 0.1737,
+    "color": "#ffe373"
+   },
+   {
+    "at": 0.2158,
+    "color": "#ffdd68"
+   },
+   {
+    "at": 0.2632,
+    "color": "#ffd55a"
+   },
+   {
+    "at": 0.3053,
+    "color": "#ffcf51"
+   },
+   {
+    "at": 0.3474,
+    "color": "#ffc548"
+   },
+   {
+    "at": 0.3895,
+    "color": "#ffb93f"
+   },
+   {
+    "at": 0.4368,
+    "color": "#ffad35"
+   },
+   {
+    "at": 0.4789,
+    "color": "#ffa12d"
+   },
+   {
+    "at": 0.5211,
+    "color": "#ff9628"
+   },
+   {
+    "at": 0.5632,
+    "color": "#ff8c24"
+   },
+   {
+    "at": 0.6105,
+    "color": "#ff8021"
+   },
+   {
+    "at": 0.6526,
+    "color": "#ff761f"
+   },
+   {
+    "at": 0.6947,
+    "color": "#ff681c"
+   },
+   {
+    "at": 0.7368,
+    "color": "#ff5818"
+   },
+   {
+    "at": 0.7842,
+    "color": "#ff4815"
+   },
+   {
+    "at": 0.8263,
+    "color": "#ff3913"
+   },
+   {
+    "at": 0.8684,
+    "color": "#fa2e11"
+   },
+   {
+    "at": 0.9105,
+    "color": "#f2240f"
+   },
+   {
+    "at": 0.9579,
+    "color": "#ea180b"
+   },
+   {
+    "at": 1.0,
+    "color": "#7f000e"
+   }
+  ],
+  "ticks": [
+   {
+    "at": 0.2526,
+    "label": "5"
+   },
+   {
+    "at": 0.5,
+    "label": "10"
+   },
+   {
+    "at": 0.7474,
+    "label": "15"
+   }
+  ],
+  "min": 0.0,
+  "max": 20.0
+ },
+ "greenhouse_gases": {
+  "kind": "gradient",
+  "title": "Methane at 400 hPa",
+  "units": "ppb",
+  "stops": [
+   {
+    "at": 0.0,
+    "color": "#f2f3f6"
+   },
+   {
+    "at": 0.0448,
+    "color": "#dde6cf"
+   },
+   {
+    "at": 0.0846,
+    "color": "#d2e7cb"
+   },
+   {
+    "at": 0.1294,
+    "color": "#c5e8c5"
+   },
+   {
+    "at": 0.1741,
+    "color": "#bae8bd"
+   },
+   {
+    "at": 0.2189,
+    "color": "#b2e5af"
+   },
+   {
+    "at": 0.2587,
+    "color": "#ace0a0"
+   },
+   {
+    "at": 0.3035,
+    "color": "#a7d98b"
+   },
+   {
+    "at": 0.3483,
+    "color": "#a6d078"
+   },
+   {
+    "at": 0.393,
+    "color": "#a8c569"
+   },
+   {
+    "at": 0.4328,
+    "color": "#b0b85e"
+   },
+   {
+    "at": 0.4776,
+    "color": "#bea954"
+   },
+   {
+    "at": 0.5224,
+    "color": "#ce974c"
+   },
+   {
+    "at": 0.5672,
+    "color": "#db8846"
+   },
+   {
+    "at": 0.607,
+    "color": "#df7a45"
+   },
+   {
+    "at": 0.6517,
+    "color": "#e06c47"
+   },
+   {
+    "at": 0.6965,
+    "color": "#e15f4e"
+   },
+   {
+    "at": 0.7413,
+    "color": "#e25351"
+   },
+   {
+    "at": 0.7811,
+    "color": "#d6474d"
+   },
+   {
+    "at": 0.8259,
+    "color": "#bd3943"
+   },
+   {
+    "at": 0.8706,
+    "color": "#a12d39"
+   },
+   {
+    "at": 0.9154,
+    "color": "#882534"
+   },
+   {
+    "at": 0.9552,
+    "color": "#702235"
+   },
+   {
+    "at": 1.0,
+    "color": "#3e0015"
+   }
+  ],
+  "ticks": [
+   {
+    "at": 0.2537,
+    "label": "1,701"
+   },
+   {
+    "at": 0.5025,
+    "label": "1,801"
+   },
+   {
+    "at": 0.7512,
+    "label": "1,901"
+   }
+  ],
+  "min": 1600.0,
+  "max": 2000.0
+ }
+}

@@ -1,0 +1,179 @@
+{
+  "checked": "2026-11-01",
+  "note": "Every number here was checked against the linked source on the date above. Numbers computed by Terra Vox from NASA/NOAA files live in data/reference.json and data/features, and are shown with their method.",
+  "themes": {
+    "wildfires": {
+      "lead": "MODIS on NASA's Terra satellite flags every 1 km pixel where a fire burns hot enough to stand out from its surroundings, day and night, and has done so since 2000.",
+      "measures": "Active fire detections: where a fire was burning when the satellite passed, not how much land burned.",
+      "facts": [
+        {
+          "figure": "2.2×",
+          "text": "More of the most extreme wildfire events (top 0.01% by fire radiative power) in 2023 than in 2003. The last seven years include the six most extreme.",
+          "source": "Cunningham, Williamson & Bowman 2024, Nature Ecology & Evolution, from MODIS",
+          "url": "https://doi.org/10.1038/s41559-024-02452-2"
+        },
+        {
+          "figure": "−24%",
+          "text": "Global burned area fell by about a quarter from 1998 to 2015, mostly as savannas and grasslands were converted to farmland. Fewer fires overall, but fiercer ones in forests.",
+          "source": "Andela et al. 2017, Science",
+          "url": "https://doi.org/10.1126/science.aal4108"
+        },
+        {
+          "figure": "375 m",
+          "text": "Pixel size of VIIRS, the instrument behind NASA's EIC fire visualization on side B. About three times more detailed than MODIS, so it catches smaller, cooler fires.",
+          "source": "NASA Scientific Visualization Studio, visualization 5113",
+          "url": "https://svs.gsfc.nasa.gov/5113/"
+        }
+      ],
+      "instruments": [
+        { "name": "MODIS on Terra", "launched": "1999-12-18", "role": "Side A frames: 1 km active-fire detections, 2001–2025" },
+        { "name": "VIIRS on Suomi NPP / NOAA-20 / NOAA-21", "launched": "2011-10-28", "role": "Side B: NASA EIC fire radiative power visualization, 2024–present" }
+      ],
+      "caveats": [
+        "Each frame is one 8-day window in mid-August: the northern fire season. Africa's and Australia's peak seasons fall outside it.",
+        "Counting fire pixels says where fires burned, not how intense they were or how much land they burned, so a year can have fewer detections and worse fires.",
+        "Terra left its formation in October 2022 and has been drifting to an earlier overpass time; by mid-2026 it crossed the equator about two hours closer to dawn. Fires peak in the afternoon, so recent Terra years likely under-count.",
+        "NASA plans to begin shutting down Terra and Aqua in late 2026 or early 2027; VIIRS carries the fire record forward."
+      ],
+      "sources": [
+        { "name": "NASA GIBS layer MODIS_Terra_Thermal_Anomalies_All", "url": "https://worldview.earthdata.nasa.gov/?l=MODIS_Terra_Thermal_Anomalies_All" },
+        { "name": "NASA FIRMS: Fire Information for Resource Management System", "url": "https://firms.modaps.eosdis.nasa.gov/" },
+        { "name": "Earthdata: transition from MODIS to VIIRS", "url": "https://www.earthdata.nasa.gov/data/alerts-outages/transition-from-modis-viirs" },
+        { "name": "NASA technical report on Terra orbit drift (NTRS 20250000522)", "url": "https://ntrs.nasa.gov/citations/20250000522" }
+      ]
+    },
+    "sea_level": {
+      "lead": "Since 1992 a relay of radar altimeter satellites has measured the height of the ocean surface to within a few centimetres, revisiting every track about every ten days.",
+      "measures": "Sea surface height anomaly: how far the sea surface sits above or below its 1993–2012 average at each place.",
+      "facts": [
+        {
+          "figure": "10 cm",
+          "text": "Average global sea level has risen about 4 inches since 1993, and the yearly rate of rise has more than doubled.",
+          "source": "NASA JPL, January 29, 2026",
+          "url": "https://www.jpl.nasa.gov/news/nasa-analysis-shows-la-nina-limited-sea-level-rise-in-2025/"
+        },
+        {
+          "figure": "2.1 → 4.5 mm/yr",
+          "text": "The rate of rise grew from 2.1 mm a year in 1993 to 4.5 mm a year by the end of 2023.",
+          "source": "Hamlington et al. 2024, Communications Earth & Environment",
+          "url": "https://doi.org/10.1038/s43247-024-01761-5"
+        },
+        {
+          "figure": "0.08 cm",
+          "text": "Rise in 2025, well below the expected 0.44 cm a year: La Niña rain parked extra water on land in the Amazon basin. 2024 had risen 0.59 cm. NASA expects the rise to resume as that water drains back.",
+          "source": "NASA JPL, January 29, 2026",
+          "url": "https://www.jpl.nasa.gov/news/nasa-analysis-shows-la-nina-limited-sea-level-rise-in-2025/"
+        }
+      ],
+      "instruments": [
+        { "name": "TOPEX/Poseidon", "launched": "1992-08-10", "role": "First of the reference altimeters" },
+        { "name": "Jason-1", "launched": "2001-12-07", "role": "Continued the record" },
+        { "name": "OSTM/Jason-2", "launched": "2008-06-20", "role": "Continued the record" },
+        { "name": "Jason-3", "launched": "2016-01-17", "role": "Continued the record" },
+        { "name": "Sentinel-6 Michael Freilich", "launched": "2020-11-21", "role": "Current reference satellite; Sentinel-6B followed in November 2025" }
+      ],
+      "caveats": [
+        "NASA's gridded sea-surface-height layer in GIBS (JPL MEaSUREs) ends in January 2019, so these frames stop at 2018. The official record on the chart continues to 2025.",
+        "Each frame is one 5-day snapshot near October 1. El Niño years (1997, 2015) bulge the Pacific, so single frames wobble around the long-term rise.",
+        "Map colours show regional height differences. The global mean is a small shift of the whole picture, which is why the sound changes slowly.",
+        "The reference line has no glacial isostatic adjustment, so its trend reads about 0.3 mm a year lower than NASA's corrected figure."
+      ],
+      "sources": [
+        { "name": "NASA Sea Level Change portal: global mean sea level", "url": "https://sealevel.nasa.gov/understanding-sea-level/key-indicators/global-mean-sea-level/" },
+        { "name": "NOAA Laboratory for Satellite Altimetry", "url": "https://www.star.nesdis.noaa.gov/socd/lsa/SeaLevelRise/" },
+        { "name": "NASA GIBS layer JPL_MEaSUREs_L4_Sea_Surface_Height_Anomalies", "url": "https://worldview.earthdata.nasa.gov/?l=JPL_MEaSUREs_L4_Sea_Surface_Height_Anomalies" },
+        { "name": "NASA SVS: Global Mean Sea Level 1993–2025", "url": "https://svs.gsfc.nasa.gov/5611/" }
+      ]
+    },
+    "air_quality": {
+      "lead": "Nitrogen dioxide (NO₂) comes mostly from burning fuel in vehicles, power plants and industry. The Dutch–Finnish OMI instrument on NASA's Aura satellite has mapped it every day since October 2004.",
+      "measures": "Tropospheric NO₂ column: the number of NO₂ molecules above each square centimetre of ground, in the lowest ~10 km of air.",
+      "facts": [
+        {
+          "figure": "99%",
+          "text": "Share of the world's population living where WHO air-quality guideline levels were not met in 2019. Outdoor air pollution caused an estimated 4.2 million premature deaths that year.",
+          "source": "World Health Organization fact sheet, October 24, 2024",
+          "url": "https://www.who.int/news-room/fact-sheets/detail/ambient-(outdoor)-air-quality-and-health"
+        },
+        {
+          "figure": "20–50%",
+          "text": "NO₂ fell by this much across the United States from 2005 to 2014 as power plants and cars got cleaner, while parts of China rose by a similar amount and India kept climbing.",
+          "source": "Duncan et al. 2016, Journal of Geophysical Research: Atmospheres (NASA)",
+          "url": "https://doi.org/10.1002/2015JD024121"
+        },
+        {
+          "figure": "hourly",
+          "text": "TEMPO, launched in April 2023, measures NO₂ over North America every daylight hour from geostationary orbit. Side B plays its rush-hour cycle from NASA's EIC.",
+          "source": "NASA Scientific Visualization Studio, visualization 5175",
+          "url": "https://svs.gsfc.nasa.gov/5175/"
+        }
+      ],
+      "instruments": [
+        { "name": "OMI on Aura", "launched": "2004-07-15", "role": "Side A frames: daily global NO₂, 13 × 24 km pixels" },
+        { "name": "TEMPO", "launched": "2023-04-07", "role": "Side B: hourly NO₂ over North America (NASA EIC)" }
+      ],
+      "caveats": [
+        "Each frame is a 3-day March mosaic, so wind and weather drive most frame-to-frame change: that noise is this theme's sound.",
+        "The global average barely moves because big regional changes cancel out: cleaner air over the US and Europe, dirtier air over South Asia.",
+        "OMI's 'row anomaly' (since 2007) blanks part of every swath. Gaps are skipped, not counted as clean air.",
+        "A column measured from space is not the concentration at street level, and the top of the GIBS palette saturates over the dirtiest cities."
+      ],
+      "sources": [
+        { "name": "NASA GIBS layer OMI_Nitrogen_Dioxide_Tropo_Column", "url": "https://worldview.earthdata.nasa.gov/?l=OMI_Nitrogen_Dioxide_Tropo_Column" },
+        { "name": "NASA Earthdata: OMI instrument", "url": "https://www.earthdata.nasa.gov/data/instruments/omi" },
+        { "name": "NASA Earth Observatory: NO₂ getting better, getting worse", "url": "https://earthobservatory.nasa.gov/Features/AirQuality/page5.php" },
+        { "name": "OMI row anomaly (FMI)", "url": "https://omi.fmi.fi/anomaly.html" }
+      ]
+    },
+    "greenhouse_gases": {
+      "lead": "Methane (CH₄) is the second-largest driver of human-caused warming after carbon dioxide. AIRS on NASA's Aqua satellite measures it in the mid-troposphere, about 7 km up.",
+      "measures": "Methane volume mixing ratio at the 400 hPa pressure level: methane molecules per billion molecules of air.",
+      "facts": [
+        {
+          "figure": "+166%",
+          "text": "Methane in 2024 stood 166% above its pre-industrial level (before 1750), at 1,942 ppb. Carbon dioxide was 52% above and nitrous oxide 25%.",
+          "source": "WMO Greenhouse Gas Bulletin No. 21, October 2025",
+          "url": "https://wmo.int/publication-series/wmo-greenhouse-gas-bulletin-no-21"
+        },
+        {
+          "figure": "≈80×",
+          "text": "Over 20 years, a tonne of fossil methane traps about 80 times as much heat as a tonne of CO₂ (GWP-20 of 82.5; about 30 over 100 years).",
+          "source": "IPCC AR6 Working Group I, Table 7.15",
+          "url": "https://www.ipcc.ch/report/ar6/wg1/chapter/chapter-7/"
+        },
+        {
+          "figure": "~10 yr",
+          "text": "Methane breaks down in about a decade, far faster than CO₂, so cutting it is the quickest way to slow near-term warming.",
+          "source": "WMO Greenhouse Gas Bulletin No. 21",
+          "url": "https://wmo.int/publication-series/wmo-greenhouse-gas-bulletin-no-21"
+        }
+      ],
+      "instruments": [
+        { "name": "AIRS on Aqua", "launched": "2002-05-04", "role": "Side A frames: monthly methane at 400 hPa, 2,378 infrared channels" },
+        { "name": "NASA GEOS model", "launched": null, "role": "Side B: NASA EIC volumetric methane for 2021 (a model, informed by observations)" }
+      ],
+      "caveats": [
+        "AIRS sees methane about 7 km up, where it is lower and smoother than at the surface, so these values sit below NOAA's surface line. The trends agree.",
+        "Each frame is the August monthly mean, which removes the seasonal cycle; El Niño and wetland swings still move single years.",
+        "Aqua is drifting and NASA plans to begin shutting it down in late 2026 or early 2027.",
+        "GIBS stores methane in 2 ppb colour steps, so every value here is rounded to within about 1 ppb."
+      ],
+      "sources": [
+        { "name": "NOAA Global Monitoring Laboratory: methane trends", "url": "https://gml.noaa.gov/ccgg/trends_ch4/" },
+        { "name": "NASA AIRS project", "url": "https://airs.jpl.nasa.gov/" },
+        { "name": "NASA GIBS layer AIRS_L3_Methane_400hPa_Volume_Mixing_Ratio_Monthly_Day", "url": "https://worldview.earthdata.nasa.gov/?l=AIRS_L3_Methane_400hPa_Volume_Mixing_Ratio_Monthly_Day" },
+        { "name": "US Greenhouse Gas Center (NASA, EPA, NIST, NOAA)", "url": "https://earth.gov/ghgcenter" }
+      ]
+    }
+  },
+  "accessibility": {
+    "figure": "2.2 billion",
+    "text": "People worldwide with a near or distance vision impairment.",
+    "source": "World Health Organization, World report on vision, 2019",
+    "url": "https://www.who.int/publications/i/item/9789241516570"
+  },
+  "challenge": {
+    "name": "The Earth Information Jukebox, NASA Space Apps Challenge 2026",
+    "url": "https://www.spaceappschallenge.org/2026/challenges/the-earth-information-jukebox/"
+  }
+}
