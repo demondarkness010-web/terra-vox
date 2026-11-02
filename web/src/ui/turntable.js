@@ -1,4 +1,4 @@
-// The stage: the globe, the rolling year, the transport and the groove
+// The stage: the globe, the big date, the transport and the groove
 // timeline. View + input only; main.js owns playback state and audio.
 //
 // The scrubber is a native <input type="range"> laid over the groove, so
@@ -8,9 +8,8 @@
 // the timeline is also the theme's chart.
 
 import { createGlobe } from './globe.js';
-import { createOdometer } from './odometer.js';
 import { physicalShort, activeShare } from '../data/loader.js';
-import { ms, motionReduced } from './tokens.js';
+import { motionReduced } from './tokens.js';
 
 export function createTurntable(root, { onTogglePlay, onScrub, onStep, onListenMode, listenModes = {}, altFor = defaultAlt }) {
   const $ = (id) => document.getElementById(id);
@@ -31,8 +30,8 @@ export function createTurntable(root, { onTogglePlay, onScrub, onStep, onListenM
   const screenB = $('eic-b');
 
   const globe = createGlobe(globeEl);
-  const year = createOdometer($('year-single'));
-  const years = { oldest: createOdometer($('year-old')), newest: createOdometer($('year-new')) };
+  const year = bigDate($('year-single'));
+  const years = { oldest: bigDate($('year-old')), newest: bigDate($('year-new')) };
 
   let theme = null;
   let ticks = [];
@@ -45,10 +44,12 @@ export function createTurntable(root, { onTogglePlay, onScrub, onStep, onListenM
 
   function setTheme(next) {
     theme = next;
-    themeTitle.textContent = theme.name;
+    // Air Quality is one region at a time, so the title says which.
+    const title = theme.region ? `${theme.name}: ${theme.region.short}` : theme.name;
+    themeTitle.textContent = title;
     scrubber.max = String(theme.frames.length - 1);
     const [r0, r1] = theme.rangeLabel;
-    scrubber.setAttribute('aria-label', `${theme.name} timeline, ${r0} to ${r1}`);
+    scrubber.setAttribute('aria-label', `${title} timeline, ${r0} to ${r1}`);
     $('scrub-start').textContent = r0;
     $('scrub-end').textContent = r1;
     $('groove-note').textContent = theme.side === 'b'
@@ -79,7 +80,7 @@ export function createTurntable(root, { onTogglePlay, onScrub, onStep, onListenM
     ticks[ticks.length - 1].classList.add('is-newest');
   }
 
-  function showFrame(index, { instant = false } = {}) {
+  function showFrame(index) {
     if (!theme) return;
     const frame = theme.frames[index];
     if (theme.side === 'b') {
@@ -89,7 +90,7 @@ export function createTurntable(root, { onTogglePlay, onScrub, onStep, onListenM
       globe.showFrame(frame);
       globeEl.setAttribute('aria-label', altFor(frame, theme));
     }
-    year.set(frame.big, { instant });
+    year.set(frame.big);
     frameLabel.textContent = frame.label;
     nowValue.textContent = `${capitalize(theme.physical.label)}: ${physicalShort(frame)}`;
     const share = activeShare(frame);
@@ -108,12 +109,10 @@ export function createTurntable(root, { onTogglePlay, onScrub, onStep, onListenM
     playBtn.title = playing ? 'Pause (Space)' : 'Play (Space)';
   }
 
-  // A bar was heard: the play ring pulses for one beat and the year's width
-  // follows its tempo. With reduced motion there is no ring; the button's
-  // fill steps once per bar instead.
+  // A bar was heard: the play ring pulses for one beat. With reduced motion
+  // there is no ring; the button's fill steps once per bar instead.
   function beat(side, params) {
     globe.setTempo(side, params.tempoBPM);
-    (side === 'single' ? year : years[side]).stretch(params.tempoBPM);
     if (motionReduced()) {
       playBtn.classList.toggle('is-tick');
       return;
@@ -133,12 +132,7 @@ export function createTurntable(root, { onTogglePlay, onScrub, onStep, onListenM
   const duetNow = $('duet-now');
   const listen = createSegmented($('listen-modes'), listenModes, (m) => onListenMode?.(m));
 
-  let rollIn = false;
-  let rollTimer = 0;
-
   function setDuet(on) {
-    rollIn = on;
-    clearTimeout(rollTimer);
     stage.dataset.mode = on ? 'duet' : 'single';
     root.dataset.mode = on ? 'duet' : 'single';
     duetPanel.hidden = !on;
@@ -161,24 +155,9 @@ export function createTurntable(root, { onTogglePlay, onScrub, onStep, onListenM
       globe.setDuet(true, gap.oldest, gap.newest);
       globeEl.setAttribute('aria-label', `Two planets. ${pair}`);
     }
-    // Entering Duet, the ear years roll in on the odometer at step four of
-    // the split; changing theme inside Duet rolls them from the last years.
-    if (rollIn) {
-      rollIn = false;
-      const zero = (s) => String(s).replace(/[0-9]/g, '0');
-      years.oldest.set(zero(gap.oldest.big), { instant: true });
-      years.newest.set(zero(gap.newest.big), { instant: true });
-      rollTimer = setTimeout(() => {
-        years.oldest.set(gap.oldest.big);
-        years.newest.set(gap.newest.big);
-      }, ms('--split-step') * 4);
-    } else {
-      years.oldest.set(gap.oldest.big);
-      years.newest.set(gap.newest.big);
-    }
-    years.oldest.stretch(gap.pa.tempoBPM);
-    years.newest.stretch(gap.pb.tempoBPM);
-    // the odometers are hidden from screen readers; they hear the dates here
+    years.oldest.set(gap.oldest.big);
+    years.newest.set(gap.newest.big);
+    // the big dates are hidden from screen readers; they hear them here
     $('year-old-sr').textContent = `, ${gap.oldest.label}`;
     $('year-new-sr').textContent = `, ${gap.newest.label}`;
     $('gap-years').textContent = `${gap.oldest.short} → ${gap.newest.short}, ${gap.apart}`;
@@ -264,6 +243,13 @@ export function createSegmented(container, options, onChange) {
 }
 
 const capitalize = (s) => s.charAt(0).toUpperCase() + s.slice(1);
+
+// The big date ("2014", "21:20", "+6.2"): plain text, aria-hidden, since the
+// full label is always in text elsewhere.
+function bigDate(el) {
+  el.setAttribute('aria-hidden', 'true');
+  return { set(text) { el.textContent = String(text); } };
+}
 
 function defaultAlt(frame, theme) {
   return `${theme.name}, ${frame.label}`;

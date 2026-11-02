@@ -2,7 +2,7 @@
 
 import '@fontsource-variable/anybody/standard.css';
 import '@fontsource-variable/atkinson-hyperlegible-next/index.css';
-import { loadThemes, loadSideB, getTheme, trackFor } from './data/loader.js';
+import { loadThemes, loadSideB, getTheme, trackFor, airRegions, setAirRegion, context } from './data/loader.js';
 import { Voice, startAudio, whenHeard } from './audio/sonify.js';
 import { Duet, LISTEN_MODES, describeGap } from './audio/duet.js';
 import { createThemeTiles } from './ui/themeTiles.js';
@@ -13,6 +13,7 @@ import { createMappingReadout } from './ui/mappingReadout.js';
 import { createGuessTheYear } from './ui/guessTheYear.js';
 import { createCaptionTrack, altText, VERBOSITY } from './ui/captions.js';
 import { createAnnouncer, installShortcuts, createHelpDialog } from './ui/a11y.js';
+import { motionReduced } from './ui/tokens.js';
 
 const themes = loadThemes();
 const sidesB = loadSideB();
@@ -70,12 +71,20 @@ const guide = createFieldGuide(document.getElementById('field-guide'));
 const mapKey = createMapKey(document.getElementById('map-key'));
 
 // Side A / side B, like a record: A is the calibrated year-by-year record,
-// B is the theme's NASA Earth Information Center visualization.
+// B is the theme's NASA Earth Information Center visualization. The switch
+// lives behind More; F flips it from anywhere.
 const SIDES = { a: 'Side A, every year', b: 'Side B, NASA EIC' };
 const sideSwitch = document.getElementById('side-switch');
 const sideNote = document.getElementById('side-note');
 const sides = createSegmented(document.getElementById('side-modes'), SIDES, (side) => setSide(side));
 sideSwitch.hidden = Object.keys(sidesB).length === 0;
+
+// Air Quality follows one region at a time: the global mean barely moves,
+// while North China has cleaned up and northern India has grown dirtier.
+const regionSwitch = document.getElementById('region-switch');
+const regions = createSegmented(document.getElementById('region-modes'),
+  Object.fromEntries(airRegions().map((r) => [r.id, r.short])), (id) => loadTrack(setAirRegion(id)));
+const story = document.getElementById('track-story');
 
 // Everything that depends on which track is loaded, but not on the frame.
 function showTrack() {
@@ -84,8 +93,13 @@ function showTrack() {
   const b = sidesB[t.parent];
   sideSwitch.querySelector('[data-value="b"]').disabled = !b;
   sideNote.textContent = t.side === 'b'
-    ? `NASA EIC visualization ${t.svs}: ${t.title}`
+    ? `Side B: NASA EIC visualization ${t.svs}, ${t.title}`
     : `${t.dataset}, NASA GIBS, ${t.rangeLabel[0]}–${t.rangeLabel[1]}`;
+  regionSwitch.hidden = !t.region;
+  if (t.region) regions.select(t.region.id);
+  const line = t.side === 'a' ? context?.themes?.[t.parent]?.story : null;
+  story.hidden = !line;
+  story.textContent = line ?? '';
   mapKey.setTrack(t);
   guide.setTrack(t, b);
 }
@@ -106,6 +120,7 @@ function setBeat(bpm) {
 function ensureVoice() {
   if (!voice) {
     voice = new Voice({ name: 'jukebox', level: 0.8 });
+    voice.setSweep(state.theme.frames.length);   // stereo is time: oldest left, newest right
     voice.onBar(onBar);
     // Each note blooms on the globe at a real place in the data, when it is heard.
     voice.onNote((n) => whenHeard(n.time, () => {
@@ -134,11 +149,26 @@ function onBar(event) {
   });
 }
 
-function render({ instant = false } = {}) {
-  turntable.showFrame(state.index, { instant });
+function render() {
+  turntable.showFrame(state.index);
   readout.showFrame(state.theme, currentFrame());
   guide.showFrame(currentFrame());
+  syncReadScroll();
 }
+
+// On short screens the reading scrolls inside its panel; only then does it
+// take a tab stop, so a keyboard can scroll it too.
+const nowRead = document.getElementById('now-read');
+function syncReadScroll() {
+  if (nowRead.scrollHeight > nowRead.clientHeight + 1) {
+    nowRead.tabIndex = 0;
+    nowRead.setAttribute('role', 'region');
+    nowRead.setAttribute('aria-label', 'Current reading');
+  } else {
+    ['tabindex', 'role', 'aria-label'].forEach((a) => nowRead.removeAttribute(a));
+  }
+}
+new ResizeObserver(syncReadScroll).observe(nowRead);
 
 function renderDuet() {
   const gap = describeGap(state.theme);
@@ -206,13 +236,15 @@ function loadTrack(track) {
     return;
   }
   if (voice) {
+    voice.setSweep(track.frames.length);
     voice.setFrame(currentFrame(), { restart: state.playing });
     if (!state.playing) voice.stop();
   }
   tiles.setPlaying(state.theme.parent, state.playing);
   const [y0, y1] = state.theme.rangeLabel;
   const what = track.side === 'b' ? `side B, NASA's ${track.title} visualization` : 'side A, year by year';
-  announce(`${state.theme.name}, ${what}: ${y0} to ${y1}, ${state.theme.frameCount} frames. ${state.theme.signature}. ${state.playing ? '' : 'Press Space to play.'}`);
+  const where = track.region ? `, over ${track.region.over}` : '';
+  announce(`${state.theme.name}${where}, ${what}: ${y0} to ${y1}, ${state.theme.frameCount} frames. ${state.theme.signature}. ${state.playing ? '' : 'Press Space to play.'}`);
   if (!state.playing) captions.describe(currentFrame(), state.theme, { delay: 2200 });
 }
 
@@ -331,41 +363,48 @@ function meterLoop() {
 // ------------------------------------------------------------ modes
 
 const guess = createGuessTheYear(document.getElementById('panel-guess'), { themes, unlock, announce });
-const modeTabs = [...document.querySelectorAll('.modes [role="tab"]')];
+const moreToggle = document.getElementById('more-toggle');
 
 function setMode(mode) {
   if (mode === state.mode) return;
   state.mode = mode;
-  modeTabs.forEach((tab) => {
-    const on = tab.id === `tab-${mode}`;
-    tab.setAttribute('aria-selected', String(on));
-    tab.tabIndex = on ? 0 : -1;
-  });
   document.getElementById('panel-jukebox').hidden = mode !== 'jukebox';
   document.getElementById('panel-guess').hidden = mode !== 'guess';
   duetToggle.hidden = mode !== 'jukebox';
+  moreToggle.hidden = mode !== 'jukebox';
   if (mode === 'guess') {
     if (state.duet) toggleDuet(false);
     voice?.stop();
     setPlaying(false);
     guess.activate();
+    document.getElementById('guess-heading').focus();
   } else {
     guess.deactivate();
+    document.getElementById('player').focus();
     announce('Jukebox. Choose a theme and press Space to play, or D for Duet.');
   }
 }
 
-modeTabs.forEach((tab, i) => {
-  tab.addEventListener('click', () => setMode(tab.id.replace('tab-', '')));
-  tab.addEventListener('keydown', (e) => {
-    const d = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
-    if (!d) return;
-    e.preventDefault();
-    const next = modeTabs[(i + d + modeTabs.length) % modeTabs.length];
-    next.focus();
-    setMode(next.id.replace('tab-', ''));
-  });
-});
+document.getElementById('open-guess').addEventListener('click', () => setMode('guess'));
+document.getElementById('close-guess').addEventListener('click', () => setMode('jukebox'));
+
+// ------------------------------------------------------------ more
+
+// The first screen is: pick a theme, press play, Duet. Everything else
+// (Guess the Year, side B, the field guide, the mapping desk) sits behind
+// one More button, below the player.
+const more = document.getElementById('more');
+
+function setMore(open) {
+  more.hidden = !open;
+  moreToggle.setAttribute('aria-expanded', String(open));
+  if (open) {
+    const heading = document.getElementById('more-heading');
+    heading.focus({ preventScroll: true });
+    heading.scrollIntoView({ behavior: motionReduced() ? 'auto' : 'smooth', block: 'start' });
+  }
+}
+moreToggle.addEventListener('click', () => setMore(more.hidden));
 
 // ------------------------------------------------------------ settings
 
@@ -432,11 +471,7 @@ const SHORTCUTS = [
   } },
   { keys: ['s'], label: 'Speak aloud on / off', run: () => setSpeak(!captions.speak) },
   { keys: ['m'], label: 'Reduce motion on / off', run: () => motionToggle.click() },
-  { keys: ['g'], label: 'Switch Jukebox / Guess the Year', run: () => {
-    const m = state.mode === 'jukebox' ? 'guess' : 'jukebox';
-    setMode(m);
-    document.getElementById(`tab-${m}`).focus();
-  } },
+  { keys: ['g'], label: 'Guess the Year / back to the jukebox', run: () => setMode(state.mode === 'jukebox' ? 'guess' : 'jukebox') },
   { keys: ['?', 'h'], label: 'Show these shortcuts', run: () => help.open() },
 ];
 
@@ -464,6 +499,11 @@ const help = createHelpDialog(document.getElementById('help-dialog'), [document.
 // the strongest moment: Duet on methane, 2003 against 2026.
 const intro = document.getElementById('intro');
 const INTRO_THEME = 'greenhouse_gases';
+
+// Phones and tablets only let sound start from a tap, so the button says so.
+if (window.matchMedia('(pointer: coarse)').matches) {
+  document.getElementById('intro-start').textContent = 'Headphones on, tap to start sound';
+}
 
 function openIntro() {
   if (help.isOpen) help.close();
@@ -497,7 +537,7 @@ setSpeak(prefs.speak ?? false, { say: false });
 tiles.select(state.theme.id);
 turntable.setTheme(state.theme);
 showTrack();
-render({ instant: true });
+render();
 captions.show(currentFrame());
 if (!prefs.introSeen) openIntro();
 

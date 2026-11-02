@@ -32,10 +32,6 @@
           <p class="tagline">NASA Earth data you can hear</p>
         </div>
       </div>
-      <div class="modes" role="tablist" aria-label="Mode">
-        <button role="tab" id="tab-jukebox" aria-selected="true" aria-controls="panel-jukebox" type="button">Jukebox</button>
-        <button role="tab" id="tab-guess" aria-selected="false" aria-controls="panel-guess" tabindex="-1" type="button">Guess the Year</button>
-      </div>
       <div class="top-actions">
         <button id="duet-toggle" class="duet-toggle" type="button" aria-pressed="false" aria-describedby="duet-hint">
           <span class="duet-dots" aria-hidden="true"><span class="duet-dot old"></span><span class="duet-dot new"></span></span>
@@ -43,6 +39,7 @@
           <kbd aria-hidden="true">D</kbd>
         </button>
         <span id="duet-hint" class="sr-only">Plays the oldest year in your left ear and the newest year in your right ear at the same time. Shortcut: D.</span>
+        <button id="more-toggle" class="ghost more-toggle" type="button" aria-expanded="false" aria-controls="more">More</button>
         <div class="settings">
           <button id="speak-toggle" class="ghost" type="button" aria-pressed="false" title="Read descriptions aloud with the browser's voice (S)">Speak aloud</button>
           <label class="describe">
@@ -60,10 +57,16 @@
       </div>
     </header>
 
-    <main id="panel-jukebox" class="jukebox" role="tabpanel" aria-labelledby="tab-jukebox">
+    <main id="panel-jukebox" class="jukebox">
       <section class="crate" aria-labelledby="themes-heading">
-        <h2 id="themes-heading" class="crate-title">Themes</h2>
-        <div id="theme-tiles"></div>
+        <div class="crate-top">
+          <h2 id="themes-heading" class="crate-title">Themes</h2>
+          <div id="theme-tiles"></div>
+        </div>
+        <div class="region-switch" id="region-switch" hidden>
+          <h3 id="region-label" class="crate-title">Air Quality region</h3>
+          <div id="region-modes" class="segmented regions" role="radiogroup" aria-labelledby="region-label"></div>
+        </div>
       </section>
 
       <section id="player" class="player" aria-labelledby="player-heading" tabindex="-1" data-mode="single">
@@ -81,23 +84,22 @@
         </div>
 
         <div class="now">
-          <h2 id="player-heading" class="now-theme"><span id="player-theme">Wildfires</span></h2>
-          <div class="side-switch" id="side-switch" hidden>
-            <span id="side-label" class="sr-only">Record side</span>
-            <div id="side-modes" class="segmented sides" role="radiogroup" aria-labelledby="side-label" aria-describedby="side-note"></div>
+          <div id="now-read" class="now-read">
+            <h2 id="player-heading" class="now-theme"><span id="player-theme">Wildfires</span></h2>
             <p id="side-note" class="side-note"></p>
-          </div>
-          <div class="now-single">
-            <p id="frame-caption" class="now-label"></p>
-            <div id="year-single" class="now-year"></div>
-            <p id="now-value" class="now-value"></p>
-            <p id="now-share" class="now-share"></p>
-          </div>
-          <div id="map-key" class="map-key"></div>
-          <div id="duet-now" class="now-duet" hidden>
-            <p id="gap-years" class="gap-years"></p>
-            <p id="gap-sentence" class="gap-sentence"></p>
-            <p id="gap-physical" class="gap-physical"></p>
+            <p id="track-story" class="track-story" hidden></p>
+            <div class="now-single">
+              <p id="frame-caption" class="now-label"></p>
+              <div id="year-single" class="now-year"></div>
+              <p id="now-value" class="now-value"></p>
+              <p id="now-share" class="now-share"></p>
+            </div>
+            <div id="map-key" class="map-key"></div>
+            <div id="duet-now" class="now-duet" hidden>
+              <p id="gap-years" class="gap-years"></p>
+              <p id="gap-sentence" class="gap-sentence"></p>
+              <p id="gap-physical" class="gap-physical"></p>
+            </div>
           </div>
           <div class="lyrics" id="caption-track" role="group" aria-label="Data caption">
             <p id="cap-prev" class="cap-prev" aria-hidden="true"></p>
@@ -141,6 +143,21 @@
           </div>
         </div>
       </section>
+
+      <section id="more" class="more" aria-labelledby="more-heading" hidden>
+        <h2 id="more-heading" class="more-title" tabindex="-1">More</h2>
+        <div class="more-cards">
+          <section class="more-card" aria-labelledby="guess-card-heading">
+            <h3 id="guess-card-heading">Guess the Year</h3>
+            <p>A hidden year plays. Compare it with the oldest and newest, then pick which year it is.</p>
+            <button id="open-guess" class="ghost" type="button">Play Guess the Year <kbd aria-hidden="true">G</kbd></button>
+          </section>
+          <section class="more-card side-switch" id="side-switch" aria-labelledby="side-label" hidden>
+            <h3 id="side-label">Side B: NASA's own visualizations</h3>
+            <p>Flip the record to play the theme's NASA Earth Information Center visualization, frame by frame, through the same mapping.</p>
+            <div id="side-modes" class="segmented sides" role="radiogroup" aria-labelledby="side-label"></div>
+          </section>
+        </div>
 
       <section id="field-guide" class="guide" aria-labelledby="guide-heading">
         <header class="guide-head">
@@ -187,13 +204,15 @@
         <h2 id="readout-heading" class="desk-title">How the data plays the music</h2>
         <div id="mapping-readout"></div>
       </section>
+      </section>
     </main>
 
-    <main id="panel-guess" class="guess" role="tabpanel" aria-labelledby="tab-guess" hidden>
+    <main id="panel-guess" class="guess" hidden>
       <section class="guess-card" aria-labelledby="guess-heading">
+        <button id="close-guess" class="btn-text guess-back" type="button">← Back to the jukebox <kbd aria-hidden="true">G</kbd></button>
         <div class="guess-head">
           <div>
-            <h2 id="guess-heading">Guess the Year</h2>
+            <h2 id="guess-heading" tabindex="-1">Guess the Year</h2>
             <p class="guess-intro">
               A hidden year is playing. Compare it with the oldest and newest years, then pick the one you hear.
               Denser, faster, tenser sound means more of the theme's "active" signal.
@@ -217,9 +236,9 @@
         </div>
 
         <div class="guess-listen" role="group" aria-label="Listen">
-          <button id="guess-oldest" class="pad old" type="button"><kbd>A</kbd> Hear oldest <span></span></button>
+          <button id="guess-oldest" class="pad old" type="button" aria-keyshortcuts="A"><kbd aria-hidden="true">A</kbd> Hear oldest <span></span></button>
           <button id="guess-play" class="pad main" type="button" aria-pressed="false"><kbd>Space</kbd> <span>Play mystery year</span></button>
-          <button id="guess-newest" class="pad new" type="button"><kbd>B</kbd> Hear newest <span></span></button>
+          <button id="guess-newest" class="pad new" type="button" aria-keyshortcuts="B"><kbd aria-hidden="true">B</kbd> Hear newest <span></span></button>
         </div>
 
         <fieldset class="guess-choices" id="guess-choices">
@@ -262,7 +281,7 @@
 
     <footer class="credits">
       <p><strong>Terra Vox</strong> for the NASA Space Apps Challenge 2026, <a href="https://www.spaceappschallenge.org/2026/challenges/the-earth-information-jukebox/" target="_blank" rel="noopener">The Earth Information Jukebox</a>. Open source, MIT licence.</p>
-      <p>Side A imagery: NASA GIBS / Worldview (MODIS on Terra, OMI on Aura, AIRS on Aqua, JPL MEaSUREs sea surface height). Side B and cover art: NASA Scientific Visualization Studio, Earth Information Center visualizations 5113, 5235, 5175 and 5116. Reference records: NOAA Global Monitoring Laboratory; NOAA Laboratory for Satellite Altimetry ("Altimetry data are provided by NOAA Laboratory for Satellite Altimetry"). Facts checked November 1, 2026.</p>
+      <p>Side A imagery: NASA GIBS / Worldview (MODIS on Terra, OMI on Aura, AIRS on Aqua, JPL MEaSUREs sea surface height). Side B and cover art: NASA Scientific Visualization Studio, Earth Information Center visualizations 5113, 5235, 5175 and 5116. Reference records: NOAA Global Monitoring Laboratory; NOAA Laboratory for Satellite Altimetry ("Altimetry data are provided by NOAA Laboratory for Satellite Altimetry"). Facts checked November 2, 2026.</p>
       <p>NASA and NOAA do not endorse this project.</p>
     </footer>
 

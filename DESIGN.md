@@ -42,7 +42,7 @@ components:
   button-control: { backgroundColor: "{colors.panel}", textColor: "{colors.ink}", typography: "{typography.label}", rounded: "{rounded.control}", height: 44px, padding: 16px }
   button-control-on: { backgroundColor: "{colors.ink}", textColor: "{colors.on-signal}", typography: "{typography.label}", rounded: "{rounded.control}", height: 44px, padding: 16px }
   toggle-speak-on: { backgroundColor: "{colors.good}", textColor: "{colors.on-signal}", typography: "{typography.label}", rounded: "{rounded.control}", height: 44px, padding: 16px }
-  tab-selected: { backgroundColor: "{colors.ink}", textColor: "{colors.on-signal}", typography: "{typography.label}", rounded: "{rounded.control}" }
+  more-toggle-open: { backgroundColor: "{colors.raised}", textColor: "{colors.ink}", typography: "{typography.label}", rounded: "{rounded.control}", height: 44px, padding: 16px }
   ear-tag-old: { backgroundColor: "{colors.old}", textColor: "{colors.on-signal}", typography: "{typography.small}", rounded: "{rounded.tight}" }
   ear-tag-new: { backgroundColor: "{colors.new}", textColor: "{colors.on-signal}", typography: "{typography.small}", rounded: "{rounded.tight}" }
   pad-old-on: { backgroundColor: "{colors.old}", textColor: "{colors.on-signal}", typography: "{typography.body-strong}", rounded: "{rounded.control}", height: 64px }
@@ -161,7 +161,7 @@ Scale (classic ratios, rem at 16px root): 14, 16, 18, 21, 24, 36, 48, 72, 144.
 | Theme name | `title` | `.now-theme`. |
 | Caption, values | `lead` / `body-strong` | `.cap-data` is `body-strong`; `.now-value` is `lead`. |
 | Running text | `body` | Help, intro, explanations. Max 64ch. |
-| Controls | `label` | Every button, tab and select. |
+| Controls | `label` | Every button and select. |
 | Tags, keys, footnotes | `small` | `kbd`, ear tags, credits. Never below 14px. |
 
 Rules:
@@ -182,20 +182,25 @@ only from the `s1`–`s9` scale. Generous, unequal margins: the manual's rigour,
 grid.
 
 ```
-Desktop, single mode
+Desktop, single mode: the whole first screen
 ┌──────────────────────────────────────────────────────────────────────┐
-│ Terra Vox  NASA Earth data you can hear     [Jukebox|Guess] Duet  …  │  hull
+│ Terra Vox  NASA Earth data you can hear         Duet  More  Speak  … │  hull
 ├──────────┬───────────────────────────────────────────────────────────┤
 │ Themes   │ ░░░░░░░░░░░░░░░░ SPACE ░░░░░░░░░░░░░░░░ │ Wildfires        │
-│ ▸ Fire   │ ░░░░░░░░░░░░░░╭──────────╮░░░░░░░░░░░░░ │ August 8         │
+│ ▸ Fire   │ ░░░░░░░░░░░░░░╭──────────╮░░░░░░░░░░░░░ │ Aug 08-15, 2019  │
 │   Sea    │ ░░░░░░░░░░░░╭╯  planet   ╰╮░░░░░░░░░░░ │ 2019             │  ← numeral-xl
-│   Air    │ ░░░░░░░░░░░╭╯  (cropped   ╰╮░░░░░░░░░░ │ 4.1 % on fire    │
-│   GHG    │ ░░░░░░░░░░░│  by stage)    │░░░░░░░░░░ │ caption track    │
+│   Air    │ ░░░░░░░░░░░╭╯  (cropped   ╰╮░░░░░░░░░░ │ 260 fire areas   │
+│   GHG    │ ░░░░░░░░░░░│  by stage)    │░░░░░░░░░░ │ story · caption  │
 ├──────────┴═══════════════ horizon ═════════════════┴──────────────────┤
 │ ⏮  ▶  ⏭   ▁▂▃▂▅▆▃▇█▆▅▇█▇  timeline groove, one bar per year           │  hull
-├──────────────────────────────────────────────────────────────────────┤
-│ How the data plays the music                                          │
-│ ┌ desk board: 7 channel strips, faders and knobs ────────────────────┐ │  panel
+└──────────────────────────────────────────────────────────────────────┘
+
+Behind "More" (aria-expanded; opens below the timeline and takes focus)
+┌──────────────────────────────────────────────────────────────────────┐
+│ More                                                                  │
+│ ┌ Guess the Year ──────────┐ ┌ Side B: NASA EIC visualization ──────┐ │  panel cards
+│ Field guide: the official record behind each theme                    │
+│ How the data plays the music  ┌ desk board: 7 channel strips ──────┐  │  panel
 └──────────────────────────────────────────────────────────────────────┘
 
 Duet mode: the stage spans the full width, one hard seam in the middle
@@ -205,7 +210,7 @@ Duet mode: the stage spans the full width, one hard seam in the middle
 │                       ╭╯ old │ new ╰╮                                 │
 │                       │ frame│frame │                                 │
 ├══════════════════════════════╧══════ horizon ═════════════════════════┤
-│ "Eight buzzy notes up at B♭5, against one calm C4."   gap table      │
+│ "Four buzzy notes up at E♭5, against one calm C4."    gap table      │
 ```
 
 - **The planet is photographed, not displayed.** In single mode its diameter is about 1.15×
@@ -238,18 +243,18 @@ Shape follows the object. Four radii, each with a meaning:
 |---|---|---|
 | `none` | 0 | Data: timeline bars (top corners only get `tight`), frames, the stage, the seam. |
 | `tight` | 4px | Small physical parts: `kbd`, ear tags, fader caps, album art. |
-| `control` | 8px | Everything a finger presses that is not round: buttons, tabs, pads, selects, panels. |
+| `control` | 8px | Everything a finger presses that is not round: buttons, pads, selects, panels. |
 | `round` | 999px | Only things that are physically round: play button, knobs, discs, meters' ends. |
 
-No pills for tabs or toggles. A rectangle with an 8px radius is a switch on a console; a
+No pills for toggles or switches. A rectangle with an 8px radius is a switch on a console; a
 pill is a SaaS toggle.
 
 ## Components
 
 Reuse before creating. Existing parts: `.play-btn`, `.icon-btn`, `.btn-primary`,
 `.btn-text`, `.ghost`, `.duet-toggle`, `.seg`, `.tile`, `.pad(.old|.new|.main)`,
-`.option`, `.fader`, `.knob`, `.odometer`, `kbd`. Class names are unique per component:
-the odometer's digit column is `.wheel-strip`, the desk's column is `.channel`.
+`.option`, `.fader`, `.knob`, `.more-toggle`, `.more-card`, `kbd`. Class names are unique
+per component: the desk's column is `.channel`.
 
 Every interactive part has all five states, and they are visibly different without colour:
 
@@ -272,6 +277,23 @@ Signature parts:
 - **Desk.** Seven channel strips on one `panel` board, separated by 1px `engrave` borders.
   Fader tracks are `raised`, scale marks `engrave`, caps `ink` (single) or `old`/`new`
   (Duet). Labels under each strip: the sound in `label`, the input in `small` `muted`.
+- **One screen.** The first screen is the whole instrument: themes, the planet, the big
+  date, the caption, play, Duet. Everything that is not "pick a theme, press play, Duet"
+  (Guess the Year, side B, the field guide, the desk) lives behind the one **More** button
+  (`.more-toggle`, `aria-expanded`), which opens a `.more` section under the timeline and
+  moves focus to its heading. `G` opens Guess the Year directly; "← Back to the jukebox"
+  returns. No tabs.
+- **Big date.** The current year in `numeral-xl`, display face, weight 300, tabular
+  figures. It changes in place, with no roll: the music already marks the change.
+- **Story line and region switch.** Above the date, one bold `label` sentence says what
+  to listen for (`.track-story`, side A only). Air Quality adds a `.seg` radiogroup of four
+  regions (`.region-switch`, 2 × 2) in the crate. The crate mirrors the player's rows, so the
+  regions land below the horizon, level with the transport: choosing a region is choosing
+  a track, a setting on the console rather than a picture in space.
+- **The stage row is fixed** at `--stage-h`, so header + stage + transport is one screen.
+  On short screens the reading (`.now-read`) scrolls inside its panel and the captions stay
+  pinned under it; only while it actually scrolls does it take a tab stop. Below 760px of
+  height the date drops to `numeral-lg` and the faded previous caption line hides first.
 - **Ear tags.** Solid `old`/`new` fill, `on-signal` text, `tight` radius. Copy is
   "Left ear, oldest year" and "Right ear, newest year". No middle dot.
 - **Duet toggle.** The two dots overlap when off and part when on: the logo of the idea.
@@ -281,7 +303,7 @@ Signature parts:
 
 Do:
 
-- Let motion come from the music (beat, sparks, meters, odometer) or from a person's action.
+- Let motion come from the music (beat, sparks, meters) or from a person's action.
 - Make the planet bigger than feels safe, and the chrome quieter than feels safe.
 - Keep every value in a token, and every new part in an existing component's grammar.
 - Keep the no-JS, no-animation state complete and readable.
@@ -311,7 +333,7 @@ Motion has a grammar: press, settle, travel, and the beat. Nothing else.
 | `--dur-press` | 120ms | `:active` scale, key feedback. |
 | `--dur-state` | 180ms | Colour, fill and border changes. Also the reduced-motion crossfade. |
 | `--dur-settle` | 320ms | Fader caps, knobs, overlay fades, tile selection. |
-| `--dur-travel` | 560ms | Odometer roll, disc slide, frame crossfade, caption change. |
+| `--dur-travel` | 560ms | Disc slide, frame crossfade, caption change. |
 | `--dur-split` | 760ms | The Duet split. Matches `SPLIT_MS` in `globe.js`. |
 | `--beat` | set by JS, `60000 / BPM` ms | Anything that answers the music. |
 | `--split-step` | 80ms | The Duet split's stagger: its steps start at 0, 1, 3, 4 and 5 steps. |
@@ -333,7 +355,7 @@ reuse it, don't invent a second clock.
 | 0ms | The seam draws from top to bottom: `scaleY(0 → 1)`, `--dur-settle`, `--ease-settle`. |
 | 80ms | The two planets part along the seam: `--dur-split`, `--ease-part`. |
 | 240ms | The ear tags fade in: opacity only, `--dur-state`. |
-| 320ms | The ear years roll in on the odometer: `--dur-travel`. |
+| 320ms | The ear years fade in: opacity only, `--dur-state`. |
 | 400ms | The gap sentence fades in under the stage: opacity only. |
 
 Leaving Duet runs the same sequence in reverse at 0.7× duration.
@@ -354,14 +376,13 @@ Reduced motion (`prefers-reduced-motion: reduce` or `html[data-motion="reduce"]`
 | Planet | Slow spin, faces its data on change | Still, faces its data |
 | Duet split | Seam draws, planets part | Instant layout, `--dur-state` crossfade |
 | Sparks | Rings bloom at real locations | Dots fade in place |
-| Odometer | Digits roll | Digits swap |
 | Beat ring | Expands each beat | Off; the play button's fill steps once per bar |
 | Desk on scroll | Faders rise from zero | Faders at their values, no animation |
 
 ## Scroll Animation
 
 Terra Vox is an instrument, not a scrollytelling page. There is **exactly one**
-scroll-linked effect: as `.desk-board` enters the viewport, each fader cap and knob rises
+scroll-linked effect, and it lives behind More: as `.desk-board` enters the viewport, each fader cap and knob rises
 from zero to its current value, left to right, as if the desk were powering on.
 
 ```css
@@ -442,7 +463,8 @@ Run this after every UI change, before calling it done.
 All of these were fixed when the code was brought up to this spec. The leak greps in the
 review protocol keep them from coming back.
 
-- `.strip` split into `.wheel-strip` (odometer) and `.channel` (desk).
+- `.strip` renamed `.channel` (desk). The odometer and its `.wheel-strip` were later removed
+  for a plain big date, and the mode tabs for the More disclosure (Plan to 10/10).
 - Timeline bars use `edge`; ground split into `space` (stage) and `hull` (page).
 - `ink`, `muted`, `quiet` and `good` moved to the values in the table above.
 - No weight 800 anywhere; years are weight 300.
@@ -479,7 +501,7 @@ review protocol keep them from coming back.
   --r-tight: 4px; --r-control: 8px; --r-round: 999px;
   /* parts (the component sizes from the YAML, and the layout's fixed measures) */
   --control-h: 44px; --primary-h: 56px; --pad-h: 64px; --play-size: 80px;
-  --page-w: 1680px; --crate-w: 232px; --now-w: 360px;
+  --page-w: 1680px; --crate-w: 264px; --now-w: 360px;
   --stage-h: clamp(360px, calc(100vh - 264px), 680px);
   --fader-h: 148px; --fader-travel: 134px; --knob-size: 76px; --groove-h: 68px;
   /* motion */

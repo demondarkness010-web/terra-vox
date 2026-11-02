@@ -32,7 +32,7 @@
   --r-tight: 4px; --r-control: 8px; --r-round: 999px;
   /* parts */
   --control-h: 44px; --primary-h: 56px; --pad-h: 64px; --play-size: 80px;
-  --page-w: 1680px; --crate-w: 232px; --now-w: 360px;
+  --page-w: 1680px; --crate-w: 264px; --now-w: 360px;
   --stage-h: clamp(360px, calc(100vh - 264px), 680px);
   --fader-h: 148px; --fader-travel: 134px; --knob-size: 76px; --groove-h: 68px;
   /* motion */
@@ -122,7 +122,7 @@ kbd {
 }
 
 /* Buttons share one grammar: rest, hover, pressed, on, focus, disabled. */
-.btn, .ghost, .duet-toggle, .seg, .modes [role="tab"], .icon-btn, .numbers summary, .describe select, .guess-setup select {
+.btn, .ghost, .duet-toggle, .seg, .icon-btn, .numbers summary, .describe select, .guess-setup select {
   min-height: var(--control-h);
   padding: 0 var(--s4);
   border: 1px solid var(--edge);
@@ -134,7 +134,7 @@ kbd {
   transition: background-color var(--dur-state) var(--ease-settle), color var(--dur-state) var(--ease-settle),
     border-color var(--dur-state) var(--ease-settle), transform var(--dur-press) var(--ease-settle);
 }
-:is(.ghost, .duet-toggle, .seg, .modes [role="tab"], .icon-btn, .numbers summary, .btn-primary, .pad, .option, .tile):not(:disabled):active { transform: scale(0.97); }
+:is(.ghost, .duet-toggle, .seg, .icon-btn, .numbers summary, .btn-primary, .pad, .option, .tile):not(:disabled):active { transform: scale(0.97); }
 .play-btn:active { transform: scale(0.94); }
 :is(button, select):disabled { opacity: 0.4; cursor: default; }
 
@@ -157,10 +157,6 @@ kbd {
 .brand-mark .planet { fill: none; stroke: var(--ink); stroke-width: 1.5; }
 .brand-mark .horizon { stroke: var(--edge); stroke-width: 1.5; }
 
-.modes { display: inline-flex; gap: var(--s1); }
-.modes [role="tab"] { background: transparent; color: var(--muted); }
-.modes [role="tab"][aria-selected="true"] { background: var(--ink); border-color: var(--ink); color: var(--on-signal); }
-
 .top-actions { display: flex; align-items: center; gap: var(--s3); flex-wrap: wrap; }
 
 .duet-toggle { display: inline-flex; align-items: center; gap: var(--s3); padding: 0 var(--s3) 0 var(--s4); }
@@ -178,6 +174,7 @@ kbd {
 .ghost { display: inline-flex; align-items: center; gap: var(--s2); background: transparent; color: var(--muted); }
 #speak-toggle[aria-pressed="true"] { background: var(--good); border-color: var(--good); color: var(--on-signal); }
 #motion-toggle[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: var(--on-signal); }
+.more-toggle[aria-expanded="true"] { background: var(--raised); border-color: var(--ink); color: var(--ink); }
 
 .describe { display: inline-flex; align-items: center; gap: var(--s2); color: var(--muted); font: 600 var(--t-label)/1.3 var(--font); }
 .describe select, .guess-setup select { padding: 0 var(--s3); }
@@ -198,6 +195,13 @@ kbd {
 
 .crate-title { margin: 0 0 var(--s3); font: 600 var(--t-label)/1.3 var(--font); color: var(--muted); }
 .tiles { display: grid; gap: var(--s1); }
+/* Air Quality's regions sit under the themes, because choosing a region is choosing a
+   track. The crate mirrors the player's rows, so they land below the horizon, level
+   with the transport: a setting on the console, not a picture in space. */
+.crate { display: grid; grid-template-rows: minmax(var(--stage-h), auto) auto; row-gap: var(--s5); }
+.region-switch[hidden] { display: none; }
+.segmented.regions { display: grid; grid-template-columns: 1fr 1fr; }
+.regions .seg { padding: 0 var(--s2); font-size: var(--t-small); }
 
 .tile {
   position: relative;   /* keeps its visually hidden text inside the scrolling row */
@@ -251,6 +255,8 @@ kbd {
   min-width: 0;
 }
 .player:focus { outline: none; }
+/* The first row is exactly the stage, so the transport always fits on screen. */
+.player, .player[data-mode="duet"] { grid-template-rows: var(--stage-h) auto auto; }
 .player[data-mode="duet"] {
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   grid-template-areas:
@@ -348,7 +354,10 @@ kbd {
 
 /* ------------------------------------------------------------------ now playing */
 
-.now { grid-area: now; display: flex; flex-direction: column; gap: var(--s4); min-width: 0; padding-top: var(--s1); }
+.now { grid-area: now; display: flex; flex-direction: column; min-width: 0; min-height: 0; padding-top: var(--s1); }
+/* The reading scrolls inside the panel on short screens; the captions stay put. */
+.now-read { display: flex; flex-direction: column; gap: var(--s4); flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
+.now-read:focus-visible { outline: 3px solid var(--focus); outline-offset: var(--s1); }
 .now-theme { margin: 0; font: 700 var(--t-title)/1.2 var(--font); }
 .now-single { display: grid; }
 .now-label { margin: 0; color: var(--muted); font: 600 var(--t-label)/1.3 var(--font); }
@@ -357,9 +366,10 @@ kbd {
 .now-share { margin: 0; color: var(--muted); }
 .now-share:empty { display: none; }
 
-/* Record side: A is every year (GIBS), B is NASA's EIC visualization. */
-.side-switch { display: grid; gap: var(--s2); justify-items: start; }
+/* Where the track comes from, the Air Quality region, and its one-line story. */
 .side-note { margin: 0; color: var(--muted); font: 600 var(--t-small)/1.35 var(--font); max-width: 40ch; }
+.track-story[hidden] { display: none; }
+.track-story { margin: 0; max-width: 36ch; font: 700 var(--t-label)/1.4 var(--font); text-wrap: pretty; }
 
 /* Map key, from NASA's own colormap: one block per colormap step. */
 .map-key { max-width: 22rem; }
@@ -385,16 +395,11 @@ kbd {
 .gap-sentence { margin: 0; font: 700 clamp(var(--t-title), 3.4vw, var(--t-display))/1 var(--display); letter-spacing: -0.02em; text-wrap: balance; }
 .gap-physical { margin: var(--s4) 0 0; color: var(--muted); }
 
-/* The odometer year: light, huge, its width following the tempo. */
-.odometer { display: inline-flex; font-family: var(--display); font-weight: 300; line-height: 1; font-variant-numeric: tabular-nums; }
-.wheel { display: inline-block; height: 1em; overflow: hidden; }
-.wheel-strip { display: flex; flex-direction: column; transition: transform var(--dur-travel) var(--ease-settle); }
-.wheel-strip > span { display: block; height: 1em; text-align: center; }
-.odometer.is-instant .wheel-strip { transition: none; }
-.odometer .glyph { display: inline-block; height: 1em; padding: 0 0.04em; }
+/* The big date: light and huge. */
+.now-year, .ear-year { font-family: var(--display); font-weight: 300; font-variant-numeric: tabular-nums; }
 
 /* Captions, like lyrics: the line that just played sits above. */
-.lyrics { margin-top: auto; padding-top: var(--s4); min-height: 7.2em; border-top: 1px solid var(--engrave); }
+.lyrics { flex: none; margin-top: var(--s4); padding-top: var(--s4); min-height: 7.2em; border-top: 1px solid var(--engrave); }
 .cap-prev { margin: 0 0 var(--s2); min-height: 1.5em; color: var(--quiet); }
 .cap-data { margin: 0; font: 700 var(--t-body)/1.4 var(--font); }
 .cap-sound { margin: var(--s1) 0 0; color: var(--muted); }
@@ -504,6 +509,21 @@ html[data-motion="reduce"] .play-btn.is-tick { background: var(--muted); }
 .gap-table tr.same { color: var(--muted); }
 .gap-table tr.changed td:last-child { font-weight: 700; }
 
+/* ------------------------------------------------------------------ more */
+
+/* Behind the one More button: Guess the Year, side B, the field guide and the
+   mapping desk. The first screen stays: pick a theme, press play, Duet. */
+.more { grid-column: 1 / -1; margin-top: var(--s8); padding-top: var(--s6); border-top: 1px solid var(--engrave); }
+.more-title { margin: 0 0 var(--s5); font: 700 var(--t-headline)/1.05 var(--display); letter-spacing: -0.015em; }
+.more-title:focus { outline: none; }
+.more-title:focus-visible { outline: 3px solid var(--focus); outline-offset: var(--s1); }
+.more-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr)); gap: var(--s5); }
+.more-card { display: grid; gap: var(--s3); align-content: start; justify-items: start; padding: var(--s5); border-radius: var(--r-control); background: var(--panel); }
+.more-card h3 { margin: 0; font: 700 var(--t-title)/1.2 var(--font); }
+.more-card p { margin: 0; color: var(--muted); max-width: 52ch; }
+.more-card[hidden] { display: none; }
+.guess-back { justify-self: start; margin-bottom: var(--s4); }
+
 /* ------------------------------------------------------------------ field guide */
 
 .guide {
@@ -511,7 +531,7 @@ html[data-motion="reduce"] .play-btn.is-tick { background: var(--muted); }
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr));
   gap: var(--s7) var(--s6);
-  margin-top: var(--s9);
+  margin-top: var(--s8);
 }
 .guide-head { grid-column: 1 / span 8; }
 .guide-title, .desk-title { margin: 0; font: 700 var(--t-headline)/1.05 var(--display); letter-spacing: -0.015em; }
@@ -707,7 +727,7 @@ html[data-motion="reduce"] .play-btn.is-tick { background: var(--muted); }
 .guess { max-width: var(--page-w); margin: 0 auto; padding: var(--s5) var(--gutter) var(--s8); }
 .guess-card { max-width: 60rem; }
 .guess-head { display: flex; justify-content: space-between; align-items: flex-start; gap: var(--s5); }
-.guess-card h2 { margin: 0; font: 700 var(--t-headline)/1.05 var(--display); letter-spacing: -0.015em; }
+.guess-card h2 { margin: 0; outline-offset: var(--s1); font: 700 var(--t-headline)/1.05 var(--display); letter-spacing: -0.015em; }
 .guess-intro { margin: var(--s3) 0 0; max-width: 64ch; color: var(--muted); }
 .guess-score { flex: none; padding-top: var(--s2); color: var(--muted); font: 600 var(--t-label)/1.3 var(--font); font-variant-numeric: tabular-nums; }
 .guess-setup { display: flex; align-items: center; gap: var(--s3); margin: var(--s5) 0 var(--s4); }
@@ -846,13 +866,21 @@ html[data-motion="reduce"] .play-btn.is-tick { background: var(--muted); }
 /* ------------------------------------------------------------------ hover */
 
 @media (hover: hover) {
-  :is(.ghost, .duet-toggle, .seg, .modes [role="tab"], .icon-btn, .numbers summary):not(:disabled):not([aria-pressed="true"]):not([aria-checked="true"]):not([aria-selected="true"]):hover,
+  :is(.ghost, .duet-toggle, .seg, .icon-btn, .numbers summary):not(:disabled):not([aria-pressed="true"]):not([aria-checked="true"]):not([aria-expanded="true"]):hover,
   .tile:not([aria-checked="true"]):hover,
   .pad:not(.main):not(.is-on):hover,
   .option:not(:disabled):hover { background: var(--raised); color: var(--ink); }
 }
 
 /* ------------------------------------------------------------------ responsive */
+
+/* Short laptop screens: the stage row is short, so the reading gives back room
+   before it has to scroll: a smaller date, and only the caption being heard. */
+@media (max-height: 760px) and (min-width: 861px) {
+  .now-year { font-size: var(--t-numeral-lg); margin: var(--s1) 0 var(--s2); }
+  .lyrics { min-height: 0; }
+  .cap-prev { display: none; }
+}
 
 @media (max-width: 1180px) {
   .jukebox { grid-template-columns: minmax(0, 1fr); }
@@ -861,6 +889,10 @@ html[data-motion="reduce"] .play-btn.is-tick { background: var(--muted); }
   .stage::after { left: calc(-1 * var(--gutter)); right: calc(-1 * (var(--now-w) + var(--s6) + var(--gutter))); }
   .player[data-mode="duet"] .stage::after { right: calc(-1 * var(--gutter)); }
   .tiles { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .crate { display: block; }
+  .region-switch { margin-top: var(--s4); }
+  .segmented.regions { display: flex; flex-wrap: wrap; }
+  .regions .seg { padding: 0 var(--s4); font-size: var(--t-label); }
   .guide-head, .chart-card, .side-b-card { grid-column: 1 / -1; }
   .facts { grid-column: 1 / -1; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); }
   .sats { grid-column: 1 / span 6; }
@@ -870,7 +902,8 @@ html[data-motion="reduce"] .play-btn.is-tick { background: var(--muted); }
 @media (max-width: 860px) {
   .tiles { grid-template-columns: none; grid-auto-flow: column; grid-auto-columns: minmax(14rem, 72%); overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: var(--s2); overscroll-behavior-x: contain; }
   .tile { scroll-snap-align: start; }
-  .player, .player[data-mode="duet"] { grid-template-columns: minmax(0, 1fr); grid-template-areas: "stage" "now" "duet" "transport"; }
+  .player, .player[data-mode="duet"] { grid-template-columns: minmax(0, 1fr); grid-template-rows: none; grid-template-areas: "stage" "now" "duet" "transport"; }
+  .now-read { overflow: visible; }
   .stage, .player[data-mode="duet"] .stage { min-height: 0; aspect-ratio: 4 / 3; }
   .stage::after, .player[data-mode="duet"] .stage::after { right: calc(-1 * var(--gutter)); }
   /* The ears sit on a solid scrim where the planet reaches them. */
@@ -896,11 +929,9 @@ html[data-motion="reduce"] .play-btn.is-tick { background: var(--muted); }
   .gap-table th, .gap-table td { padding-inline: var(--s2); }
   .topbar { padding-top: max(var(--s3), env(safe-area-inset-top)); gap: var(--s3); }
   .tagline { display: none; }
-  /* Brand and Duet on one row, the mode tabs, then the settings. */
+  /* Brand, Duet and More on one row, then the settings. */
   .top-actions { display: contents; }
-  .duet-toggle { order: 1; }
-  .modes { order: 2; width: 100%; }
-  .modes [role="tab"] { flex: 1; }
+  .duet-toggle, .more-toggle { order: 1; }
   .settings { order: 3; width: 100%; }
   .settings .ghost, .describe select { padding: 0 var(--s3); }
   .duet-toggle kbd, .ghost kbd { display: none; }

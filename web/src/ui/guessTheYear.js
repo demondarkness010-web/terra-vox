@@ -106,16 +106,15 @@ export function createGuessTheYear(root, { themes, unlock, announce }) {
 
     oldBtn.querySelector('span').textContent = `(${oldestFrame(theme).year})`;
     newBtn.querySelector('span').textContent = `(${newestFrame(theme).year})`;
-    oldBtn.setAttribute('aria-label', `Hear the oldest year, ${oldestFrame(theme).year}. Key A.`);
-    newBtn.setAttribute('aria-label', `Hear the newest year, ${newestFrame(theme).year}. Key B.`);
 
     options.replaceChildren(...round.choices.map((year, i) => {
       const b = document.createElement('button');
       b.type = 'button';
       b.className = 'option';
       b.dataset.year = String(year);
-      b.innerHTML = `<kbd>${i + 1}</kbd> ${year}`;
-      b.setAttribute('aria-label', `${year}. Key ${i + 1}.`);
+      // Named by what it shows (WCAG 2.5.3); the key is announced as a shortcut.
+      b.innerHTML = `<kbd aria-hidden="true">${i + 1}</kbd> ${year}`;
+      b.setAttribute('aria-keyshortcuts', String(i + 1));
       b.addEventListener('click', () => answer(year));
       return b;
     }));
