@@ -90,7 +90,7 @@ Wildfires: global fire hasn't simply risen, so listen to the record jump year to
 - **Speak aloud** for people without a screen reader, ducking the music while it talks.
 - **Take turns** for one speaker, one earbud or hearing in one ear.
 - **Works without WebGL or speech.** If the browser has no WebGL, the frame is shown as a flat image and the sound and captions carry on; without speech synthesis the Speak aloud button hides.
-- **Lighthouse accessibility:** _score goes here once run (see [docs/submission.md](docs/submission.md))._
+- **Lighthouse accessibility: 100** on mobile and on desktop (Lighthouse 13.6, production build, November 2, 2026). Lighthouse sees the first load, with the welcome dialog open; the jukebox behind it was checked separately with axe-core ([docs/submission.md](docs/submission.md#accessibility-checks)).
 
 ### One real use
 

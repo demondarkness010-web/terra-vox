@@ -104,8 +104,27 @@ Then add one line to the README's second bullet and to the video, for example *"
 
 ### Already true in the repository
 
+- Lighthouse accessibility 100 (mobile and desktop) and axe-core with 0 violations across the app's states (see Accessibility checks below).
 - `python scripts/validate_mapping.py` passes: pitch, loudness, density and tempo correlate at r ≥ 0.82 with the measured value on all 11 tracks.
 - In the methane Duet the right ear (2026) is higher (E♭5 vs C4) and louder (velocity 0.81 vs 0.46).
 - Pan means only time: oldest left, newest right.
 - The 2.2 billion figure and the "45 dB" claim are gone from the README, the video script and the app.
 - Wildfires and Air Quality are reframed so the sound tells only what the data supports (fire areas jump year to year; air quality follows one region at a time).
+
+---
+
+## Accessibility checks
+
+Run on the production build on November 2, 2026. Automated checks catch only part of what real users hit; the tester session (section 3) and the screen-reader pass (section 4) are still needed.
+
+| Check | Result |
+|---|---|
+| Lighthouse 13.6 accessibility, mobile | 100 (audits the first load, with the welcome dialog open) |
+| Lighthouse 13.6 accessibility, desktop | 100 (same) |
+| axe-core 4.14, WCAG 2.0–2.2 A/AA and best practice, jukebox / Duet / Air Quality / More open / Guess the Year | 0 violations in every state (43–49 rules passing per state) |
+| Keyboard: Tab from the skip link round the whole page | 13 stops, each with the 3px focus ring, no trap |
+| No WebGL (Chrome with WebGL disabled) | flat NASA frames replace the globe; Duet, sound and captions keep working |
+| No speech synthesis | Speak aloud hides itself; captions and the screen-reader live region keep working |
+| 1440×900, 1366×657 and 375×812 | header, stage and transport fit one screen; no horizontal scroll |
+
+Fixed along the way: Guess the Year buttons were named differently from what they show (WCAG 2.5.3); the scrolling reading panel shared a landmark name with the player.
