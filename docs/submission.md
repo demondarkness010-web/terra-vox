@@ -91,7 +91,7 @@ Then add one line to the README's second bullet and to the video, for example *"
 
 ## 4. Before you submit: **You**
 
-- [ ] **Enable Pages:** repo Settings → Pages → Source: **GitHub Actions**. The workflow in `.github/workflows/deploy.yml` then publishes every push to `main`. Open https://demondarkness010-web.github.io/terra-vox/ in a private window and confirm it plays sound within one click.
+- [x] **Enable Pages:** done November 2, 2026 (Source: **GitHub Actions**). `.github/workflows/deploy.yml` now publishes every push to `main` to https://demondarkness010-web.github.io/terra-vox/. Checked live: the page, all four themes and the NASA images load with no failed requests, and Start opens the methane Duet. **You:** open it once in a private window with headphones and confirm you hear sound after one click (a script can't hear it).
 - [ ] **Tester session** done (section 3) and reported in the README with real numbers.
 - [ ] **Video:** record from `demo/demo-script.md`, burn in captions, upload to YouTube as unlisted, put the link in the README's first screen. Play it once on a phone speaker (mono); if Duet means nothing there, add the on-screen text "Headphones: left = 2003, right = 2026".
 - [ ] **GIF:** about 10 seconds of the methane Duet; replace `docs/media/duet.png` in the README with it (a still is there now).
