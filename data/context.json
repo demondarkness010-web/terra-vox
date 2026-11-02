@@ -1,5 +1,5 @@
 {
-  "checked": "2026-11-01",
+  "checked": "2026-11-02",
   "note": "Every number here was checked against the linked source on the date above. Numbers computed by Terra Vox from NASA/NOAA files live in data/reference.json and data/features, and are shown with their method.",
   "themes": {
     "wildfires": {
@@ -31,8 +31,8 @@
       ],
       "caveats": [
         "Each frame is one 8-day window in mid-August: the northern fire season. Africa's and Australia's peak seasons fall outside it.",
-        "Counting fire pixels says where fires burned, not how intense they were or how much land they burned, so a year can have fewer detections and worse fires.",
-        "Terra left its formation in October 2022 and has been drifting to an earlier overpass time; by mid-2026 it crossed the equator about two hours closer to dawn. Fires peak in the afternoon, so recent Terra years likely under-count.",
+        "The number is separate fire areas: connected patches of detections on the frame's 0.35° grid. It says how many places burned, not how intense the fires were or how much land burned, so a year can have fewer areas and worse fires.",
+        "Terra left its formation in October 2022 and has drifted to an earlier overpass, away from the afternoon fire peak. We checked: counted the same way from MODIS on Aqua, Terra's 2023–2025 counts stay inside the range the two satellites agreed on before the drift (Terra/Aqua 0.91–1.10 in 2003–2021; 2025: 1.03). Aqua drifts too, so this is a cross-check, not proof.",
         "NASA plans to begin shutting down Terra and Aqua in late 2026 or early 2027; VIIRS carries the fire record forward."
       ],
       "sources": [
@@ -40,7 +40,8 @@
         { "name": "NASA FIRMS: Fire Information for Resource Management System", "url": "https://firms.modaps.eosdis.nasa.gov/" },
         { "name": "Earthdata: transition from MODIS to VIIRS", "url": "https://www.earthdata.nasa.gov/data/alerts-outages/transition-from-modis-viirs" },
         { "name": "NASA technical report on Terra orbit drift (NTRS 20250000522)", "url": "https://ntrs.nasa.gov/citations/20250000522" }
-      ]
+      ],
+      "story": "Global fire hasn't simply risen. Listen to the record jump year to year."
     },
     "sea_level": {
       "lead": "Since 1992 a relay of radar altimeter satellites has measured the height of the ocean surface to within a few centimetres, revisiting every track about every ten days.",
@@ -114,7 +115,7 @@
       ],
       "caveats": [
         "Each frame is a 3-day March mosaic, so wind and weather drive most frame-to-frame change: that noise is this theme's sound.",
-        "The global average barely moves because big regional changes cancel out: cleaner air over the US and Europe, dirtier air over South Asia.",
+        "The global average barely moves because big regional changes cancel out: cleaner air over China, the US and Europe, dirtier air over South Asia. So the sound follows one region at a time.",
         "OMI's 'row anomaly' (since 2007) blanks part of every swath. Gaps are skipped, not counted as clean air.",
         "A column measured from space is not the concentration at street level, and the top of the GIBS palette saturates over the dirtiest cities."
       ],
@@ -123,7 +124,8 @@
         { "name": "NASA Earthdata: OMI instrument", "url": "https://www.earthdata.nasa.gov/data/instruments/omi" },
         { "name": "NASA Earth Observatory: NO₂ getting better, getting worse", "url": "https://earthobservatory.nasa.gov/Features/AirQuality/page5.php" },
         { "name": "OMI row anomaly (FMI)", "url": "https://omi.fmi.fi/anomaly.html" }
-      ]
+      ],
+      "story": "North China's air has cleaned up since its 2011 peak; northern India's has grown dirtier."
     },
     "greenhouse_gases": {
       "lead": "Methane (CH₄) is the second-largest driver of human-caused warming after carbon dioxide. AIRS on NASA's Aqua satellite measures it in the mid-troposphere, about 7 km up.",
@@ -167,10 +169,10 @@
     }
   },
   "accessibility": {
-    "figure": "2.2 billion",
-    "text": "People worldwide with a near or distance vision impairment.",
-    "source": "World Health Organization, World report on vision, 2019",
-    "url": "https://www.who.int/publications/i/item/9789241516570"
+    "figure": "338 million",
+    "text": "people are blind or have moderate to severe vision loss (43.3 million blind, 295 million with moderate or severe distance vision impairment, 2020), and climate data almost always arrives as a chart.",
+    "source": "GBD 2019 Blindness and Vision Impairment Collaborators (Bourne et al.), Lancet Global Health 9(2), e130–e143, 2021",
+    "url": "https://doi.org/10.1016/S2214-109X(20)30425-3"
   },
   "challenge": {
     "name": "The Earth Information Jukebox, NASA Space Apps Challenge 2026",

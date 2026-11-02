@@ -28,6 +28,19 @@ Feature definitions (all measured over the frame's valid data pixels):
   latBand        'north' | 'equatorial' | 'south' from the mean latitude of the
                  active pixels (tropics = within 23.44 degrees of the equator).
 
+What the sound follows (see SOUND in theme_defs.py): the measured value on
+a FIXED range per theme, not the picture. Each frame gets
+  value01        its headline measurement on the theme's fixed range
+  activeShare01  the share past the theme's "active" threshold, 0-100 %
+  fromFirst01    how far value01 has moved from the oldest frame's
+Air Quality frames carry these for every region in data/reference.json
+(run fetch_reference.py first); the top level holds the default region.
+
+    python scripts/extract_features.py --sound-only   # update just these
+
+The visual features below are still measured and kept in each frame's JSON
+(they describe the picture for alt text), but no longer drive the sound.
+
 Normalization: each of hue, brightness, colorVariance, pixelDensity and
 frameDelta is min-max scaled against that theme's own history, so every
 theme spans the same 0-1 range (hue: 0-360) before the sonification
@@ -48,7 +61,7 @@ import numpy as np
 from PIL import Image
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from theme_defs import THEMES, frame_label  # noqa: E402
+from theme_defs import AIR_REGIONS, SOUND, THEMES, frame_label, unit01  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
 RAW = ROOT / "data" / "raw_frames"
@@ -199,8 +212,11 @@ def process_theme(theme, base, coast):
         if rule["kind"] == "opaque":
             active = opaque
             n_clusters = cv2.connectedComponents(opaque.astype(np.uint8), connectivity=8)[0] - 1
-            physical["value"] = round(float(opaque.mean()) * 100, 2)
+            # The headline is a count of separate fire areas: the share of the
+            # map covered by dots grows with the dot size GIBS draws at.
+            physical["value"] = int(n_clusters)
             physical["clusters"] = int(n_clusters)
+            physical["mapPct"] = round(float(opaque.mean()) * 100, 2)
         else:
             values, exact = pixels_to_values(rgb_data, opaque, cmap)
             vmap = np.full(opaque.shape, np.nan)
@@ -238,6 +254,7 @@ def process_theme(theme, base, coast):
         f["normalized"]["hue"] = min(f["normalized"]["hue"], 0.9999) * 360
 
     first_year = int(frames[0]["entry"]["date"][:4])
+    outs = []
     for idx, f in enumerate(frames):
         e = f["entry"]
         out = {
@@ -257,7 +274,11 @@ def process_theme(theme, base, coast):
             "physical": f["physical"],
             "source": {"layer": theme["layer"], "days": e["days"], "urls": e["source_urls"]},
         }
-        (FEATURES / tid / f"{e['date']}.json").write_text(json.dumps(out, indent=2))
+        outs.append(out)
+
+    add_sound(tid, outs)
+    for out in outs:
+        (FEATURES / tid / f"{out['date']}.json").write_text(json.dumps(out, indent=2))
 
     return {
         "id": tid,
@@ -278,10 +299,101 @@ def process_theme(theme, base, coast):
         "frameCount": len(frames),
         "frames": [f["entry"]["date"] for f in frames],
         "normalization": ranges,
+        "sound": sound_meta(tid),
     }
 
 
+# ---------------------------------------------------------------- sound inputs
+
+def air_regions():
+    path = ROOT / "data" / "reference.json"
+    if not path.exists():
+        raise SystemExit("data/reference.json is missing: run scripts/fetch_reference.py first")
+    regions = json.loads(path.read_text(encoding="utf-8"))["air_quality"]["regions"]
+    return {r["id"]: r for r in regions if r["id"] in AIR_REGIONS}
+
+
+def sound_meta(tid):
+    cfg = SOUND[tid]
+    meta = {"range": list(cfg["range"]), "rangeLabel": cfg["rangeLabel"]}
+    if not isinstance(cfg.get("shareMax"), dict):
+        meta["shareMax"] = cfg.get("shareMax", 100)
+    if cfg["value"] == "region":
+        regions = air_regions()
+        meta["regions"] = [{"id": rid, "name": regions[rid]["name"], "shareMax": cfg["shareMax"][rid]}
+                           for rid in AIR_REGIONS]
+        meta["defaultRegion"] = AIR_REGIONS[0]
+    return meta
+
+
+def _inputs(value, share, lo, hi, share_max=100):
+    return {"value01": round(unit01(value, lo, hi), 4), "activeShare01": round(unit01(share, 0, share_max), 4)}
+
+
+def add_sound(tid, outs):
+    """value01 / activeShare01 / fromFirst01 for every frame (see theme_defs.SOUND)."""
+    cfg = SOUND[tid]
+    lo, hi = cfg["range"]
+    if cfg["value"] == "region":
+        regions = air_regions()
+        for out in outs:
+            out["regions"] = {}
+        for rid in AIR_REGIONS:
+            by_year = {p["year"]: p for p in regions[rid]["series"]}
+            first = None
+            for out in outs:
+                p = by_year[out["year"]]
+                inp = {"value": p["value"], "share": p["share"],
+                       **_inputs(p["value"], p["share"], lo, hi, cfg["shareMax"][rid])}
+                first = inp["value01"] if first is None else first
+                inp["fromFirst01"] = round(abs(inp["value01"] - first), 4)
+                out["regions"][rid] = inp
+        for out in outs:
+            d = out["regions"][AIR_REGIONS[0]]
+            out.update({k: d[k] for k in ("value01", "activeShare01", "fromFirst01")})
+        return
+    for out in outs:
+        value = out["physical"][cfg["value"]]
+        share = out["raw"]["pixelDensity"] * 100
+        out.update(_inputs(value, share, lo, hi, cfg.get("shareMax", 100)))
+        if cfg["share"] == "value":
+            out["activeShare01"] = out["value01"]
+    first = outs[0]["value01"]
+    for out in outs:
+        out["fromFirst01"] = round(abs(out["value01"] - first), 4)
+
+
+def sound_only():
+    """Recompute the sound inputs from the existing frame JSON, no image work."""
+    themes_path = ROOT / "data" / "themes.json"
+    meta = json.loads(themes_path.read_text())
+    for theme in meta["themes"]:
+        tid = theme["id"]
+        paths = [FEATURES / tid / f"{d}.json" for d in theme["frames"]]
+        outs = [json.loads(p.read_text()) for p in paths]
+        if tid == "wildfires":
+            for out in outs:  # headline moved from % of map to a count
+                ph = out["physical"]
+                if "mapPct" not in ph:
+                    ph["mapPct"], ph["value"] = ph["value"], ph["clusters"]
+                ph["label"], ph["units"] = THEME_PHYSICAL["wildfires"]["label"], THEME_PHYSICAL["wildfires"]["units"]
+            theme["physical"] = {k: THEME_PHYSICAL["wildfires"][k] for k in ("label", "units")}
+        add_sound(tid, outs)
+        for p, out in zip(paths, outs):
+            p.write_text(json.dumps(out, indent=2))
+        theme["sound"] = sound_meta(tid)
+        print(f"{tid:17s} value01 {outs[0]['value01']:.3f} -> {outs[-1]['value01']:.3f}  "
+              f"share01 {outs[0]['activeShare01']:.3f} -> {outs[-1]['activeShare01']:.3f}")
+    themes_path.write_text(json.dumps(meta, indent=2))
+
+
+THEME_PHYSICAL = {t["id"]: t["physical"] for t in THEMES}
+
+
 def main():
+    if "--sound-only" in sys.argv:
+        sound_only()
+        return
     base, coast = load_bases()
     out = {
         "generatedAt": datetime.now(timezone.utc).isoformat(timespec="seconds"),

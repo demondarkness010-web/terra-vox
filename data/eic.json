@@ -73,7 +73,10 @@
       "label": "fire pixels",
       "units": "% of land",
       "value": 2.77
-     }
+     },
+     "value01": 0.554,
+     "activeShare01": 0.554,
+     "fromFirst01": 0.0
     },
     {
      "theme": "wildfires_eic",
@@ -105,7 +108,10 @@
       "label": "fire pixels",
       "units": "% of land",
       "value": 2.275
-     }
+     },
+     "value01": 0.455,
+     "activeShare01": 0.455,
+     "fromFirst01": 0.099
     },
     {
      "theme": "wildfires_eic",
@@ -137,7 +143,10 @@
       "label": "fire pixels",
       "units": "% of land",
       "value": 2.223
-     }
+     },
+     "value01": 0.4446,
+     "activeShare01": 0.4446,
+     "fromFirst01": 0.1094
     },
     {
      "theme": "wildfires_eic",
@@ -169,7 +178,10 @@
       "label": "fire pixels",
       "units": "% of land",
       "value": 2.333
-     }
+     },
+     "value01": 0.4666,
+     "activeShare01": 0.4666,
+     "fromFirst01": 0.0874
     },
     {
      "theme": "wildfires_eic",
@@ -201,7 +213,10 @@
       "label": "fire pixels",
       "units": "% of land",
       "value": 2.816
-     }
+     },
+     "value01": 0.5632,
+     "activeShare01": 0.5632,
+     "fromFirst01": 0.0092
     },
     {
      "theme": "wildfires_eic",
@@ -233,7 +248,10 @@
       "label": "fire pixels",
       "units": "% of land",
       "value": 2.968
-     }
+     },
+     "value01": 0.5936,
+     "activeShare01": 0.5936,
+     "fromFirst01": 0.0396
     },
     {
      "theme": "wildfires_eic",
@@ -265,7 +283,10 @@
       "label": "fire pixels",
       "units": "% of land",
       "value": 3.072
-     }
+     },
+     "value01": 0.6144,
+     "activeShare01": 0.6144,
+     "fromFirst01": 0.0604
     },
     {
      "theme": "wildfires_eic",
@@ -297,7 +318,10 @@
       "label": "fire pixels",
       "units": "% of land",
       "value": 3.181
-     }
+     },
+     "value01": 0.6362,
+     "activeShare01": 0.6362,
+     "fromFirst01": 0.0822
     },
     {
      "theme": "wildfires_eic",
@@ -329,7 +353,10 @@
       "label": "fire pixels",
       "units": "% of land",
       "value": 3.213
-     }
+     },
+     "value01": 0.6426,
+     "activeShare01": 0.6426,
+     "fromFirst01": 0.0886
     },
     {
      "theme": "wildfires_eic",
@@ -361,7 +388,10 @@
       "label": "fire pixels",
       "units": "% of land",
       "value": 2.219
-     }
+     },
+     "value01": 0.4438,
+     "activeShare01": 0.4438,
+     "fromFirst01": 0.1102
     },
     {
      "theme": "wildfires_eic",
@@ -393,7 +423,10 @@
       "label": "fire pixels",
       "units": "% of land",
       "value": 1.521
-     }
+     },
+     "value01": 0.3042,
+     "activeShare01": 0.3042,
+     "fromFirst01": 0.2498
     },
     {
      "theme": "wildfires_eic",
@@ -425,7 +458,10 @@
       "label": "fire pixels",
       "units": "% of land",
       "value": 1.587
-     }
+     },
+     "value01": 0.3174,
+     "activeShare01": 0.3174,
+     "fromFirst01": 0.2366
     },
     {
      "theme": "wildfires_eic",
@@ -457,7 +493,10 @@
       "label": "fire pixels",
       "units": "% of land",
       "value": 1.817
-     }
+     },
+     "value01": 0.3634,
+     "activeShare01": 0.3634,
+     "fromFirst01": 0.1906
     },
     {
      "theme": "wildfires_eic",
@@ -489,7 +528,10 @@
       "label": "fire pixels",
       "units": "% of land",
       "value": 1.941
-     }
+     },
+     "value01": 0.3882,
+     "activeShare01": 0.3882,
+     "fromFirst01": 0.1658
     },
     {
      "theme": "wildfires_eic",
@@ -521,7 +563,10 @@
       "label": "fire pixels",
       "units": "% of land",
       "value": 2.326
-     }
+     },
+     "value01": 0.4652,
+     "activeShare01": 0.4652,
+     "fromFirst01": 0.0888
     },
     {
      "theme": "wildfires_eic",
@@ -553,7 +598,10 @@
       "label": "fire pixels",
       "units": "% of land",
       "value": 2.818
-     }
+     },
+     "value01": 0.5636,
+     "activeShare01": 0.5636,
+     "fromFirst01": 0.0096
     },
     {
      "theme": "wildfires_eic",
@@ -585,7 +633,10 @@
       "label": "fire pixels",
       "units": "% of land",
       "value": 3.343
-     }
+     },
+     "value01": 0.6686,
+     "activeShare01": 0.6686,
+     "fromFirst01": 0.1146
     },
     {
      "theme": "wildfires_eic",
@@ -617,7 +668,10 @@
       "label": "fire pixels",
       "units": "% of land",
       "value": 3.268
-     }
+     },
+     "value01": 0.6536,
+     "activeShare01": 0.6536,
+     "fromFirst01": 0.0996
     },
     {
      "theme": "wildfires_eic",
@@ -649,7 +703,10 @@
       "label": "fire pixels",
       "units": "% of land",
       "value": 2.693
-     }
+     },
+     "value01": 0.5386,
+     "activeShare01": 0.5386,
+     "fromFirst01": 0.0154
     },
     {
      "theme": "wildfires_eic",
@@ -681,7 +738,10 @@
       "label": "fire pixels",
       "units": "% of land",
       "value": 2.766
-     }
+     },
+     "value01": 0.5532,
+     "activeShare01": 0.5532,
+     "fromFirst01": 0.0008
     },
     {
      "theme": "wildfires_eic",
@@ -713,7 +773,10 @@
       "label": "fire pixels",
       "units": "% of land",
       "value": 2.175
-     }
+     },
+     "value01": 0.435,
+     "activeShare01": 0.435,
+     "fromFirst01": 0.119
     },
     {
      "theme": "wildfires_eic",
@@ -745,7 +808,10 @@
       "label": "fire pixels",
       "units": "% of land",
       "value": 2.331
-     }
+     },
+     "value01": 0.4662,
+     "activeShare01": 0.4662,
+     "fromFirst01": 0.0878
     },
     {
      "theme": "wildfires_eic",
@@ -777,7 +843,10 @@
       "label": "fire pixels",
       "units": "% of land",
       "value": 1.921
-     }
+     },
+     "value01": 0.3842,
+     "activeShare01": 0.3842,
+     "fromFirst01": 0.1698
     },
     {
      "theme": "wildfires_eic",
@@ -809,7 +878,10 @@
       "label": "fire pixels",
       "units": "% of land",
       "value": 2.201
-     }
+     },
+     "value01": 0.4402,
+     "activeShare01": 0.4402,
+     "fromFirst01": 0.1138
     },
     {
      "theme": "wildfires_eic",
@@ -841,7 +913,10 @@
       "label": "fire pixels",
       "units": "% of land",
       "value": 2.559
-     }
+     },
+     "value01": 0.5118,
+     "activeShare01": 0.5118,
+     "fromFirst01": 0.0422
     },
     {
      "theme": "wildfires_eic",
@@ -873,7 +948,10 @@
       "label": "fire pixels",
       "units": "% of land",
       "value": 2.673
-     }
+     },
+     "value01": 0.5346,
+     "activeShare01": 0.5346,
+     "fromFirst01": 0.0194
     },
     {
      "theme": "wildfires_eic",
@@ -905,7 +983,10 @@
       "label": "fire pixels",
       "units": "% of land",
       "value": 2.991
-     }
+     },
+     "value01": 0.5982,
+     "activeShare01": 0.5982,
+     "fromFirst01": 0.0442
     },
     {
      "theme": "wildfires_eic",
@@ -937,7 +1018,10 @@
       "label": "fire pixels",
       "units": "% of land",
       "value": 2.431
-     }
+     },
+     "value01": 0.4862,
+     "activeShare01": 0.4862,
+     "fromFirst01": 0.0678
     },
     {
      "theme": "wildfires_eic",
@@ -969,7 +1053,10 @@
       "label": "fire pixels",
       "units": "% of land",
       "value": 2.338
-     }
+     },
+     "value01": 0.4676,
+     "activeShare01": 0.4676,
+     "fromFirst01": 0.0864
     },
     {
      "theme": "wildfires_eic",
@@ -1001,7 +1088,10 @@
       "label": "fire pixels",
       "units": "% of land",
       "value": 2.356
-     }
+     },
+     "value01": 0.4712,
+     "activeShare01": 0.4712,
+     "fromFirst01": 0.0828
     },
     {
      "theme": "wildfires_eic",
@@ -1033,7 +1123,10 @@
       "label": "fire pixels",
       "units": "% of land",
       "value": 2.06
-     }
+     },
+     "value01": 0.412,
+     "activeShare01": 0.412,
+     "fromFirst01": 0.142
     },
     {
      "theme": "wildfires_eic",
@@ -1065,7 +1158,10 @@
       "label": "fire pixels",
       "units": "% of land",
       "value": 1.828
-     }
+     },
+     "value01": 0.3656,
+     "activeShare01": 0.3656,
+     "fromFirst01": 0.1884
     },
     {
      "theme": "wildfires_eic",
@@ -1097,7 +1193,10 @@
       "label": "fire pixels",
       "units": "% of land",
       "value": 2.114
-     }
+     },
+     "value01": 0.4228,
+     "activeShare01": 0.4228,
+     "fromFirst01": 0.1312
     },
     {
      "theme": "wildfires_eic",
@@ -1129,7 +1228,10 @@
       "label": "fire pixels",
       "units": "% of land",
       "value": 2.469
-     }
+     },
+     "value01": 0.4938,
+     "activeShare01": 0.4938,
+     "fromFirst01": 0.0602
     },
     {
      "theme": "wildfires_eic",
@@ -1161,7 +1263,10 @@
       "label": "fire pixels",
       "units": "% of land",
       "value": 2.886
-     }
+     },
+     "value01": 0.5772,
+     "activeShare01": 0.5772,
+     "fromFirst01": 0.0232
     },
     {
      "theme": "wildfires_eic",
@@ -1193,7 +1298,10 @@
       "label": "fire pixels",
       "units": "% of land",
       "value": 3.105
-     }
+     },
+     "value01": 0.621,
+     "activeShare01": 0.621,
+     "fromFirst01": 0.067
     },
     {
      "theme": "wildfires_eic",
@@ -1225,7 +1333,10 @@
       "label": "fire pixels",
       "units": "% of land",
       "value": 3.77
-     }
+     },
+     "value01": 0.754,
+     "activeShare01": 0.754,
+     "fromFirst01": 0.2
     },
     {
      "theme": "wildfires_eic",
@@ -1257,7 +1368,10 @@
       "label": "fire pixels",
       "units": "% of land",
       "value": 3.165
-     }
+     },
+     "value01": 0.633,
+     "activeShare01": 0.633,
+     "fromFirst01": 0.079
     },
     {
      "theme": "wildfires_eic",
@@ -1289,7 +1403,10 @@
       "label": "fire pixels",
       "units": "% of land",
       "value": 2.971
-     }
+     },
+     "value01": 0.5942,
+     "activeShare01": 0.5942,
+     "fromFirst01": 0.0402
     },
     {
      "theme": "wildfires_eic",
@@ -1321,9 +1438,20 @@
       "label": "fire pixels",
       "units": "% of land",
       "value": 2.931
-     }
+     },
+     "value01": 0.5862,
+     "activeShare01": 0.5862,
+     "fromFirst01": 0.0322
     }
-   ]
+   ],
+   "sound": {
+    "range": [
+     0.0,
+     5.0
+    ],
+    "rangeLabel": "0 to 5% of land",
+    "share": "value"
+   }
   },
   {
    "id": "sea_level_eic",
@@ -1401,7 +1529,10 @@
       "units": "cm",
       "value": 2.43,
       "waterLinePx": 515.0
-     }
+     },
+     "value01": 0.162,
+     "activeShare01": 0.162,
+     "fromFirst01": 0.0
     },
     {
      "theme": "sea_level_eic",
@@ -1434,7 +1565,10 @@
       "units": "cm",
       "value": 1.17,
       "waterLinePx": 528.0
-     }
+     },
+     "value01": 0.078,
+     "activeShare01": 0.078,
+     "fromFirst01": 0.084
     },
     {
      "theme": "sea_level_eic",
@@ -1467,7 +1601,10 @@
       "units": "cm",
       "value": 3.41,
       "waterLinePx": 505.0
-     }
+     },
+     "value01": 0.2273,
+     "activeShare01": 0.2273,
+     "fromFirst01": 0.0653
     },
     {
      "theme": "sea_level_eic",
@@ -1500,7 +1637,10 @@
       "units": "cm",
       "value": 1.17,
       "waterLinePx": 528.0
-     }
+     },
+     "value01": 0.078,
+     "activeShare01": 0.078,
+     "fromFirst01": 0.084
     },
     {
      "theme": "sea_level_eic",
@@ -1533,7 +1673,10 @@
       "units": "cm",
       "value": 0.88,
       "waterLinePx": 531.0
-     }
+     },
+     "value01": 0.0587,
+     "activeShare01": 0.0587,
+     "fromFirst01": 0.1033
     },
     {
      "theme": "sea_level_eic",
@@ -1566,7 +1709,10 @@
       "units": "cm",
       "value": 1.65,
       "waterLinePx": 523.0
-     }
+     },
+     "value01": 0.11,
+     "activeShare01": 0.11,
+     "fromFirst01": 0.052
     },
     {
      "theme": "sea_level_eic",
@@ -1599,7 +1745,10 @@
       "units": "cm",
       "value": 1.07,
       "waterLinePx": 529.0
-     }
+     },
+     "value01": 0.0713,
+     "activeShare01": 0.0713,
+     "fromFirst01": 0.0907
     },
     {
      "theme": "sea_level_eic",
@@ -1632,7 +1781,10 @@
       "units": "cm",
       "value": 0.58,
       "waterLinePx": 534.0
-     }
+     },
+     "value01": 0.0387,
+     "activeShare01": 0.0387,
+     "fromFirst01": 0.1233
     },
     {
      "theme": "sea_level_eic",
@@ -1665,7 +1817,10 @@
       "units": "cm",
       "value": 2.14,
       "waterLinePx": 518.0
-     }
+     },
+     "value01": 0.1427,
+     "activeShare01": 0.1427,
+     "fromFirst01": 0.0193
     },
     {
      "theme": "sea_level_eic",
@@ -1698,7 +1853,10 @@
       "units": "cm",
       "value": 3.7,
       "waterLinePx": 502.0
-     }
+     },
+     "value01": 0.2467,
+     "activeShare01": 0.2467,
+     "fromFirst01": 0.0847
     },
     {
      "theme": "sea_level_eic",
@@ -1731,7 +1889,10 @@
       "units": "cm",
       "value": 1.17,
       "waterLinePx": 528.0
-     }
+     },
+     "value01": 0.078,
+     "activeShare01": 0.078,
+     "fromFirst01": 0.084
     },
     {
      "theme": "sea_level_eic",
@@ -1764,7 +1925,10 @@
       "units": "cm",
       "value": 2.63,
       "waterLinePx": 513.0
-     }
+     },
+     "value01": 0.1753,
+     "activeShare01": 0.1753,
+     "fromFirst01": 0.0133
     },
     {
      "theme": "sea_level_eic",
@@ -1797,7 +1961,10 @@
       "units": "cm",
       "value": 4.48,
       "waterLinePx": 494.0
-     }
+     },
+     "value01": 0.2987,
+     "activeShare01": 0.2987,
+     "fromFirst01": 0.1367
     },
     {
      "theme": "sea_level_eic",
@@ -1830,7 +1997,10 @@
       "units": "cm",
       "value": 3.41,
       "waterLinePx": 505.0
-     }
+     },
+     "value01": 0.2273,
+     "activeShare01": 0.2273,
+     "fromFirst01": 0.0653
     },
     {
      "theme": "sea_level_eic",
@@ -1863,7 +2033,10 @@
       "units": "cm",
       "value": 3.8,
       "waterLinePx": 501.0
-     }
+     },
+     "value01": 0.2533,
+     "activeShare01": 0.2533,
+     "fromFirst01": 0.0913
     },
     {
      "theme": "sea_level_eic",
@@ -1896,7 +2069,10 @@
       "units": "cm",
       "value": 5.35,
       "waterLinePx": 485.0
-     }
+     },
+     "value01": 0.3567,
+     "activeShare01": 0.3567,
+     "fromFirst01": 0.1947
     },
     {
      "theme": "sea_level_eic",
@@ -1929,7 +2105,10 @@
       "units": "cm",
       "value": 5.26,
       "waterLinePx": 486.0
-     }
+     },
+     "value01": 0.3507,
+     "activeShare01": 0.3507,
+     "fromFirst01": 0.1887
     },
     {
      "theme": "sea_level_eic",
@@ -1962,7 +2141,10 @@
       "units": "cm",
       "value": 4.57,
       "waterLinePx": 493.0
-     }
+     },
+     "value01": 0.3047,
+     "activeShare01": 0.3047,
+     "fromFirst01": 0.1427
     },
     {
      "theme": "sea_level_eic",
@@ -1995,7 +2177,10 @@
       "units": "cm",
       "value": 6.52,
       "waterLinePx": 473.0
-     }
+     },
+     "value01": 0.4347,
+     "activeShare01": 0.4347,
+     "fromFirst01": 0.2727
     },
     {
      "theme": "sea_level_eic",
@@ -2028,7 +2213,10 @@
       "units": "cm",
       "value": 7.01,
       "waterLinePx": 468.0
-     }
+     },
+     "value01": 0.4673,
+     "activeShare01": 0.4673,
+     "fromFirst01": 0.3053
     },
     {
      "theme": "sea_level_eic",
@@ -2061,7 +2249,10 @@
       "units": "cm",
       "value": 8.18,
       "waterLinePx": 456.0
-     }
+     },
+     "value01": 0.5453,
+     "activeShare01": 0.5453,
+     "fromFirst01": 0.3833
     },
     {
      "theme": "sea_level_eic",
@@ -2094,7 +2285,10 @@
       "units": "cm",
       "value": 7.98,
       "waterLinePx": 458.0
-     }
+     },
+     "value01": 0.532,
+     "activeShare01": 0.532,
+     "fromFirst01": 0.37
     },
     {
      "theme": "sea_level_eic",
@@ -2127,7 +2321,10 @@
       "units": "cm",
       "value": 7.98,
       "waterLinePx": 458.0
-     }
+     },
+     "value01": 0.532,
+     "activeShare01": 0.532,
+     "fromFirst01": 0.37
     },
     {
      "theme": "sea_level_eic",
@@ -2160,7 +2357,10 @@
       "units": "cm",
       "value": 9.44,
       "waterLinePx": 443.0
-     }
+     },
+     "value01": 0.6293,
+     "activeShare01": 0.6293,
+     "fromFirst01": 0.4673
     },
     {
      "theme": "sea_level_eic",
@@ -2193,7 +2393,10 @@
       "units": "cm",
       "value": 10.22,
       "waterLinePx": 435.0
-     }
+     },
+     "value01": 0.6813,
+     "activeShare01": 0.6813,
+     "fromFirst01": 0.5193
     },
     {
      "theme": "sea_level_eic",
@@ -2226,7 +2429,10 @@
       "units": "cm",
       "value": 10.9,
       "waterLinePx": 428.0
-     }
+     },
+     "value01": 0.7267,
+     "activeShare01": 0.7267,
+     "fromFirst01": 0.5647
     },
     {
      "theme": "sea_level_eic",
@@ -2259,7 +2465,10 @@
       "units": "cm",
       "value": 10.9,
       "waterLinePx": 428.0
-     }
+     },
+     "value01": 0.7267,
+     "activeShare01": 0.7267,
+     "fromFirst01": 0.5647
     },
     {
      "theme": "sea_level_eic",
@@ -2292,7 +2501,10 @@
       "units": "cm",
       "value": 11.58,
       "waterLinePx": 421.0
-     }
+     },
+     "value01": 0.772,
+     "activeShare01": 0.772,
+     "fromFirst01": 0.61
     },
     {
      "theme": "sea_level_eic",
@@ -2325,7 +2537,10 @@
       "units": "cm",
       "value": 10.9,
       "waterLinePx": 428.0
-     }
+     },
+     "value01": 0.7267,
+     "activeShare01": 0.7267,
+     "fromFirst01": 0.5647
     },
     {
      "theme": "sea_level_eic",
@@ -2358,7 +2573,10 @@
       "units": "cm",
       "value": 11.09,
       "waterLinePx": 426.0
-     }
+     },
+     "value01": 0.7393,
+     "activeShare01": 0.7393,
+     "fromFirst01": 0.5773
     },
     {
      "theme": "sea_level_eic",
@@ -2391,9 +2609,20 @@
       "units": "cm",
       "value": 11.19,
       "waterLinePx": 425.0
-     }
+     },
+     "value01": 0.746,
+     "activeShare01": 0.746,
+     "fromFirst01": 0.584
     }
-   ]
+   ],
+   "sound": {
+    "range": [
+     0.0,
+     15.0
+    ],
+    "rangeLabel": "0 to 15 cm above 1993",
+    "share": "value"
+   }
   },
   {
    "id": "air_quality_eic",
@@ -2403,7 +2632,7 @@
    "title": "TEMPO – Nitrogen Dioxide Air Pollution Over North America",
    "page": "https://svs.gsfc.nasa.gov/5175/",
    "source": "https://svs.gsfc.nasa.gov/vis/a000000/a005100/a005175/tempo_no2_north-america_1080p60.mp4",
-   "credits": "NASA's Scientific Visualization Studio. Data: Smithsonian Astrophysical Observatory, Center for Astrophysics | Harvard & Smithsonian. Visualizers: Kel Elkins, Trent L. Schindler (USRA), Cindy Starr (GST).",
+   "credits": "NASA's Scientific Visualization Studio. Data provided by the Smithsonian Astrophysical Observatory at the Center for Astrophysics | Harvard & Smithsonian. Visualizers: Kel Elkins, Trent L. Schindler (USRA), Cindy Starr (GST).",
    "dataset": "TEMPO tropospheric NO2 column, hourly daylight scans, August 28–31, 2023",
    "signature": "rush-hour rhythm",
    "physical": {
@@ -2488,7 +2717,10 @@
       "units": "x10^15 molecules/cm2",
       "value": 0.771,
       "observedPct": 9.66
-     }
+     },
+     "value01": 0.514,
+     "activeShare01": 0.514,
+     "fromFirst01": 0.0
     },
     {
      "theme": "air_quality_eic",
@@ -2521,7 +2753,10 @@
       "units": "x10^15 molecules/cm2",
       "value": 0.747,
       "observedPct": 10.42
-     }
+     },
+     "value01": 0.498,
+     "activeShare01": 0.498,
+     "fromFirst01": 0.016
     },
     {
      "theme": "air_quality_eic",
@@ -2554,7 +2789,10 @@
       "units": "x10^15 molecules/cm2",
       "value": 0.805,
       "observedPct": 22.92
-     }
+     },
+     "value01": 0.5367,
+     "activeShare01": 0.5367,
+     "fromFirst01": 0.0227
     },
     {
      "theme": "air_quality_eic",
@@ -2587,7 +2825,10 @@
       "units": "x10^15 molecules/cm2",
       "value": 0.758,
       "observedPct": 23.72
-     }
+     },
+     "value01": 0.5053,
+     "activeShare01": 0.5053,
+     "fromFirst01": 0.0087
     },
     {
      "theme": "air_quality_eic",
@@ -2620,7 +2861,10 @@
       "units": "x10^15 molecules/cm2",
       "value": 0.698,
       "observedPct": 24.18
-     }
+     },
+     "value01": 0.4653,
+     "activeShare01": 0.4653,
+     "fromFirst01": 0.0487
     },
     {
      "theme": "air_quality_eic",
@@ -2653,7 +2897,10 @@
       "units": "x10^15 molecules/cm2",
       "value": 0.691,
       "observedPct": 23.74
-     }
+     },
+     "value01": 0.4607,
+     "activeShare01": 0.4607,
+     "fromFirst01": 0.0533
     },
     {
      "theme": "air_quality_eic",
@@ -2686,7 +2933,10 @@
       "units": "x10^15 molecules/cm2",
       "value": 0.691,
       "observedPct": 23.19
-     }
+     },
+     "value01": 0.4607,
+     "activeShare01": 0.4607,
+     "fromFirst01": 0.0533
     },
     {
      "theme": "air_quality_eic",
@@ -2719,7 +2969,10 @@
       "units": "x10^15 molecules/cm2",
       "value": 0.739,
       "observedPct": 22.01
-     }
+     },
+     "value01": 0.4927,
+     "activeShare01": 0.4927,
+     "fromFirst01": 0.0213
     },
     {
      "theme": "air_quality_eic",
@@ -2752,7 +3005,10 @@
       "units": "x10^15 molecules/cm2",
       "value": 0.811,
       "observedPct": 12.0
-     }
+     },
+     "value01": 0.5407,
+     "activeShare01": 0.5407,
+     "fromFirst01": 0.0267
     },
     {
      "theme": "air_quality_eic",
@@ -2785,7 +3041,10 @@
       "units": "x10^15 molecules/cm2",
       "value": 0.849,
       "observedPct": 8.63
-     }
+     },
+     "value01": 0.566,
+     "activeShare01": 0.566,
+     "fromFirst01": 0.052
     },
     {
      "theme": "air_quality_eic",
@@ -2818,7 +3077,10 @@
       "units": "x10^15 molecules/cm2",
       "value": 0.735,
       "observedPct": 9.45
-     }
+     },
+     "value01": 0.49,
+     "activeShare01": 0.49,
+     "fromFirst01": 0.024
     },
     {
      "theme": "air_quality_eic",
@@ -2851,7 +3113,10 @@
       "units": "x10^15 molecules/cm2",
       "value": 0.767,
       "observedPct": 22.63
-     }
+     },
+     "value01": 0.5113,
+     "activeShare01": 0.5113,
+     "fromFirst01": 0.0027
     },
     {
      "theme": "air_quality_eic",
@@ -2884,7 +3149,10 @@
       "units": "x10^15 molecules/cm2",
       "value": 0.677,
       "observedPct": 23.94
-     }
+     },
+     "value01": 0.4513,
+     "activeShare01": 0.4513,
+     "fromFirst01": 0.0627
     },
     {
      "theme": "air_quality_eic",
@@ -2917,7 +3185,10 @@
       "units": "x10^15 molecules/cm2",
       "value": 0.665,
       "observedPct": 24.09
-     }
+     },
+     "value01": 0.4433,
+     "activeShare01": 0.4433,
+     "fromFirst01": 0.0707
     },
     {
      "theme": "air_quality_eic",
@@ -2950,7 +3221,10 @@
       "units": "x10^15 molecules/cm2",
       "value": 0.653,
       "observedPct": 23.82
-     }
+     },
+     "value01": 0.4353,
+     "activeShare01": 0.4353,
+     "fromFirst01": 0.0787
     },
     {
      "theme": "air_quality_eic",
@@ -2983,7 +3257,10 @@
       "units": "x10^15 molecules/cm2",
       "value": 0.661,
       "observedPct": 23.09
-     }
+     },
+     "value01": 0.4407,
+     "activeShare01": 0.4407,
+     "fromFirst01": 0.0733
     },
     {
      "theme": "air_quality_eic",
@@ -3016,7 +3293,10 @@
       "units": "x10^15 molecules/cm2",
       "value": 0.713,
       "observedPct": 21.68
-     }
+     },
+     "value01": 0.4753,
+     "activeShare01": 0.4753,
+     "fromFirst01": 0.0387
     },
     {
      "theme": "air_quality_eic",
@@ -3049,7 +3329,10 @@
       "units": "x10^15 molecules/cm2",
       "value": 0.846,
       "observedPct": 11.92
-     }
+     },
+     "value01": 0.564,
+     "activeShare01": 0.564,
+     "fromFirst01": 0.05
     },
     {
      "theme": "air_quality_eic",
@@ -3082,7 +3365,10 @@
       "units": "x10^15 molecules/cm2",
       "value": 0.834,
       "observedPct": 10.25
-     }
+     },
+     "value01": 0.556,
+     "activeShare01": 0.556,
+     "fromFirst01": 0.042
     },
     {
      "theme": "air_quality_eic",
@@ -3115,7 +3401,10 @@
       "units": "x10^15 molecules/cm2",
       "value": 0.766,
       "observedPct": 14.98
-     }
+     },
+     "value01": 0.5107,
+     "activeShare01": 0.5107,
+     "fromFirst01": 0.0033
     },
     {
      "theme": "air_quality_eic",
@@ -3148,7 +3437,10 @@
       "units": "x10^15 molecules/cm2",
       "value": 0.755,
       "observedPct": 20.65
-     }
+     },
+     "value01": 0.5033,
+     "activeShare01": 0.5033,
+     "fromFirst01": 0.0107
     },
     {
      "theme": "air_quality_eic",
@@ -3181,7 +3473,10 @@
       "units": "x10^15 molecules/cm2",
       "value": 0.723,
       "observedPct": 21.7
-     }
+     },
+     "value01": 0.482,
+     "activeShare01": 0.482,
+     "fromFirst01": 0.032
     },
     {
      "theme": "air_quality_eic",
@@ -3214,7 +3509,10 @@
       "units": "x10^15 molecules/cm2",
       "value": 0.692,
       "observedPct": 22.78
-     }
+     },
+     "value01": 0.4613,
+     "activeShare01": 0.4613,
+     "fromFirst01": 0.0527
     },
     {
      "theme": "air_quality_eic",
@@ -3247,7 +3545,10 @@
       "units": "x10^15 molecules/cm2",
       "value": 0.646,
       "observedPct": 23.5
-     }
+     },
+     "value01": 0.4307,
+     "activeShare01": 0.4307,
+     "fromFirst01": 0.0833
     },
     {
      "theme": "air_quality_eic",
@@ -3280,7 +3581,10 @@
       "units": "x10^15 molecules/cm2",
       "value": 0.657,
       "observedPct": 22.94
-     }
+     },
+     "value01": 0.438,
+     "activeShare01": 0.438,
+     "fromFirst01": 0.076
     },
     {
      "theme": "air_quality_eic",
@@ -3313,7 +3617,10 @@
       "units": "x10^15 molecules/cm2",
       "value": 0.686,
       "observedPct": 22.17
-     }
+     },
+     "value01": 0.4573,
+     "activeShare01": 0.4573,
+     "fromFirst01": 0.0567
     },
     {
      "theme": "air_quality_eic",
@@ -3346,7 +3653,10 @@
       "units": "x10^15 molecules/cm2",
       "value": 0.702,
       "observedPct": 21.59
-     }
+     },
+     "value01": 0.468,
+     "activeShare01": 0.468,
+     "fromFirst01": 0.046
     },
     {
      "theme": "air_quality_eic",
@@ -3379,7 +3689,10 @@
       "units": "x10^15 molecules/cm2",
       "value": 0.902,
       "observedPct": 12.51
-     }
+     },
+     "value01": 0.6013,
+     "activeShare01": 0.6013,
+     "fromFirst01": 0.0873
     },
     {
      "theme": "air_quality_eic",
@@ -3412,7 +3725,10 @@
       "units": "x10^15 molecules/cm2",
       "value": 0.652,
       "observedPct": 9.33
-     }
+     },
+     "value01": 0.4347,
+     "activeShare01": 0.4347,
+     "fromFirst01": 0.0793
     },
     {
      "theme": "air_quality_eic",
@@ -3445,7 +3761,10 @@
       "units": "x10^15 molecules/cm2",
       "value": 0.646,
       "observedPct": 10.08
-     }
+     },
+     "value01": 0.4307,
+     "activeShare01": 0.4307,
+     "fromFirst01": 0.0833
     },
     {
      "theme": "air_quality_eic",
@@ -3478,7 +3797,10 @@
       "units": "x10^15 molecules/cm2",
       "value": 0.777,
       "observedPct": 20.72
-     }
+     },
+     "value01": 0.518,
+     "activeShare01": 0.518,
+     "fromFirst01": 0.004
     },
     {
      "theme": "air_quality_eic",
@@ -3511,7 +3833,10 @@
       "units": "x10^15 molecules/cm2",
       "value": 0.718,
       "observedPct": 21.93
-     }
+     },
+     "value01": 0.4787,
+     "activeShare01": 0.4787,
+     "fromFirst01": 0.0353
     },
     {
      "theme": "air_quality_eic",
@@ -3544,7 +3869,10 @@
       "units": "x10^15 molecules/cm2",
       "value": 0.698,
       "observedPct": 22.78
-     }
+     },
+     "value01": 0.4653,
+     "activeShare01": 0.4653,
+     "fromFirst01": 0.0487
     },
     {
      "theme": "air_quality_eic",
@@ -3577,7 +3905,10 @@
       "units": "x10^15 molecules/cm2",
       "value": 0.698,
       "observedPct": 22.45
-     }
+     },
+     "value01": 0.4653,
+     "activeShare01": 0.4653,
+     "fromFirst01": 0.0487
     },
     {
      "theme": "air_quality_eic",
@@ -3610,7 +3941,10 @@
       "units": "x10^15 molecules/cm2",
       "value": 0.73,
       "observedPct": 21.51
-     }
+     },
+     "value01": 0.4867,
+     "activeShare01": 0.4867,
+     "fromFirst01": 0.0273
     },
     {
      "theme": "air_quality_eic",
@@ -3643,7 +3977,10 @@
       "units": "x10^15 molecules/cm2",
       "value": 0.748,
       "observedPct": 21.3
-     }
+     },
+     "value01": 0.4987,
+     "activeShare01": 0.4987,
+     "fromFirst01": 0.0153
     },
     {
      "theme": "air_quality_eic",
@@ -3676,9 +4013,20 @@
       "units": "x10^15 molecules/cm2",
       "value": 0.903,
       "observedPct": 10.08
-     }
+     },
+     "value01": 0.602,
+     "activeShare01": 0.602,
+     "fromFirst01": 0.088
     }
-   ]
+   ],
+   "sound": {
+    "range": [
+     0.0,
+     1.5
+    ],
+    "rangeLabel": "0 to 1.5 x10^15 molecules/cm2 (continent-wide mean; record 0.90)",
+    "share": "value"
+   }
   },
   {
    "id": "greenhouse_gases_eic",
@@ -3751,7 +4099,10 @@
       "label": "globe under dense methane haze",
       "units": "%",
       "value": 61.72
-     }
+     },
+     "value01": 0.6172,
+     "activeShare01": 0.6172,
+     "fromFirst01": 0.0
     },
     {
      "theme": "greenhouse_gases_eic",
@@ -3783,7 +4134,10 @@
       "label": "globe under dense methane haze",
       "units": "%",
       "value": 54.91
-     }
+     },
+     "value01": 0.5491,
+     "activeShare01": 0.5491,
+     "fromFirst01": 0.0681
     },
     {
      "theme": "greenhouse_gases_eic",
@@ -3815,7 +4169,10 @@
       "label": "globe under dense methane haze",
       "units": "%",
       "value": 41.95
-     }
+     },
+     "value01": 0.4195,
+     "activeShare01": 0.4195,
+     "fromFirst01": 0.1977
     },
     {
      "theme": "greenhouse_gases_eic",
@@ -3847,7 +4204,10 @@
       "label": "globe under dense methane haze",
       "units": "%",
       "value": 51.74
-     }
+     },
+     "value01": 0.5174,
+     "activeShare01": 0.5174,
+     "fromFirst01": 0.0998
     },
     {
      "theme": "greenhouse_gases_eic",
@@ -3879,7 +4239,10 @@
       "label": "globe under dense methane haze",
       "units": "%",
       "value": 46.61
-     }
+     },
+     "value01": 0.4661,
+     "activeShare01": 0.4661,
+     "fromFirst01": 0.1511
     },
     {
      "theme": "greenhouse_gases_eic",
@@ -3911,7 +4274,10 @@
       "label": "globe under dense methane haze",
       "units": "%",
       "value": 49.27
-     }
+     },
+     "value01": 0.4927,
+     "activeShare01": 0.4927,
+     "fromFirst01": 0.1245
     },
     {
      "theme": "greenhouse_gases_eic",
@@ -3943,7 +4309,10 @@
       "label": "globe under dense methane haze",
       "units": "%",
       "value": 46.12
-     }
+     },
+     "value01": 0.4612,
+     "activeShare01": 0.4612,
+     "fromFirst01": 0.156
     },
     {
      "theme": "greenhouse_gases_eic",
@@ -3975,7 +4344,10 @@
       "label": "globe under dense methane haze",
       "units": "%",
       "value": 48.14
-     }
+     },
+     "value01": 0.4814,
+     "activeShare01": 0.4814,
+     "fromFirst01": 0.1358
     },
     {
      "theme": "greenhouse_gases_eic",
@@ -4007,7 +4379,10 @@
       "label": "globe under dense methane haze",
       "units": "%",
       "value": 38.89
-     }
+     },
+     "value01": 0.3889,
+     "activeShare01": 0.3889,
+     "fromFirst01": 0.2283
     },
     {
      "theme": "greenhouse_gases_eic",
@@ -4039,7 +4414,10 @@
       "label": "globe under dense methane haze",
       "units": "%",
       "value": 26.08
-     }
+     },
+     "value01": 0.2608,
+     "activeShare01": 0.2608,
+     "fromFirst01": 0.3564
     },
     {
      "theme": "greenhouse_gases_eic",
@@ -4071,7 +4449,10 @@
       "label": "globe under dense methane haze",
       "units": "%",
       "value": 27.3
-     }
+     },
+     "value01": 0.273,
+     "activeShare01": 0.273,
+     "fromFirst01": 0.3442
     },
     {
      "theme": "greenhouse_gases_eic",
@@ -4103,7 +4484,10 @@
       "label": "globe under dense methane haze",
       "units": "%",
       "value": 28.5
-     }
+     },
+     "value01": 0.285,
+     "activeShare01": 0.285,
+     "fromFirst01": 0.3322
     },
     {
      "theme": "greenhouse_gases_eic",
@@ -4135,7 +4519,10 @@
       "label": "globe under dense methane haze",
       "units": "%",
       "value": 32.07
-     }
+     },
+     "value01": 0.3207,
+     "activeShare01": 0.3207,
+     "fromFirst01": 0.2965
     },
     {
      "theme": "greenhouse_gases_eic",
@@ -4167,7 +4554,10 @@
       "label": "globe under dense methane haze",
       "units": "%",
       "value": 41.75
-     }
+     },
+     "value01": 0.4175,
+     "activeShare01": 0.4175,
+     "fromFirst01": 0.1997
     },
     {
      "theme": "greenhouse_gases_eic",
@@ -4199,7 +4589,10 @@
       "label": "globe under dense methane haze",
       "units": "%",
       "value": 45.68
-     }
+     },
+     "value01": 0.4568,
+     "activeShare01": 0.4568,
+     "fromFirst01": 0.1604
     },
     {
      "theme": "greenhouse_gases_eic",
@@ -4231,7 +4624,10 @@
       "label": "globe under dense methane haze",
       "units": "%",
       "value": 40.62
-     }
+     },
+     "value01": 0.4062,
+     "activeShare01": 0.4062,
+     "fromFirst01": 0.211
     },
     {
      "theme": "greenhouse_gases_eic",
@@ -4263,7 +4659,10 @@
       "label": "globe under dense methane haze",
       "units": "%",
       "value": 34.2
-     }
+     },
+     "value01": 0.342,
+     "activeShare01": 0.342,
+     "fromFirst01": 0.2752
     },
     {
      "theme": "greenhouse_gases_eic",
@@ -4295,7 +4694,10 @@
       "label": "globe under dense methane haze",
       "units": "%",
       "value": 31.91
-     }
+     },
+     "value01": 0.3191,
+     "activeShare01": 0.3191,
+     "fromFirst01": 0.2981
     },
     {
      "theme": "greenhouse_gases_eic",
@@ -4327,7 +4729,10 @@
       "label": "globe under dense methane haze",
       "units": "%",
       "value": 35.02
-     }
+     },
+     "value01": 0.3502,
+     "activeShare01": 0.3502,
+     "fromFirst01": 0.267
     },
     {
      "theme": "greenhouse_gases_eic",
@@ -4359,7 +4764,10 @@
       "label": "globe under dense methane haze",
       "units": "%",
       "value": 37.03
-     }
+     },
+     "value01": 0.3703,
+     "activeShare01": 0.3703,
+     "fromFirst01": 0.2469
     },
     {
      "theme": "greenhouse_gases_eic",
@@ -4391,7 +4799,10 @@
       "label": "globe under dense methane haze",
       "units": "%",
       "value": 43.09
-     }
+     },
+     "value01": 0.4309,
+     "activeShare01": 0.4309,
+     "fromFirst01": 0.1863
     },
     {
      "theme": "greenhouse_gases_eic",
@@ -4423,7 +4834,10 @@
       "label": "globe under dense methane haze",
       "units": "%",
       "value": 49.11
-     }
+     },
+     "value01": 0.4911,
+     "activeShare01": 0.4911,
+     "fromFirst01": 0.1261
     },
     {
      "theme": "greenhouse_gases_eic",
@@ -4455,7 +4869,10 @@
       "label": "globe under dense methane haze",
       "units": "%",
       "value": 55.95
-     }
+     },
+     "value01": 0.5595,
+     "activeShare01": 0.5595,
+     "fromFirst01": 0.0577
     },
     {
      "theme": "greenhouse_gases_eic",
@@ -4487,9 +4904,20 @@
       "label": "globe under dense methane haze",
       "units": "%",
       "value": 61.07
-     }
+     },
+     "value01": 0.6107,
+     "activeShare01": 0.6107,
+     "fromFirst01": 0.0065
     }
-   ]
+   ],
+   "sound": {
+    "range": [
+     0.0,
+     100.0
+    ],
+    "rangeLabel": "0 to 100% of the globe",
+    "share": "value"
+   }
   }
  ]
 }

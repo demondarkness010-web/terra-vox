@@ -8,6 +8,10 @@
 //           (data/eic.json, scripts/fetch_eic.py)
 // Both sides are "tracks" with the same shape, so the player, Duet, captions
 // and readout treat them alike.
+//
+// Air Quality follows one region at a time (data/reference.json): the global
+// March mean barely moves, while regions move in opposite directions (North
+// China falling, northern India rising). Each region is its own side A track.
 
 import themesMeta from '../../../data/themes.json';
 
@@ -17,17 +21,35 @@ const thumbnails = import.meta.glob('../../../assets/thumbnails/*.jpg', { eager:
 // Where each frame's signal is (scripts/extract_points.py): drives the note sparks.
 const pointFiles = import.meta.glob('../../../data/points/*.json', { eager: true, import: 'default' });
 // Optional data files: the app still runs if a script has not been run yet.
-const optional = import.meta.glob(['../../../data/eic.json', '../../../data/reference.json', '../../../data/legends.json', '../../../data/context.json'], { eager: true, import: 'default' });
+const optional = import.meta.glob(['../../../data/eic.json', '../../../data/reference.json', '../../../data/legends.json', '../../../data/context.json', '../../../data/fire_check.json'], { eager: true, import: 'default' });
 const eicImages = import.meta.glob('../../../data/eic/*/*.jpg', { eager: true, query: '?url', import: 'default' });
 
 const file = (name) => optional[`../../../data/${name}.json`] ?? null;
 export const reference = file('reference');
 export const legends = file('legends');
 export const context = file('context');
+// Terra against Aqua, the drift cross-check (scripts/check_fire_drift.py).
+export const fireCheck = file('fire_check');
 const eicMeta = file('eic');
 
 let cache = null;
 let sideB = null;
+let airRegion = null;
+const regionTracks = new Map();
+
+// "over the North China Plain": region names as they read inside a sentence.
+const OVER = {
+  north_china: 'the North China Plain',
+  northern_india: 'northern India',
+  eastern_us: 'the eastern United States',
+  western_europe: 'western Europe',
+};
+const REGION_SHORT = {
+  north_china: 'North China',
+  northern_india: 'Northern India',
+  eastern_us: 'Eastern US',
+  western_europe: 'Western Europe',
+};
 
 /** The four themes (side A), each with its frames in date order (oldest first). */
 export function loadThemes() {
@@ -55,8 +77,39 @@ export function loadThemes() {
       step: 'year',
       thumbnailUrl: thumbnails[`../../../assets/thumbnails/${meta.id}.jpg`] ?? frames[frames.length - 1].imageUrl,
     };
-  });
+  }).map((track) => (track.sound?.regions ? regionTrack(track, track.sound.defaultRegion) : track));
   return cache;
+}
+
+// The same frames, but every number (value, share, the sound inputs) taken
+// from one region, so the words, the sound and the readout follow it together.
+function regionTrack(base, id) {
+  const key = `${base.id}:${id}`;
+  if (regionTracks.has(key)) return regionTracks.get(key);
+  const region = { id, short: REGION_SHORT[id] ?? id, over: OVER[id] ?? id, ...base.sound.regions.find((r) => r.id === id) };
+  const label = `March mean NO₂ over ${region.over}`;
+  const track = {
+    ...base,
+    region,
+    physical: { ...base.physical, label },
+    frames: base.frames.map((f) => ({ ...f, ...f.regions[id], physical: { ...f.physical, label, value: f.regions[id].value } })),
+  };
+  regionTracks.set(key, track);
+  if (!airRegion) airRegion = id;
+  return track;
+}
+
+/** Regions Air Quality can follow: [{ id, name, short, over }]. */
+export function airRegions() {
+  const aq = themesMeta.themes.find((t) => t.id === 'air_quality');
+  return (aq?.sound?.regions ?? []).map((r) => ({ ...r, short: REGION_SHORT[r.id] ?? r.name, over: OVER[r.id] ?? r.name }));
+}
+
+/** Follow another Air Quality region; returns its track. */
+export function setAirRegion(id) {
+  loadThemes();
+  airRegion = id;
+  return trackFor('air_quality', 'a');
 }
 
 /** Side B tracks keyed by theme id (empty until scripts/fetch_eic.py has run). */
@@ -94,7 +147,9 @@ export function getTheme(id) {
 
 /** The track for a theme and side; side B falls back to A if it is missing. */
 export function trackFor(themeId, side) {
-  return (side === 'b' && loadSideB()[themeId]) || loadThemes().find((t) => t.id === themeId);
+  const a = loadThemes().find((t) => t.id === themeId);
+  if (side === 'b' && loadSideB()[themeId]) return loadSideB()[themeId];
+  return a?.region && airRegion ? regionTrack(a, airRegion) : a;
 }
 
 export const oldestFrame = (theme) => theme.frames[0];
@@ -116,8 +171,9 @@ export function spanBetween(theme, a = oldestFrame(theme), b = newestFrame(theme
 
 // ------------------------------------------------------------ real units
 
-// What counts as an "active" pixel per track (drives notes per bar). Where
-// the active share IS the headline number, it is not repeated.
+// What counts as "active" per track: its share drives notes per bar. Where
+// the share IS the headline number (wildfires, all of side B), it is not
+// repeated.
 const ACTIVE = {
   wildfires: null,
   sea_level: 'ocean at least 10 cm above the mean',
@@ -125,14 +181,16 @@ const ACTIVE = {
   greenhouse_gases: 'air holding at least 1,900 ppb of methane',
   wildfires_eic: null,
   sea_level_eic: null,
-  air_quality_eic: 'observed air above 5 ×10¹⁵ molec/cm² of NO₂',
+  air_quality_eic: null,
   greenhouse_gases_eic: null,
 };
 
 /** e.g. { label: "ocean at least 10 cm above the mean", percent: 24.8 }, or null. */
 export function activeShare(frame) {
   const label = ACTIVE[frame.theme];
-  return label ? { label, percent: frame.raw.pixelDensity * 100 } : null;
+  // the real share: a region's own, else the frame's (activeShare01 is that
+  // share on the track's sound range, which may top out at 50 %)
+  return label ? { label, percent: frame.share ?? frame.raw.pixelDensity * 100 } : null;
 }
 
 const signed = (v, d) => `${v >= 0 ? '+' : '−'}${Math.abs(v).toFixed(d)}`;
@@ -143,9 +201,9 @@ const sci15 = {
 
 const PHYSICAL = {
   wildfires: {
-    short: (v) => `${v.toFixed(1)}% of the map`,
-    spoken: (v) => `fire detections cover ${v.toFixed(1)} percent of the map`,
-    delta: (d) => `${signed(d, 1)} points`,
+    short: (v) => `${v} fire areas`,
+    spoken: (v) => `satellites saw ${v} separate fire areas`,
+    delta: (d) => `${signed(d, 0)} fire areas`,
   },
   sea_level: {
     short: (v) => `${signed(v, 1)} cm`,

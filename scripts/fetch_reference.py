@@ -66,6 +66,7 @@ NO2_REGIONS = [
 NO2_YEARS = range(2005, 2026)
 NO2_W, NO2_H = 720, 360  # 0.5 degree grid: plenty for regional means
 MIN_DAYS = 20
+NO2_ACTIVE = 5e15   # "polluted" air, the same threshold as the app's Air Quality frames
 
 session = requests.Session()
 session.headers["User-Agent"] = "terra-vox/1.0 (NASA Space Apps; github.com/demondarkness010-web/terra-vox)"
@@ -236,13 +237,14 @@ def air_quality(force):
             continue
         vals = np.zeros(valid.shape)
         vals[valid], _ = pixels_to_values(rgba[..., :3], valid, cmap)
-        acc = sums.setdefault(day.year, {k: [0.0, 0.0] for k in ["global", *masks]})
+        acc = sums.setdefault(day.year, {k: [0.0, 0.0, 0.0] for k in ["global", *masks]})
         acc.setdefault("days", 0)
         acc["days"] += 1
         for key, m in [("global", valid), *[(k, valid & mk) for k, mk in masks.items()]]:
             w = weight[m]
             acc[key][0] += float((vals[m] * w).sum())
             acc[key][1] += float(w.sum())
+            acc[key][2] += float(w[vals[m] >= NO2_ACTIVE].sum())   # polluted share, side A's rule
 
     def series(key):
         out = []
@@ -252,7 +254,8 @@ def air_quality(force):
             # satellite left short
             if not s or s["days"] < MIN_DAYS or s[key][1] == 0:
                 continue
-            out.append({"year": y, "value": round(s[key][0] / s[key][1] / 1e15, 3)})
+            out.append({"year": y, "value": round(s[key][0] / s[key][1] / 1e15, 3),
+                        "share": round(s[key][2] / s[key][1] * 100, 2)})
         return out
 
     regions = [{"id": "global", "name": "Whole globe", "series": series("global")}]
@@ -273,7 +276,7 @@ def air_quality(force):
         "kind": "annual-regions",
         "regions": regions,
         "daysUsed": {str(y): sums[y]["days"] for y in sorted(sums)},
-        "method": "Every day of March, GIBS layer OMI_Nitrogen_Dioxide_Tropo_Column at 0.5 degrees, colours inverted through the GIBS colormap, cloud and swath gaps skipped, means weighted by cos(latitude).",
+        "method": "Every day of March, GIBS layer OMI_Nitrogen_Dioxide_Tropo_Column at 0.5 degrees, colours inverted through the GIBS colormap, cloud and swath gaps skipped, means weighted by cos(latitude). share = % of the region's observed air at or above 5 x10^15 molecules/cm2.",
         "note": "Derived by Terra Vox from NASA's OMI layer, not an official NASA product. The top of the GIBS palette saturates, so the most polluted cells are under-counted and peaks read low.",
         "source": {"name": "NASA OMI / Aura via NASA GIBS (derived by Terra Vox)", "layer": theme["layer"],
                    "url": gibs_url(theme["layer"], date(2025, 3, 1), width=NO2_W, height=NO2_H),

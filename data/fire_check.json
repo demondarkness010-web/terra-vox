@@ -1,0 +1,168 @@
+{
+ "method": "Separate fire areas (8-connected clusters of opaque pixels) in the same 8-day mid-August union composite at 1024x512, from GIBS layers MODIS_Terra_Thermal_Anomalies_All and MODIS_Aqua_Thermal_Anomalies_All.",
+ "before": {
+  "years": [
+   2003,
+   2021
+  ],
+  "meanRatio": 1.004,
+  "minRatio": 0.914,
+  "maxRatio": 1.098
+ },
+ "drift": [
+  {
+   "year": 2023,
+   "ratio": 1.03
+  },
+  {
+   "year": 2024,
+   "ratio": 1.066
+  },
+  {
+   "year": 2025,
+   "ratio": 1.032
+  }
+ ],
+ "insidePreDriftRange": true,
+ "yearToYearR": 0.769,
+ "years": [
+  {
+   "year": 2003,
+   "terra": 275,
+   "aqua": 263,
+   "ratio": 1.046
+  },
+  {
+   "year": 2004,
+   "terra": 236,
+   "aqua": 247,
+   "ratio": 0.955
+  },
+  {
+   "year": 2005,
+   "terra": 265,
+   "aqua": 262,
+   "ratio": 1.011
+  },
+  {
+   "year": 2006,
+   "terra": 234,
+   "aqua": 256,
+   "ratio": 0.914
+  },
+  {
+   "year": 2007,
+   "terra": 264,
+   "aqua": 251,
+   "ratio": 1.052
+  },
+  {
+   "year": 2008,
+   "terra": 246,
+   "aqua": 224,
+   "ratio": 1.098
+  },
+  {
+   "year": 2009,
+   "terra": 282,
+   "aqua": 285,
+   "ratio": 0.989
+  },
+  {
+   "year": 2010,
+   "terra": 263,
+   "aqua": 273,
+   "ratio": 0.963
+  },
+  {
+   "year": 2011,
+   "terra": 241,
+   "aqua": 252,
+   "ratio": 0.956
+  },
+  {
+   "year": 2012,
+   "terra": 256,
+   "aqua": 248,
+   "ratio": 1.032
+  },
+  {
+   "year": 2013,
+   "terra": 266,
+   "aqua": 267,
+   "ratio": 0.996
+  },
+  {
+   "year": 2014,
+   "terra": 281,
+   "aqua": 295,
+   "ratio": 0.953
+  },
+  {
+   "year": 2015,
+   "terra": 288,
+   "aqua": 282,
+   "ratio": 1.021
+  },
+  {
+   "year": 2016,
+   "terra": 256,
+   "aqua": 258,
+   "ratio": 0.992
+  },
+  {
+   "year": 2017,
+   "terra": 264,
+   "aqua": 249,
+   "ratio": 1.06
+  },
+  {
+   "year": 2018,
+   "terra": 280,
+   "aqua": 272,
+   "ratio": 1.029
+  },
+  {
+   "year": 2019,
+   "terra": 260,
+   "aqua": 269,
+   "ratio": 0.967
+  },
+  {
+   "year": 2020,
+   "terra": 254,
+   "aqua": 262,
+   "ratio": 0.969
+  },
+  {
+   "year": 2021,
+   "terra": 292,
+   "aqua": 271,
+   "ratio": 1.077
+  },
+  {
+   "year": 2022,
+   "terra": 295,
+   "aqua": 301,
+   "ratio": 0.98
+  },
+  {
+   "year": 2023,
+   "terra": 276,
+   "aqua": 268,
+   "ratio": 1.03
+  },
+  {
+   "year": 2024,
+   "terra": 289,
+   "aqua": 271,
+   "ratio": 1.066
+  },
+  {
+   "year": 2025,
+   "terra": 293,
+   "aqua": 284,
+   "ratio": 1.032
+  }
+ ]
+}

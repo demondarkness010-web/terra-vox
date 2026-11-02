@@ -1,9 +1,9 @@
 // Words for what is on screen and in the speakers.
 //
 //   altText(frame, theme)     rich alt text built from the frame's own
-//                             features: what the map shows, its tone,
-//                             brightness, colour variance, how much of it is
-//                             "active", how much changed, and the real value
+//                             numbers: what the map shows, the real value and
+//                             where it sits on the theme's fixed scale, how
+//                             much of it is "active", how far it has moved
 //   captionLine(frame, ...)   the plain-English "subtitle" for the bar now
 //                             playing: real numbers -> the sound they made
 //   createCaptionTrack(...)   the visible caption bar + the screen-reader
@@ -13,7 +13,7 @@
 // Every description is generated from the same JSON the sound comes from,
 // so the words, the sound and the picture can never disagree.
 
-import { mapFeatures, duckMusic } from '../audio/sonify.js';
+import { mapFeatures, duckMusic, TENSE_FROM } from '../audio/sonify.js';
 import { physicalShort, physicalSpoken, activeShare } from '../data/loader.js';
 import { speakNote, showNote } from '../audio/scales.js';
 
@@ -39,40 +39,38 @@ const ACTIVE_NOUN = {
   greenhouse_gases_eic: 'dense methane haze',
 };
 
-const band = (x, words) => words[x < 1 / 3 ? 0 : x < 2 / 3 ? 1 : 2];
-
+// Words from the same three numbers the sound follows, with the same
+// thresholds, so what you read matches what you hear: level (value01: pitch,
+// loudness, timbre), spread (activeShare01: notes per bar) and distance from
+// the oldest frame (fromFirst01: tempo and harmony).
 function featureWords(frame) {
-  const tone = band(frame.hue / 360, ['cool-toned', 'mid-toned', 'warm-toned']);
-  const light = band(frame.brightness, ['dim', 'moderate brightness', 'bright']);
-  // same thresholds as the timbre rule, so the words match what you hear
-  const variance = frame.colorVariance < 0.15 ? 'low colour variance'
-    : frame.colorVariance < 0.35 ? 'moderate colour variance' : 'high colour variance';
-  const d = frame.pixelDensity;
+  const v = frame.value01;
+  const level = v < 0.33 ? 'low' : v < 0.66 ? 'middling' : 'high';
+  const d = frame.activeShare01;
   const spread = d < 0.2 ? 'sparse' : d < 0.5 ? 'scattered' : d < 0.8 ? 'widespread' : 'dense';
-  const before = frame.theme.endsWith('_eic') ? 'frame' : 'year';
-  const change = band(frame.frameDelta, ['little', 'moderate', 'sharp']).concat(` change from the ${before} before`);
-  const where = frame.latBand === 'north' ? 'centred north of the tropics'
-    : frame.latBand === 'south' ? 'centred south of the tropics' : 'centred in the tropics';
-  return { tone, light, variance, spread, change, where };
+  const first = frame.theme.endsWith('_eic') ? 'first frame' : 'oldest year';
+  const moved = frame.index === 0 ? `this is the ${first}`
+    : frame.fromFirst01 < 0.05 ? `close to the ${first}`
+    : frame.fromFirst01 < TENSE_FROM ? `some way from the ${first}` : `far from the ${first}`;
+  return { level, spread, moved };
 }
 
 /**
- * e.g. "Greenhouse Gases, August 2014. World map of methane ... Relative to
- * this theme's record: mid-toned, moderate brightness, low colour variance,
- * sparse methane-rich air (2.0% at or above 1,900 ppb), centred north of
- * the tropics, little change from the year before. Mean methane: 1,815 ppb."
+ * e.g. "Greenhouse Gases, August 2021. World map of methane ... Mean methane
+ * at 400 hPa: 1,864 ppb, middling on this theme's fixed scale; scattered
+ * methane-rich air (share of air holding at least 1,900 ppb of methane:
+ * 32.8%); far from the oldest year."
  */
 export function altText(frame, theme) {
   const w = featureWords(frame);
   const share = activeShare(frame);
-  const shareText = share ? ` (share of ${share.label}: ${share.percent.toFixed(1)}%)` : '';
+  const shareText = share ? `; ${w.spread} ${ACTIVE_NOUN[frame.theme]} (share of ${share.label}: ${share.percent.toFixed(1)}%)` : '';
   return `${theme.name}${theme.side === 'b' ? ', side B' : ''}, ${frame.label}. ${MAP_DESCRIPTION[frame.theme]}. `
-    + `Relative to this ${theme.side === 'b' ? "visualization's frames" : "theme's record"}: ${w.tone}, ${w.light}, ${w.variance}, `
-    + `${w.spread} ${ACTIVE_NOUN[frame.theme]}${shareText}, ${w.where}, ${w.change}. `
-    + `${capitalize(theme.physical.label)}: ${physicalShort(frame)}.`;
+    + `${capitalize(theme.physical.label)}: ${physicalShort(frame)}, ${w.level} on this ${theme.side === 'b' ? "track's" : "theme's"} fixed scale`
+    + `${shareText}; ${w.moved}.`;
 }
 
-/** The subtitle for a bar: "2014: 1,815 ppb, 2.0% methane-rich air" over "B♭4, 1 note a bar, 89 BPM, triangle, calm fifth" */
+/** The subtitle for a bar: "2021: 1,864 ppb, 33% methane-rich air" over "C5, 3 notes a bar, 109 BPM, triangle, tense third" */
 export function captionLine(frame) {
   const p = mapFeatures(frame);
   const share = activeShare(frame);

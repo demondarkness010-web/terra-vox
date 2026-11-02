@@ -21,10 +21,11 @@
     "frameDelta": 0.01991
   },
   "physical": {
-    "label": "fire detections",
-    "units": "% of map",
-    "value": 8.26,
+    "label": "MODIS fire count",
+    "units": "separate fire areas",
+    "value": 260,
     "clusters": 260,
+    "mapPct": 8.26,
     "activeThreshold": null
   },
   "source": {
@@ -49,5 +50,8 @@
       "https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi?SERVICE=WMS&REQUEST=GetMap&VERSION=1.1.1&SRS=EPSG:4326&BBOX=-180,-90,180,90&WIDTH=1024&HEIGHT=512&FORMAT=image/png&TRANSPARENT=TRUE&STYLES=&LAYERS=MODIS_Terra_Thermal_Anomalies_All&TIME=2019-08-14",
       "https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi?SERVICE=WMS&REQUEST=GetMap&VERSION=1.1.1&SRS=EPSG:4326&BBOX=-180,-90,180,90&WIDTH=1024&HEIGHT=512&FORMAT=image/png&TRANSPARENT=TRUE&STYLES=&LAYERS=MODIS_Terra_Thermal_Anomalies_All&TIME=2019-08-15"
     ]
-  }
+  },
+  "value01": 0.8667,
+  "activeShare01": 0.8667,
+  "fromFirst01": 0.03
 }

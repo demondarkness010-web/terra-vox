@@ -3,8 +3,9 @@
 // through the identical mapping, so whatever you hear differ between your
 // ears is the planet having changed.
 //
-// Each voice keeps its own data-driven tempo, so the two may drift against
-// each other; that drift is part of the gap. Both start on the same
+// Each voice keeps its own tempo, set by how far its year sits from the
+// oldest (the oldest is always 80 BPM), so the two may drift against each
+// other; that drift is part of the gap. Both start on the same
 // downbeat so the first bar lands as one clear before/after chord.
 //
 // Listening modes:
@@ -172,7 +173,8 @@ export function describeGap(theme) {
     : `${words.slice(0, -1).join(', ')} and ${words[words.length - 1]} than`;
   const sentence = `${b.short} sounds ${list} ${a.short}.`;
   const sideWord = theme.side === 'b' ? `NASA's ${theme.title} visualization, ` : '';
-  const spoken = `Duet. ${theme.name}, ${sideWord}${a.short} in your left ear, ${b.short} in your right. `
+  const where = theme.region ? ` over ${theme.region.over}` : '';
+  const spoken = `Duet. ${theme.name}${where}, ${sideWord}${a.short} in your left ear, ${b.short} in your right. `
     + `In ${a.short}, ${physicalSpoken(a)}. In ${b.short}, ${physicalSpoken(b)}. `
     + (physical.activeLabel ? `The share of ${physical.activeLabel} went from ${physical.activeFrom} to ${physical.activeTo}. ` : '')
     + `Listen: ${sentence} `

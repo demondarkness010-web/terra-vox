@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-29T19:02:40+00:00",
+  "generatedAt": "2026-11-02T08:23:45+00:00",
   "source": "NASA GIBS (Worldview) imagery; NASA SVS Earth Information Center cover art",
   "scale": "C minor pentatonic",
   "themes": [
@@ -12,8 +12,8 @@
       "layer": "MODIS_Terra_Thermal_Anomalies_All",
       "unitsNote": "each orange dot is a satellite-detected active fire",
       "physical": {
-        "label": "fire detections",
-        "units": "% of map"
+        "label": "MODIS fire count",
+        "units": "separate fire areas"
       },
       "activeRule": {
         "kind": "opaque"
@@ -83,6 +83,14 @@
           "min": 0.01728657491846022,
           "max": 0.021232647365993923
         }
+      },
+      "sound": {
+        "range": [
+          0,
+          300
+        ],
+        "rangeLabel": "0 to 300 separate fire areas (record: 295)",
+        "shareMax": 100
       }
     },
     {
@@ -168,6 +176,14 @@
           "min": 0.17014608680300874,
           "max": 0.25832414407992665
         }
+      },
+      "sound": {
+        "range": [
+          -5.0,
+          10.0
+        ],
+        "rangeLabel": "-5 to +10 cm",
+        "shareMax": 50
       }
     },
     {
@@ -247,6 +263,36 @@
           "min": 0.02234250472211138,
           "max": 0.02402114069188451
         }
+      },
+      "sound": {
+        "range": [
+          0.0,
+          14.0
+        ],
+        "rangeLabel": "0 to 14 x10^15 molecules/cm2 (record: 13.0, North China 2011)",
+        "regions": [
+          {
+            "id": "north_china",
+            "name": "North China Plain",
+            "shareMax": 100
+          },
+          {
+            "id": "northern_india",
+            "name": "Northern India",
+            "shareMax": 50
+          },
+          {
+            "id": "eastern_us",
+            "name": "Eastern United States",
+            "shareMax": 50
+          },
+          {
+            "id": "western_europe",
+            "name": "Western Europe",
+            "shareMax": 50
+          }
+        ],
+        "defaultRegion": "north_china"
       }
     },
     {
@@ -329,6 +375,14 @@
           "min": 0.015223526798821743,
           "max": 0.044610664183547304
         }
+      },
+      "sound": {
+        "range": [
+          1750.0,
+          1950.0
+        ],
+        "rangeLabel": "1,750 to 1,950 ppb",
+        "shareMax": 100
       }
     }
   ]

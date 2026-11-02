@@ -1,87 +1,49 @@
-// Core Terra Vox sonification: NASA frame features -> live Tone.js sound.
+// Core Terra Vox sonification: a frame's mapped parameters -> live Tone.js sound.
 //
 // Two layers:
-//   mapFeatures()  the locked mapping formulas, verbatim, as a pure function
+//   mapping.js     the mapping itself, a pure function of the frame's measured
+//                  value (re-exported here so callers have one import)
 //   Voice          a synth chain that plays one frame's mapped parameters as a
 //                  repeating bar and picks up new frames live
 //
-// The features arriving here are already normalized per theme (see
-// scripts/extract_features.py), so every theme drives these formulas across
-// the same 0-1 range. On top of that the mix is normalized: each timbre gets
-// a loudness trim and the master bus compresses and limits, so switching
-// themes never blows out the mix, and velocity never drops below 0.3, so it
-// never goes silent.
+// Each theme plays one fixed instrument (soft pad, deep bass, plucked notes,
+// breathy noise), so the theme tells you what and the music how much. On top
+// of that the mix is normalized: each timbre and instrument gets a loudness
+// trim and the master bus compresses and limits, so switching themes never
+// blows out the mix, and velocity never drops below 0.4, so it never goes
+// silent.
 
 import * as Tone from 'tone';
-import { SCALE, INTERVAL_SEMITONES, MOTIF, foldDegree, transpose } from './scales.js';
+import { mapFeatures, barPlan, instrumentFor, timePan, TENSE_FROM } from './mapping.js';
+
+export { mapFeatures, barPlan, instrumentFor, timePan, TENSE_FROM };
 
 const clamp = (x, lo, hi) => Math.min(hi, Math.max(lo, x));
 
-// ------------------------------------------------------------ locked mapping
-
-/**
- * The locked Terra Vox formulas. `f` is one frame's normalized features:
- * { hue 0-360, brightness 0-1, colorVariance 0-1, pixelDensity 0-1,
- *   frameDelta 0-1, latBand 'north' | 'equatorial' | 'south' }.
- */
-export function mapFeatures(f) {
-  const scale = SCALE;
-  const scaleDegree = Math.floor((f.hue / 360) * scale.length) % scale.length;
-  const note = scale[scaleDegree];
-
-  const velocity = clamp(0.3 + (f.brightness * 0.7), 0.3, 1.0);
-
-  const timbre = f.colorVariance < 0.15 ? 'sine'
-    : f.colorVariance < 0.35 ? 'triangle'
-    : 'sawtooth';
-
-  const notesPerBar = 1 + Math.round(f.pixelDensity * 7);       // range 1-8
-
-  const tempoBPM = 80 + Math.round(f.frameDelta * 80);           // range 80-160
-
-  const interval = f.frameDelta > 0.5 ? 'minor third (tense)' : 'perfect fifth (consonant)';
-
-  const pan = f.latBand === 'north' ? -0.8 : f.latBand === 'south' ? 0.8 : 0;
-
-  return { scaleDegree, note, velocity, timbre, notesPerBar, tempoBPM, interval, pan };
-}
-
-/**
- * How one bar of a frame is played. The bar opens on the mapped note; the
- * remaining notes walk a fixed pentatonic motif from it, so the pitch centre
- * still tracks hue. Under the melody, a soft dyad sounds the mapped interval
- * an octave below the mapped note.
- */
-export function barPlan(params) {
-  const barSeconds = (60 / params.tempoBPM) * 4;
-  const step = barSeconds / params.notesPerBar;
-  const hold = params.timbre === 'sawtooth' ? 0.55 : params.timbre === 'triangle' ? 0.75 : 0.95;
-  const notes = [];
-  for (let i = 0; i < params.notesPerBar; i++) {
-    notes.push({
-      note: SCALE[foldDegree(params.scaleDegree + MOTIF[i])],
-      offset: i * step,
-      duration: Math.min(step * hold, 1.6),
-    });
-  }
-  const root = transpose(params.note, -12);
-  const dyad = [root, transpose(root, INTERVAL_SEMITONES[params.interval])];
-  return { barSeconds, step, notes, dyad };
-}
-
 // ------------------------------------------------------------ mix + master
 
-// Loudness trims, calibrated by rendering every timbre x density x tempo
-// combination offline and measuring RMS. The plucky triangle/saw envelopes
-// carry much less energy than the sustained sine, so untrimmed the timbre
-// switch alone moved the level by 15 dB. Trimmed: sine -16, triangle -16.9,
-// sawtooth -19.5 dB RMS at full velocity (a saw sounds ~3 dB louder than its
-// RMS suggests). Note density moves the level by only ~2 dB, so velocity
-// (brightness) stays the dominant loudness control, as the mapping intends.
+// Each timbre sets the waveform's filter and a loudness trim, so stepping up
+// from sine to triangle to sawtooth (value01 crossing 0.33 and 0.66) never
+// makes a bigger value sound quieter: velocity (0.4-1.0, from value01) stays
+// the loudness control. Trims calibrated by rendering frames offline
+// (levelCheck.js) and measuring RMS; a saw sounds ~3 dB louder than its RMS.
 const TIMBRE = {
-  sine:     { trim: 1.0, cutoff: 6000, env: { attack: 0.02,  decay: 0.25, sustain: 0.5,  release: 1.4 } },
-  triangle: { trim: 1.3, cutoff: 4200, env: { attack: 0.01,  decay: 0.2,  sustain: 0.35, release: 1.0 } },
-  sawtooth: { trim: 1.3, cutoff: 2200, env: { attack: 0.006, decay: 0.15, sustain: 0.25, release: 0.5 } },
+  sine:     { trim: 1.0, cutoff: 6000 },
+  triangle: { trim: 1.25, cutoff: 4200 },
+  sawtooth: { trim: 1.25, cutoff: 2400 },
+};
+
+// One fixed instrument per theme (mapping.js INSTRUMENT names them): the
+// theme tells you what, the music tells you how much. `osc` prefixes the
+// waveform ("fat" = three detuned copies, a pad's width), `env` shapes every
+// melody note, `cutoff` scales the timbre's filter, `trim` evens loudness out
+// between instruments, and `breath` adds band-passed pink noise under each
+// note at that share of its velocity.
+const INSTRUMENTS = {
+  'soft pad':      { osc: 'fat', env: { attack: 0.18, decay: 0.5, sustain: 0.7, release: 2.0 }, cutoff: 0.8, trim: 1.0 },
+  'deep bass':     { osc: '', env: { attack: 0.008, decay: 0.4, sustain: 0.55, release: 0.9 }, cutoff: 0.5, trim: 0.9 },
+  'plucked notes': { osc: '', env: { attack: 0.002, decay: 0.25, sustain: 0.0, release: 0.4 }, cutoff: 1.2, trim: 1.1 },
+  'breathy noise': { osc: '', env: { attack: 0.05, decay: 0.3, sustain: 0.3, release: 0.9 }, cutoff: 0.9, trim: 1.0, breath: 0.9 },
 };
 const PAD_LEVEL = 0.35;
 
@@ -130,6 +92,8 @@ export function whenHeard(time, fn) {
 
 /** Unlock audio (must run inside a user gesture) and start the clock. */
 export async function startAudio() {
+  // iPhone: without a "playback" session, the ringer's silent switch mutes Web Audio.
+  if (navigator.audioSession) navigator.audioSession.type = 'playback';
   await Tone.start();
   const m = getMaster();
   const transport = Tone.getTransport();
@@ -161,6 +125,8 @@ export class Voice {
     this.pending = null;
     this.params = null;
     this.panOverride = null;
+    this.sweep = 0;
+    this.instrument = INSTRUMENTS['soft pad'];
     this.running = false;
     this.bar = 0;
     this.listeners = new Set();
@@ -176,7 +142,7 @@ export class Voice {
     // Polyphonic so a note's release tail can overlap the next note's attack
     // (a mono Tone.Synth throws if a start time is not strictly increasing,
     // which a scrub-restart can produce, and the throw would kill the loop).
-    this.lead = new Tone.PolySynth(Tone.Synth, { oscillator: { type: 'sine' }, envelope: TIMBRE.sine.env });
+    this.lead = new Tone.PolySynth(Tone.Synth, { oscillator: { type: 'sine' }, envelope: this.instrument.env });
     this.lead.maxPolyphony = 12;
     this._noteIds = [];
     this.pad = new Tone.PolySynth(Tone.Synth, {
@@ -230,12 +196,23 @@ export class Voice {
     this.pending = null;
     this.frame = frame;
     this.params = mapFeatures(frame);
-    this._applyTimbre(this.params.timbre);
+    this._applySound(this.params);
     this._applyPan();
   }
 
+  /** Fixed stereo position (Duet: -1 oldest, 1 newest; 0 centred), or null. */
   setPanOverride(pan) {
     this.panOverride = pan;
+    this._applyPan();
+  }
+
+  /**
+   * Single play: stereo position follows time across a track of `count`
+   * frames, oldest left to newest right (the sweep). 0 = centred, which Guess
+   * the Year needs so the ear does not give the answer away.
+   */
+  setSweep(count) {
+    this.sweep = count;
     this._applyPan();
   }
 
@@ -275,7 +252,8 @@ export class Voice {
     this.stop();
     this.listeners.clear();
     this.noteListeners.clear();
-    [this.lead, this.pad, this.filter, this.trim, this.panner, this.out, this.meter, this.waveform].forEach((n) => n.dispose());
+    [this.lead, this.pad, this.filter, this.trim, this.panner, this.out, this.meter, this.waveform,
+      this.breathNoise, this.breathBand, this.breathEnv].forEach((n) => n?.dispose());
   }
 
   level() {
@@ -309,9 +287,11 @@ export class Voice {
     // restart can cancel them instead of letting the old bar bleed through.
     this._noteIds = [];
     const frame = this.frame;
+    const breath = this.instrument.breath;
     plan.notes.forEach((n, i) => {
       const play = (t) => {
         this.lead.triggerAttackRelease(n.note, n.duration, t, params.velocity);
+        if (breath) this._breathe(n.note, n.duration, t, params.velocity * breath);
         const note = { voice: this.name, frame, index: i, count: plan.notes.length, time: t, velocity: params.velocity };
         this.noteListeners.forEach((fn) => fn(note));
       };
@@ -332,16 +312,35 @@ export class Voice {
     else { this.running = false; this._eventId = null; }
   }
 
-  _applyTimbre(type) {
-    const t = TIMBRE[type];
-    this.lead.set({ oscillator: { type }, envelope: t.env });
-    this.pad.set({ oscillator: { type } });
-    this.filter.frequency.rampTo(t.cutoff, 0.1);
-    this.trim.gain.rampTo(t.trim, 0.1);
+  _applySound(params) {
+    const t = TIMBRE[params.timbre];
+    const inst = INSTRUMENTS[params.instrument] ?? INSTRUMENTS['soft pad'];
+    this.instrument = inst;
+    this.lead.set({ oscillator: { type: `${inst.osc}${params.timbre}` }, envelope: inst.env });
+    this.pad.set({ oscillator: { type: params.timbre } });
+    this.filter.frequency.rampTo(t.cutoff * inst.cutoff, 0.1);
+    this.trim.gain.rampTo(t.trim * inst.trim, 0.1);
+  }
+
+  // The breath layer: pink noise, band-passed around each note so the hiss
+  // still follows the pitch, built the first time a breathy theme plays.
+  _breathe(note, duration, time, velocity) {
+    if (!this.breathEnv) {
+      // the voice's own context: this runs inside a scheduled callback, when
+      // an offline render may no longer be Tone's current context
+      const context = this.trim.context;
+      this.breathNoise = new Tone.Noise({ context, type: 'pink' });
+      this.breathBand = new Tone.Filter({ context, type: 'bandpass', frequency: 800, Q: 2.5 });
+      this.breathEnv = new Tone.AmplitudeEnvelope({ context, attack: 0.07, decay: 0.3, sustain: 0.35, release: 0.7 });
+      this.breathNoise.chain(this.breathBand, this.breathEnv, this.trim);
+      this.breathNoise.start();
+    }
+    this.breathBand.frequency.setValueAtTime(Tone.Frequency(note).toFrequency() * 2, time);
+    this.breathEnv.triggerAttackRelease(duration, time, velocity);
   }
 
   _applyPan() {
-    const pan = this.panOverride ?? this.params?.pan ?? 0;
-    this.panner.pan.rampTo(pan, 0.1);
+    const sweep = this.sweep > 1 && this.frame ? timePan(this.frame.index, this.sweep) : 0;
+    this.panner.pan.rampTo(this.panOverride ?? sweep, 0.1);
   }
 }

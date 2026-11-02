@@ -2,11 +2,12 @@
 
     python scripts/fetch_eic.py            # download, sample, extract
     python scripts/fetch_eic.py --sheets   # also write date-stamp contact sheets
+    python scripts/fetch_eic.py --sound-only  # only recompute what the sound follows
 
 The Space Apps brief asks for a jukebox that pairs EIC visual frames with
 sonification. Side A plays a calibrated year-by-year record built from the
 same NASA layers (GIBS); side B plays the EIC visualizations themselves,
-frame by frame, through the same locked formulas. One EIC visualization per
+frame by frame, through the same mapping. One EIC visualization per
 theme, each from its theme's EIC dashboard on NASA's Scientific Visualization
 Studio (SVS):
 
@@ -15,10 +16,8 @@ Studio (SVS):
   air_quality       SVS 5175  TEMPO NO2 over North America, Aug 28-31 2023
   greenhouse_gases  SVS 5116  Global Atmospheric Methane (GEOS, 2021)
 
-The features are the same five as side A, measured from the EIC pixels:
-warmth (hue), brightness, colour variance, active-pixel density and change
-from the previous frame, min-max normalized within each visualization. Each
-track also reads one real quantity out of the picture:
+Each track reads one real quantity out of the picture, and that quantity is
+what the sound follows (on a fixed range per track, SOUND below):
 
   fires     share of land pixels where VIIRS saw fire (moving 5-day window)
   porthole  sea level above 1993 in cm, read off the visualization's own
@@ -28,6 +27,11 @@ track also reads one real quantity out of the picture:
             fixed by the bar's own tick marks. TEMPO scans in daylight only,
             so the movie's overnight frames carry no NO2 and are skipped.
   methane   share of the globe covered by dense methane haze
+
+On side B that one quantity drives pitch, loudness and density together
+(value01 = activeShare01), and tempo follows its distance from the first
+frame, as on side A. The colour features (hue, brightness, variance, change)
+are still measured and kept for reference, but no longer drive the sound.
 
 Dates: the fire and TEMPO frames carry NASA's date stamp in the corner. They
 were transcribed from contact sheets (--sheets) into scripts/eic_labels.json.
@@ -52,6 +56,7 @@ from PIL import Image, ImageDraw
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from extract_features import frame_features, normalize, warmth, NORMALIZED, TROPIC  # noqa: E402
+from theme_defs import unit01  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
 CACHE = ROOT / ".cache" / "eic"
@@ -91,7 +96,7 @@ TRACKS = [
         "title": "TEMPO – Nitrogen Dioxide Air Pollution Over North America",
         "movie": f"{VIS}/a005100/a005175/tempo_no2_north-america_1080p60.mp4",
         "samples": 48, "analysis": (1920, 1080), "display": (1280, 720),
-        "credits": "NASA's Scientific Visualization Studio. Data: Smithsonian Astrophysical Observatory, Center for Astrophysics | Harvard & Smithsonian. Visualizers: Kel Elkins, Trent L. Schindler (USRA), Cindy Starr (GST).",
+        "credits": "NASA's Scientific Visualization Studio. Data provided by the Smithsonian Astrophysical Observatory at the Center for Astrophysics | Harvard & Smithsonian. Visualizers: Kel Elkins, Trent L. Schindler (USRA), Cindy Starr (GST).",
         "dataset": "TEMPO tropospheric NO2 column, hourly daylight scans, August 28–31, 2023",
         "signature": "rush-hour rhythm",
         "physical": {"label": "mean NO₂ in view", "units": "x10^15 molecules/cm2"},
@@ -109,6 +114,17 @@ TRACKS = [
         "activeRule": "globe pixels inside the dense purple methane haze",
     },
 ]
+
+# What the sound follows on side B: each track's one quantity on a FIXED
+# range, stated in the README, never the min and max of the frames. TEMPO's
+# number is a mean over the whole continent in view, mostly clean air, so its
+# range is narrower than side A's regional one.
+SOUND = {
+    "wildfires_eic": {"range": (0.0, 5.0), "rangeLabel": "0 to 5% of land"},
+    "sea_level_eic": {"range": (0.0, 15.0), "rangeLabel": "0 to 15 cm above 1993"},
+    "air_quality_eic": {"range": (0.0, 1.5), "rangeLabel": "0 to 1.5 x10^15 molecules/cm2 (continent-wide mean; record 0.90)"},
+    "greenhouse_gases_eic": {"range": (0.0, 100.0), "rangeLabel": "0 to 100% of the globe"},
+}
 
 session = requests.Session()
 session.headers["User-Agent"] = "terra-vox/1.0 (NASA Space Apps)"
@@ -460,13 +476,26 @@ def process(track, labels, sheets):
     else:
         extra = {}
     page = f"{SVS}/{track['svs']}/"
-    return {
+    return add_sound({
         "id": tid, "theme": track["theme"], "side": "b", "svs": track["svs"], "title": track["title"],
         "page": page, "source": track.get("movie") or track["frames_url"].format(0), "credits": track["credits"],
         "dataset": track["dataset"], "signature": track["signature"], "physical": track["physical"],
         "activeRule": track["activeRule"], "frameCount": len(out_frames), "normalization": ranges,
         "aspect": round(track["display"][0] / track["display"][1], 4), **extra, "frames": out_frames,
-    }
+    })
+
+
+def add_sound(meta):
+    """value01 / activeShare01 / fromFirst01 for every frame of a side B track."""
+    cfg = SOUND[meta["id"]]
+    lo, hi = cfg["range"]
+    first = None
+    for f in meta["frames"]:
+        v01 = round(unit01(f["physical"]["value"], lo, hi), 4)
+        first = v01 if first is None else first
+        f.update(value01=v01, activeShare01=v01, fromFirst01=round(abs(v01 - first), 4))
+    meta["sound"] = {"range": [lo, hi], "rangeLabel": cfg["rangeLabel"], "share": "value"}
+    return meta
 
 
 def label_for(track, row, stamp, total):
@@ -497,9 +526,18 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--sheets", action="store_true", help="write date-stamp contact sheets for transcription")
     ap.add_argument("--only", help="process one track id")
+    ap.add_argument("--sound-only", action="store_true", help="recompute value01 etc. in data/eic.json without downloading")
     args = ap.parse_args()
     labels = json.loads(LABELS.read_text(encoding="utf-8")) if LABELS.exists() else {}
     existing = json.loads(OUT.read_text(encoding="utf-8")) if OUT.exists() else {"tracks": []}
+    if args.sound_only:
+        for meta in existing["tracks"]:
+            add_sound(meta)
+            f0, f1 = meta["frames"][0], meta["frames"][-1]
+            print(f"{meta['id']:22s} value01 {f0['value01']:.3f} -> {f1['value01']:.3f}  fromFirst01 max "
+                  f"{max(f['fromFirst01'] for f in meta['frames']):.3f}")
+        OUT.write_text(json.dumps(existing, indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
+        return
     done = {t["id"]: t for t in existing.get("tracks", [])}
     for track in TRACKS:
         if args.only and track["id"] != args.only:

@@ -59,7 +59,7 @@ THEMES = [
         "valid_domain": "frame",
         "active_rule": {"kind": "opaque"},
         "colormap": None,
-        "physical": {"label": "fire detections", "units": "% of map"},
+        "physical": {"label": "MODIS fire count", "units": "separate fire areas"},
         "eic": {
             "dashboard": "https://svs.gsfc.nasa.gov/gallery/wildland-fires/",
             "visualization": "https://svs.gsfc.nasa.gov/5113/",
@@ -139,6 +139,53 @@ THEMES = [
         },
     },
 ]
+
+
+# ------------------------------------------------------------ what the sound follows
+#
+# We sonify the measurement, not the picture of it. Each theme's sound is
+# driven by its measured value on a FIXED range, written here and stated in
+# the README, never the min and max of our own frames: min-max scaling
+# stretches any wobble to the full musical range and turns noise into music.
+#
+#   value01        the headline measurement on its fixed range -> pitch,
+#                  loudness and timbre ("how much")
+#   activeShare01  the share of the region past its "active" threshold, on
+#                  a zero-based fixed range -> notes per bar ("how
+#                  widespread"). 0-100 %, or 0-50 % where the record has
+#                  never passed 50 %, so a small share still spans more
+#                  than one step of the 1-8 notes. Zero-based, so twice the
+#                  area plays about twice the notes.
+#   fromFirst01    |value01 - the oldest frame's value01| -> tempo and the
+#                  tense third ("how far the planet has moved")
+
+SOUND = {
+    # Separate fire areas in the 8-day composite (connected groups of MODIS
+    # detections at the frame's 0.35 degree grid). A count, so it does not
+    # grow with the dot size the map is drawn at. 0 to just above the record
+    # (295 in 2022). Fire count IS its spread, so density follows it too.
+    "wildfires": {"value": "clusters", "range": (0, 300), "share": "value",
+                  "rangeLabel": "0 to 300 separate fire areas (record: 295)"},
+    # Mean sea-surface height anomaly against the 1993-2012 mean.
+    "sea_level": {"value": "value", "range": (-5.0, 10.0), "share": "active", "shareMax": 50,
+                  "rangeLabel": "-5 to +10 cm"},
+    # March mean tropospheric NO2 over one region (data/reference.json); the
+    # global mean barely moves, regions move in opposite directions.
+    "air_quality": {"value": "region", "range": (0.0, 14.0), "share": "region",
+                    "shareMax": {"north_china": 100, "northern_india": 50, "eastern_us": 50, "western_europe": 50},
+                    "rangeLabel": "0 to 14 x10^15 molecules/cm2 (record: 13.0, North China 2011)"},
+    # Mean methane at 400 hPa.
+    "greenhouse_gases": {"value": "value", "range": (1750.0, 1950.0), "share": "active", "shareMax": 100,
+                         "rangeLabel": "1,750 to 1,950 ppb"},
+}
+
+# Regions the Air Quality theme can follow; the first is the default.
+AIR_REGIONS = ["north_china", "northern_india", "eastern_us", "western_europe"]
+TENSE_FROM = 0.25   # fromFirst01 at or above this plays the tense minor third
+
+
+def unit01(x, lo, hi):
+    return min(1.0, max(0.0, (x - lo) / (hi - lo)))
 
 
 def theme_by_id(theme_id):

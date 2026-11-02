@@ -40,5 +40,38 @@
       "https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi?SERVICE=WMS&REQUEST=GetMap&VERSION=1.1.1&SRS=EPSG:4326&BBOX=-180,-90,180,90&WIDTH=1024&HEIGHT=512&FORMAT=image/png&TRANSPARENT=TRUE&STYLES=&LAYERS=OMI_Nitrogen_Dioxide_Tropo_Column&TIME=2025-03-16",
       "https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi?SERVICE=WMS&REQUEST=GetMap&VERSION=1.1.1&SRS=EPSG:4326&BBOX=-180,-90,180,90&WIDTH=1024&HEIGHT=512&FORMAT=image/png&TRANSPARENT=TRUE&STYLES=&LAYERS=OMI_Nitrogen_Dioxide_Tropo_Column&TIME=2025-03-17"
     ]
-  }
+  },
+  "regions": {
+    "north_china": {
+      "value": 7.015,
+      "share": 63.87,
+      "value01": 0.5011,
+      "activeShare01": 0.6387,
+      "fromFirst01": 0.1615
+    },
+    "northern_india": {
+      "value": 3.439,
+      "share": 19.26,
+      "value01": 0.2456,
+      "activeShare01": 0.3852,
+      "fromFirst01": 0.0935
+    },
+    "eastern_us": {
+      "value": 1.919,
+      "share": 5.07,
+      "value01": 0.1371,
+      "activeShare01": 0.1014,
+      "fromFirst01": 0.1411
+    },
+    "western_europe": {
+      "value": 3.067,
+      "share": 19.4,
+      "value01": 0.2191,
+      "activeShare01": 0.388,
+      "fromFirst01": 0.0382
+    }
+  },
+  "value01": 0.5011,
+  "activeShare01": 0.6387,
+  "fromFirst01": 0.1615
 }
