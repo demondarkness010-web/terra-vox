@@ -15,10 +15,13 @@ Headphones are best for Duet. On one speaker or one earbud, choose **Take turns*
 
 ## What it does
 
-- **Four themes, chosen for contrasting sound signatures.** Wildfires (spiky, event-driven), Sea Level Change (slow, monotonic), Air Quality (noisy, daily) and Greenhouse Gases (smooth, trending), each a yearly series of global NASA frames.
-- **Real-time sonification.** Each bar is one year. Hue, brightness, colour variance, active-region density, year-over-year change and latitude drive pitch, loudness, timbre, rhythm, tempo, harmony and stereo position through fixed formulas. Every note is constrained to C minor pentatonic, so it is always listenable.
-- **Normalized across themes.** Every feature is scaled against its own theme's history before the formulas run, and the mix is loudness-calibrated, so switching themes never blows out the mix or goes silent.
-- **Live mapping readout.** The actual numbers driving the sound right now (`hue → pitch: 0.65 → E♭5`, `density → notesPerBar: 0.60 → 5` …), plus the raw values and normalization ranges.
+- **Four themes, chosen for contrasting sound signatures.** Wildfires (spiky, event-driven), Sea Level Change (slow, monotonic), Air Quality (noisy, daily) and Greenhouse Gases (smooth, trending).
+- **Two sides to every record.** *Side A* plays a calibrated year-by-year record: one global NASA frame per year, always taken from the same calendar window. *Side B* (press **F** to flip the record) plays the theme's own NASA Earth Information Center visualization, frame by frame, through the same locked formulas. Each side-B frame keeps NASA's date stamp, or for the sea-level porthole, its water level.
+- **Real-time sonification.** Each bar is one year (side A) or one frame (side B). Hue, brightness, colour variance, active-region density, change from the previous frame and latitude drive pitch, loudness, timbre, rhythm, tempo, harmony and stereo position through fixed formulas. Every note is constrained to C minor pentatonic, so it is always listenable.
+- **Normalized across themes.** Every feature is scaled against its own track's history before the formulas run, and the mix is loudness-calibrated, so switching themes never blows out the mix or goes silent.
+- **The planet.** A WebGL globe shows the frame being heard, with a spark for each note where its signal sits. In Duet the planet splits at the seam: the oldest year on the left half, the newest on the right.
+- **Live mapping readout.** A mixing desk shows the numbers driving the sound right now (warmth 0.65 → E♭5, density 0.60 → 5 notes a bar …), plus the raw values and normalization ranges.
+- **Field guide.** Under the player, each theme is checked against the record scientists cite: NOAA's global methane, NOAA's satellite sea-level record and NASA OMI regional NO₂. The app's own frames are drawn on the same chart, so you can see where a snapshot agrees with the trend. Published findings are linked, and every number names its source.
 - **Guess the Year.** An audio-first game: a hidden year plays, you compare it by ear with the oldest and newest anchors, then pick the year. The reveal is spoken first, and the picture is only a confirmation.
 
 ## Accessibility (the point, not an add-on)
@@ -32,17 +35,26 @@ Headphones are best for Duet. On one speaker or one earbud, choose **Take turns*
   | `[` `]` | Previous / next year (← → on the timeline) |
   | `1`–`4` | Choose a theme and play |
   | `D` | Duet on / off |
+  | `F` | Flip the record: side A (every year) / side B (NASA EIC visualization) |
   | `L` | Cycle Duet listening mode |
   | `R` | Repeat the description |
   | `C` | Description detail: off / brief / full |
   | `S` | Speak aloud on / off |
+  | `M` | Reduce motion on / off |
   | `G` | Switch Jukebox ⟷ Guess the Year |
+  | `?` | Show the shortcuts |
 
 - **Alt text generated from the data.** Each frame's alt text comes from its own features. For example: *"Greenhouse Gases, August 2014. World map of methane in the mid-troposphere… mid-toned, moderate brightness, moderate colour variance, sparse methane-rich air (2.0 %)… Mean methane at 400 hPa: 1,815 ppb."*
 - **Live data captions**, like subtitles. Plain-English numbers and the sound they made, synced to the bar you are hearing. Screen readers hear each year at the detail level you choose. When you pause or scrub, the full description is read once.
 - **Speak aloud** for people without a screen reader. It uses the browser's voice, ducks the music while speaking, and never lags behind the audio.
 - **ARIA throughout.** Radio groups, tabs, a native dialog, live regions, named controls (16 of 16) and `aria-valuetext` on the timeline ("Aug 08–15, 2014, frame 14 of 25").
-- **Colour-blind-safe.** Okabe-Ito colours (blue = oldest / left, orange = newest / right), always paired with text or shape. Every text colour pair has at least 5 : 1 contrast. Reduced motion is respected.
+- **Colour-blind-safe.** Okabe-Ito colours (blue = oldest / left, orange = newest / right), always paired with text or shape.
+- **High contrast.** Text under 24 px is at least 7 : 1 against its background; larger text is at least 4.5 : 1. Focus is a 3 px yellow ring on every control.
+- **Motion you control.** By default the app follows your system's reduced-motion setting. **Reduce motion** (or `M`) overrides it either way and is remembered. With it on, the planet holds still, transitions become instant and the beat shows as a colour change instead of a ring.
+
+## Design
+
+The interface is an instrument floating in orbit: a dark hull, a horizon, and the planet as the biggest thing on screen. The Duet split is its one moment of spectacle. The full brief is [DESIGN.md](DESIGN.md), covering tokens, type, motion, components and a review protocol. Its rules are enforced in code. Every colour, size, radius, duration and easing lives in `web/styles/main.css` `:root`, and the scripts read them from there (`web/src/ui/tokens.js`). Only transform, opacity and WebGL uniforms animate. There are no shadows, gradients, glows, pills or all-caps.
 
 ## Run it
 
@@ -62,8 +74,11 @@ To regenerate the data from NASA (Python 3.10+):
 python -m venv .venv
 source .venv/bin/activate            # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
-python scripts/fetch_frames.py       # downloads frames, colormaps, EIC cover art
+python scripts/fetch_frames.py       # side A: GIBS frames, colormaps, EIC cover art
 python scripts/extract_features.py   # writes data/features, data/display, data/themes.json
+python scripts/extract_points.py     # where each frame's signal is, for the note sparks
+python scripts/fetch_reference.py    # field guide: NOAA methane and sea level, OMI regional NO2
+python scripts/fetch_eic.py          # side B: NASA SVS EIC movies, sampled and measured (needs ffmpeg)
 ```
 
 ## How the mapping works (short version)
@@ -91,25 +106,53 @@ The full explanation, normalization ranges, Duet measurements and caveats are in
 | Air Quality | OMI/Aura Tropospheric NO₂ (3-day mosaic, Mar 15–17) | 2005–2025 |
 | Greenhouse Gases | AIRS/Aqua Methane at 400 hPa (August mean) | 2003–2026 |
 
-The 97 frames come from [NASA GIBS](https://nasa-gibs.github.io/gibs-api-docs/), the imagery service behind [NASA Worldview](https://worldview.earthdata.nasa.gov). Theme cover art comes from the [NASA SVS Earth Information Center](https://svs.gsfc.nasa.gov/gallery/earth-information-center/) dashboards. The EIC gallery's own frame sequences are undated single-year HDR animations, so dated yearly frames come from GIBS, the fallback named in our build plan. Every frame's source URLs are recorded in its JSON.
+**Side A.** The 97 frames come from [NASA GIBS](https://nasa-gibs.github.io/gibs-api-docs/), the imagery service behind [NASA Worldview](https://worldview.earthdata.nasa.gov), each sampled in the same calendar window every year so the seasonal cycle cancels out. "Active" pixels and headline values are read in real units by inverting NASA's published colormaps. Every frame's source URLs are recorded in its JSON.
+
+**Side B: NASA Earth Information Center visualizations** ([SVS EIC gallery](https://svs.gsfc.nasa.gov/gallery/earth-information-center/)), one per theme:
+
+| Theme | Visualization | Frames | What each frame reads out |
+|---|---|---|---|
+| Wildfires | [SVS 5113](https://svs.gsfc.nasa.gov/5113/) Active Fires As Observed by VIIRS, Oct 2024 – Oct 2026 | 40, dated from NASA's stamp | share of land where VIIRS saw fire (5-day window) |
+| Sea Level Change | [SVS 5235](https://svs.gsfc.nasa.gov/5235/) Sea Level Through a Porthole, 1993–2023 | 31, by water level | sea level above 1993, read off the porthole's own ruler: waves around 1–3 cm at first, 11.2 cm at the end (NASA's own 2023 marker sits at about 10.8) |
+| Air Quality | [SVS 5175](https://svs.gsfc.nasa.gov/5175/) TEMPO NO₂ over North America, Aug 28–31 2023 | 37 daylight scans with NASA's EDT stamp (11 of the 48 sampled showed no NO₂ at night or dawn and are skipped) | mean NO₂ in view, every pixel matched to the frame's colour bar, scaled by its tick marks |
+| Greenhouse Gases | [SVS 5116](https://svs.gsfc.nasa.gov/5116/) Global Atmospheric Methane (GEOS), 2021 | 24 | share of the globe under dense methane haze |
+
+**Field guide reference records.**
+
+| Theme | Record | Source |
+|---|---|---|
+| Greenhouse Gases | Global surface methane, annual and monthly, 1984–2025 (1,645 → 1,936 ppb); CO₂ and N₂O for context | [NOAA Global Monitoring Laboratory](https://gml.noaa.gov/ccgg/trends_ch4/) |
+| Sea Level Change | Global mean sea level from TOPEX/Poseidon, Jason-1/2/3 and Sentinel-6MF; +101 mm from 1993 to 2024, trend 3.1 mm/yr | [NOAA Laboratory for Satellite Altimetry](https://www.star.nesdis.noaa.gov/socd/lsa/SeaLevelRise/) |
+| Air Quality | March mean tropospheric NO₂ for four regions and the globe, 2005–2025, compared on three-year averages at each end | NASA OMI via GIBS, derived by Terra Vox (method in `data/reference.json`) |
+| Wildfires | Published MODIS studies (Cunningham et al. 2024; Andela et al. 2017) | linked in `data/context.json` |
+
+Substitutions, stated plainly:
+- The GIBS sea-surface-height layer ends in 2018, so NOAA's altimetry record carries the field guide to 2025.
+- The regional NO₂ means are computed by Terra Vox from NASA's OMI layer. They are not an official NASA product, and the top of the GIBS palette saturates, so peaks read low.
+- On side B, the top of TEMPO's colour bar fades to the same black as space, so values above about 10 ×10¹⁵ cannot be read and are left out. TEMPO only scans in daylight, so the movie's overnight frames are skipped.
 
 ## Repository
 
 ```
 data/        raw_frames/ (GIBS PNGs + manifests + colormaps), features/ (one JSON per frame),
-             display/ (frames as shown), themes.json (metadata + normalization ranges)
-scripts/     fetch_frames.py, extract_features.py, theme_defs.py
-web/         index.html, styles/main.css, src/
+             display/ (frames as shown), points/ (note-spark positions), themes.json,
+             eic.json + eic/ (side B frames), reference.json (field guide records),
+             legends.json (map keys), context.json (checked facts and citations)
+scripts/     fetch_frames.py, extract_features.py, extract_points.py, fetch_reference.py,
+             fetch_eic.py, eic_labels.json (NASA date stamps), theme_defs.py
+web/         index.html, styles/main.css (all design tokens), src/
                audio/   sonify.js (locked formulas, Voice, mix), scales.js, duet.js, levelCheck.js (dev)
-               ui/      turntable.js, themeTiles.js, mappingReadout.js, guessTheYear.js, captions.js, a11y.js
+               ui/      globe.js, turntable.js, odometer.js, themeTiles.js, mappingReadout.js,
+                        fieldGuide.js, mapKey.js, guessTheYear.js, captions.js, a11y.js, tokens.js
                data/    loader.js
 assets/      thumbnails/ (NASA SVS EIC cover images)
 docs/        mapping-explainer.md
 demo/        demo-script.md (90-second video)
+DESIGN.md    the design brief: tokens, type, motion, components, review protocol
 ```
 
 ## Credits and license
 
-Imagery courtesy of NASA EOSDIS GIBS / Worldview, built on MODIS (Terra), OMI (Aura), AIRS (Aqua) and JPL MEaSUREs altimetry. Cover art from the NASA Scientific Visualization Studio's Earth Information Center. NASA does not endorse this project.
+Imagery courtesy of NASA EOSDIS GIBS / Worldview, built on MODIS (Terra), OMI (Aura), AIRS (Aqua) and JPL MEaSUREs altimetry. Side B visualizations and cover art are by NASA's Scientific Visualization Studio for the Earth Information Center; each track's credits are in `data/eic.json`. TEMPO data from the Smithsonian Astrophysical Observatory. Reference records from the NOAA Global Monitoring Laboratory (Lan, Thoning and Dlugokencky) and the NOAA Laboratory for Satellite Altimetry. NASA and NOAA do not endorse this project.
 
 Code is released under the [MIT License](LICENSE).
