@@ -1,33 +1,75 @@
 # Terra Vox
 
-**Hear how the planet changed.** Terra Vox is an Earth Information Jukebox for the NASA Space Apps Challenge 2026 challenge *The Earth Information Jukebox*. It turns real NASA Earth imagery into live, generated music, so blind and low-vision people (and everyone else) can experience climate data by ear.
+**Hear how the planet changed: oldest year in your left ear, newest in your right.**
 
-## The moment: Duet mode
+### [▶ Try it live (headphones on)](https://demondarkness010-web.github.io/terra-vox/)
 
-Press **D**. The **oldest** satellite frame of a theme plays in your **left ear** and the **newest** in your **right**, at the same time, through the *identical* mapping. Whatever differs between your ears is the planet having changed.
+![Terra Vox in Duet: methane in August 2003 on the left half of the planet, August 2026 on the right](docs/media/duet.png)
 
-> **Greenhouse Gases, 2003 ⟷ 2026.** On the left, one low, calm C4 on a soft triangle wave at 88 BPM. On the right, eight buzzy sawtooth notes up at B♭5, 136 BPM, over a tense minor third.
-> Methane at 400 hPa: **1,769 → 1,887 ppb**. Air at or above 1,900 ppb: **0 % → 49 %** of the planet.
+**Video (90 s):** _link goes here once recorded; script in [demo/demo-script.md](demo/demo-script.md)_
 
-That contrast is measured, not asserted: rendered offline, the newest ear's spectral centroid sits about two octaves above the oldest's (390 Hz → 1,520 Hz), it plays 12× as many notes per second, and the two ears are separated by 45 dB. Details are in [docs/mapping-explainer.md](docs/mapping-explainer.md#4-duet-mode-the-gap-you-can-hear).
+- **What it does.** An Earth Information Jukebox for NASA Space Apps 2026: it plays NASA's [Earth Information Center](https://svs.gsfc.nasa.gov/gallery/earth-information-center/) visualizations and 20+ years of the same satellites' records as live music. In **Duet**, the oldest and newest year of a theme play at once, one in each ear, through the identical mapping, so the change is the difference you hear.
+- **Who it's for.** 338 million people are blind or have moderate to severe vision loss, and climate data almost always arrives as a chart. Terra Vox is built to be heard first: keyboard only, screen-reader captions generated from the data, spoken descriptions, no sight needed. _Tester result goes here, only once a session has actually happened (see [docs/submission.md](docs/submission.md))._
+- **Proof the sound carries the data.** [`scripts/validate_mapping.py`](scripts/validate_mapping.py) runs every frame through the app's own mapping: pitch, loudness, density and tempo follow the measured value at **r ≥ 0.82 on all 11 tracks** (r = 1.00 for loudness everywhere). [The table](docs/mapping-explainer.md#3-proof-does-the-sound-carry-the-data).
 
-Headphones are best for Duet. On one speaker or one earbud, choose **Take turns** and the two years alternate, centred.
+---
 
-## What it does
+## Details
 
-- **Four themes, chosen for contrasting sound signatures.** Wildfires (spiky, event-driven), Sea Level Change (slow, monotonic), Air Quality (noisy, daily) and Greenhouse Gases (smooth, trending).
-- **Two sides to every record.** *Side A* plays a calibrated year-by-year record: one global NASA frame per year, always taken from the same calendar window. *Side B* (press **F** to flip the record) plays the theme's own NASA Earth Information Center visualization, frame by frame, through the same locked formulas. Each side-B frame keeps NASA's date stamp, or for the sea-level porthole, its water level.
-- **Real-time sonification.** Each bar is one year (side A) or one frame (side B). Hue, brightness, colour variance, active-region density, change from the previous frame and latitude drive pitch, loudness, timbre, rhythm, tempo, harmony and stereo position through fixed formulas. Every note is constrained to C minor pentatonic, so it is always listenable.
-- **Normalized across themes.** Every feature is scaled against its own track's history before the formulas run, and the mix is loudness-calibrated, so switching themes never blows out the mix or goes silent.
-- **The planet.** A WebGL globe shows the frame being heard, with a spark for each note where its signal sits. In Duet the planet splits at the seam: the oldest year on the left half, the newest on the right.
-- **Live mapping readout.** A mixing desk shows the numbers driving the sound right now (warmth 0.65 → E♭5, density 0.60 → 5 notes a bar …), plus the raw values and normalization ranges.
-- **Field guide.** Under the player, each theme is checked against the record scientists cite: NOAA's global methane, NOAA's satellite sea-level record and NASA OMI regional NO₂. The app's own frames are drawn on the same chart, so you can see where a snapshot agrees with the trend. Published findings are linked, and every number names its source.
-- **Guess the Year.** An audio-first game: a hidden year plays, you compare it by ear with the oldest and newest anchors, then pick the year. The reveal is spoken first, and the picture is only a confirmation.
+### The idea in one sentence
 
-## Accessibility (the point, not an add-on)
+Other sonifications play a chart over time. Terra Vox plays two moments of the planet at once, one in each ear, so the change is the difference you hear.
 
-- **Sound is the primary channel.** Visuals are secondary and optional; nothing requires sight or a mouse.
-- **Full keyboard control** with visible focus. Every shortcut is also an on-screen control. Press **?** for the list.
+**Greenhouse Gases, 2003 ⟷ 2026.** Left ear: one low, calm C4 on a sine, 80 BPM. Right ear: E♭5, four notes a bar on a buzzy sawtooth at 115 BPM over a tense minor third, and louder. Methane at 400 hPa went from 1,769 to 1,887 ppb; air at or above 1,900 ppb from 0 % to 49 % of the planet.
+
+### How it meets the challenge
+
+From the official [Earth Information Jukebox](https://www.spaceappschallenge.org/2026/challenges/the-earth-information-jukebox/) statement:
+
+| The statement asks for… | Terra Vox | How to try it |
+|---|---|---|
+| "an interface … that pairs EIC visual frames with dynamic sonifications generated in real time" | Side B plays four NASA EIC visualizations (SVS 5113, 5235, 5175, 5116) frame by frame, generated live in the browser with Tone.js | **More → Side B**, or press **F** |
+| "individuals can select or experience a specific EIC visualization alongside its corresponding soundscape" | One screen: pick a theme, press play, Duet | Press **1**–**4** to play a theme, **D** for Duet |
+| map "color palettes, shapes, or pixel densities … to audio parameters like pitch, tempo, or instrumentation" | NASA's own colormaps are inverted to real values; value → pitch, loudness, timbre; share of the map → notes per bar; one instrument per theme | **More → How the data plays the music** |
+| "balance data interpretation with artistic, musically pleasing outputs" | Every note in C minor pentatonic; four instruments; the data link is tested (r ≥ 0.82) | Play any theme; run `validate_mapping.py` |
+| "Accessibility is a core theme … screen-reader compatibility … rich descriptive text" | Keyboard only, captions and alt text generated from the data, Speak aloud, Take turns for one ear, reduced motion | Press **?**; turn on NVDA or VoiceOver |
+| "how intuitively someone can select a visualization and initiate the audio" | "Put on headphones and start" drops straight into the methane Duet | Open the live link |
+| "Documenting your process … the 'why' behind your artistic choices" | [docs/mapping-explainer.md](docs/mapping-explainer.md): every range, formula, limit and check | Read it |
+| "how your soundscapes can reflect the urgency of climate change" | Duet: 23 years of methane in one chord | **D** on Greenhouse Gases |
+
+### What you hear
+
+We sonify the measurement, not the picture of it. Each frame's colours are turned back into the number NASA encoded (ppb, cm, molecules/cm², fire areas), placed on a fixed range written down for its theme, and that number plays:
+
+- **How much** → pitch, loudness and timbre (sine → triangle → sawtooth).
+- **How widespread** (share of the map past a threshold) → notes per bar.
+- **How far from the oldest year** → tempo, and from a quarter of the range on, a tense third.
+- **When** → stereo: oldest left, newest right. Duet plays both ends at once; single play sweeps left to right as the years advance.
+- **What** → the instrument: soft pad (methane), deep bass (sea level), plucked notes (wildfires), breathy noise (air quality).
+
+| Theme | NASA data | Years | What the sound follows |
+|---|---|---|---|
+| Wildfires | MODIS/Terra active fires, 8-day Aug 8–15 composite | 2001–2025 | separate fire areas, 0–300 |
+| Sea Level Change | JPL MEaSUREs sea surface height (TOPEX/Poseidon, Jason-1/2/3) | 1992–2018 | mean anomaly, −5 to +10 cm |
+| Air Quality | OMI/Aura tropospheric NO₂, March | 2005–2025 | one region's mean, 0–14 ×10¹⁵ molec/cm² (North China, northern India, eastern US, western Europe) |
+| Greenhouse Gases | AIRS/Aqua methane at 400 hPa, August | 2003–2026 | mean, 1,750–1,950 ppb |
+
+Wildfires: global fire hasn't simply risen, so listen to the record jump year to year. Terra's orbit has drifted since 2022; counted the same way from Aqua, Terra's 2023–2025 counts stay inside the range the two satellites agreed on before the drift ([check](scripts/check_fire_drift.py)). Air Quality follows one region at a time because the global mean barely moves: North China falling, northern India rising.
+
+**Limits.** One snapshot per year is not an annual mean; NASA GIBS sea-surface height ends in 2018; reading values back from colours has quantisation error. [All three, explained](docs/mapping-explainer.md).
+
+### Side B: the Earth Information Center visualizations
+
+| Theme | Visualization | Frames | What each frame reads out |
+|---|---|---|---|
+| Wildfires | [SVS 5113](https://svs.gsfc.nasa.gov/5113/) Active Fires As Observed by VIIRS | 40, dated from NASA's stamp | share of land where VIIRS saw fire |
+| Sea Level Change | [SVS 5235](https://svs.gsfc.nasa.gov/5235/) Sea Level Through a Porthole, 1993–2023 | 31, by water level | sea level above 1993, read off the porthole's own ruler |
+| Air Quality | [SVS 5175](https://svs.gsfc.nasa.gov/5175/) TEMPO NO₂ over North America, Aug 28–31 2023 | 37 daylight scans | mean NO₂ in view, matched to the frame's colour bar |
+| Greenhouse Gases | [SVS 5116](https://svs.gsfc.nasa.gov/5116/) Global Atmospheric Methane (GEOS), 2021 | 24 | share of the globe under dense methane haze |
+
+### Accessibility
+
+- **Sound first.** Nothing requires sight or a mouse. Every shortcut is also an on-screen control; press **?** for the list.
 
   | Key | Action |
   |---|---|
@@ -35,124 +77,87 @@ Headphones are best for Duet. On one speaker or one earbud, choose **Take turns*
   | `[` `]` | Previous / next year (← → on the timeline) |
   | `1`–`4` | Choose a theme and play |
   | `D` | Duet on / off |
+  | `L` | Duet listening mode: together, take turns, oldest only, newest only |
   | `F` | Flip the record: side A (every year) / side B (NASA EIC visualization) |
-  | `L` | Cycle Duet listening mode |
   | `R` | Repeat the description |
   | `C` | Description detail: off / brief / full |
   | `S` | Speak aloud on / off |
   | `M` | Reduce motion on / off |
-  | `G` | Switch Jukebox ⟷ Guess the Year |
+  | `G` | Guess the Year / back to the jukebox |
   | `?` | Show the shortcuts |
 
-- **Alt text generated from the data.** Each frame's alt text comes from its own features. For example: *"Greenhouse Gases, August 2014. World map of methane in the mid-troposphere… mid-toned, moderate brightness, moderate colour variance, sparse methane-rich air (2.0 %)… Mean methane at 400 hPa: 1,815 ppb."*
-- **Live data captions**, like subtitles. Plain-English numbers and the sound they made, synced to the bar you are hearing. Screen readers hear each year at the detail level you choose. When you pause or scrub, the full description is read once.
-- **Speak aloud** for people without a screen reader. It uses the browser's voice, ducks the music while speaking, and never lags behind the audio.
-- **ARIA throughout.** Radio groups, tabs, a native dialog, live regions, named controls (16 of 16) and `aria-valuetext` on the timeline ("Aug 08–15, 2014, frame 14 of 25").
-- **Colour-blind-safe.** Okabe-Ito colours (blue = oldest / left, orange = newest / right), always paired with text or shape.
-- **High contrast.** Text under 24 px is at least 7 : 1 against its background; larger text is at least 4.5 : 1. Focus is a 3 px yellow ring on every control.
-- **Motion you control.** By default the app follows your system's reduced-motion setting. **Reduce motion** (or `M`) overrides it either way and is remembered. With it on, the planet holds still, transitions become instant and the beat shows as a colour change instead of a ring.
+- **Captions and alt text from the data**, synced to the bar you hear: *"2021: 1,864 ppb, 33% methane-rich air → C5, 3 notes a bar, 109 BPM, triangle, tense third."*
+- **Speak aloud** for people without a screen reader, ducking the music while it talks.
+- **Take turns** for one speaker, one earbud or hearing in one ear.
+- **Works without WebGL or speech.** If the browser has no WebGL, the frame is shown as a flat image and the sound and captions carry on; without speech synthesis the Speak aloud button hides.
+- **Lighthouse accessibility:** _score goes here once run (see [docs/submission.md](docs/submission.md))._
 
-## Design
+### One real use
 
-The interface is an instrument floating in orbit: a dark hull, a horizon, and the planet as the biggest thing on screen. The Duet split is its one moment of spectacle. The full brief is [DESIGN.md](DESIGN.md), covering tokens, type, motion, components and a review protocol. Its rules are enforced in code. Every colour, size, radius, duration and easing lives in `web/styles/main.css` `:root`, and the scripts read them from there (`web/src/ui/tokens.js`). Only transform, opacity and WebGL uniforms animate. There are no shadows, gradients, glows, pills or all-caps.
+A teacher at a school for blind students opens the link on a classroom speaker, picks Greenhouse Gases, sets Duet to **Take turns**, and asks: "Which year has more methane, the first or the second? How can you tell?" No chart, no sighted helper, and the answer is in the sound.
 
-## Run it
+### Add your own dataset
+
+Any NASA GIBS layer with a published colormap can become a theme.
+
+1. **Define it** in [`scripts/theme_defs.py`](scripts/theme_defs.py): add an entry to `THEMES` (GIBS layer, one date per year in the same calendar window, the "active" rule in real units, the colormap URL, the physical label) and to `SOUND` (the fixed range for the value, and for the share). Pick ranges from the physics, not from your frames.
+2. **Fetch and measure:** `python scripts/fetch_frames.py`, then `python scripts/extract_features.py` and `python scripts/extract_points.py`.
+3. **Give it words and an instrument:** a units formatter in `PHYSICAL` and an active label in `ACTIVE` (`web/src/data/loader.js`), a map description in `MAP_DESCRIPTION` (`web/src/ui/captions.js`), and an instrument in `INSTRUMENT` (`web/src/audio/mapping.js`).
+4. **Prove it:** `python scripts/validate_mapping.py` must still pass.
+
+The app picks the theme up from `data/themes.json`; no other code changes.
+
+### Run it
 
 Requires Node 20.19+ or 22.12+ (Vite 8).
 
 ```bash
 cd web
-npm install
+npm ci
 npm run dev          # http://localhost:5173
 ```
 
-For an offline demo build, run `npm run build` and serve `web/dist/` with any static server (`npm run preview`). No backend is needed, and all NASA data is precomputed and bundled.
+`npm run build` writes a static site to `web/dist/` with all NASA data bundled; no backend. Every push to `main` deploys it to GitHub Pages ([.github/workflows/deploy.yml](.github/workflows/deploy.yml)).
 
-To regenerate the data from NASA (Python 3.10+):
+To regenerate the data from NASA (Python 3.10+, ffmpeg for side B):
 
 ```bash
 python -m venv .venv
 source .venv/bin/activate            # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
-python scripts/fetch_frames.py       # side A: GIBS frames, colormaps, EIC cover art
-python scripts/extract_features.py   # writes data/features, data/display, data/themes.json
+python scripts/fetch_frames.py       # side A: GIBS frames and colormaps (data/raw_frames/, not in git, 24 MB)
+python scripts/fetch_reference.py    # field guide: NOAA methane and sea level, regional OMI NO2
+python scripts/extract_features.py   # measurements and sound inputs -> data/features, data/themes.json
 python scripts/extract_points.py     # where each frame's signal is, for the note sparks
-python scripts/fetch_reference.py    # field guide: NOAA methane and sea level, OMI regional NO2
-python scripts/fetch_eic.py          # side B: NASA SVS EIC movies, sampled and measured (needs ffmpeg)
+python scripts/fetch_eic.py          # side B: NASA SVS EIC movies, sampled and measured
+python scripts/check_fire_drift.py   # Terra against Aqua
+python scripts/validate_mapping.py   # exits 1 if any r < 0.8
 ```
 
-## How the mapping works (short version)
-
-```js
-note        = scale[Math.floor((hue / 360) * 10) % 10]      // C minor pentatonic, C4–Bb5
-velocity    = clamp(0.3 + brightness * 0.7, 0.3, 1.0)
-timbre      = colorVariance < 0.15 ? 'sine' : colorVariance < 0.35 ? 'triangle' : 'sawtooth'
-notesPerBar = 1 + Math.round(pixelDensity * 7)
-tempoBPM    = 80 + Math.round(frameDelta * 80)
-interval    = frameDelta > 0.5 ? 'minor third (tense)' : 'perfect fifth (consonant)'
-pan         = latBand === 'north' ? -0.8 : latBand === 'south' ? 0.8 : 0
-```
-
-`hue` is measured on a cool → warm axis, so warm colours sound high. Every feature is normalized per theme first. "Active" pixels are defined in real units by inverting NASA's published colormaps: a detected fire, sea ≥ 10 cm above its mean, NO₂ ≥ 5 × 10¹⁵ molecules/cm², or methane ≥ 1,900 ppb.
-
-The full explanation, normalization ranges, Duet measurements and caveats are in **[docs/mapping-explainer.md](docs/mapping-explainer.md)**.
-
-## Data
-
-| Theme | NASA dataset | Years |
-|---|---|---|
-| Wildfires | MODIS/Terra Thermal Anomalies & Fires (8-day, Aug 8–15) | 2001–2025 |
-| Sea Level Change | JPL MEaSUREs Sea Surface Height Anomalies (TOPEX/Poseidon, Jason-1/2/3) | 1992–2018 |
-| Air Quality | OMI/Aura Tropospheric NO₂ (3-day mosaic, Mar 15–17) | 2005–2025 |
-| Greenhouse Gases | AIRS/Aqua Methane at 400 hPa (August mean) | 2003–2026 |
-
-**Side A.** The 97 frames come from [NASA GIBS](https://nasa-gibs.github.io/gibs-api-docs/), the imagery service behind [NASA Worldview](https://worldview.earthdata.nasa.gov), each sampled in the same calendar window every year so the seasonal cycle cancels out. "Active" pixels and headline values are read in real units by inverting NASA's published colormaps. Every frame's source URLs are recorded in its JSON.
-
-**Side B: NASA Earth Information Center visualizations** ([SVS EIC gallery](https://svs.gsfc.nasa.gov/gallery/earth-information-center/)), one per theme:
-
-| Theme | Visualization | Frames | What each frame reads out |
-|---|---|---|---|
-| Wildfires | [SVS 5113](https://svs.gsfc.nasa.gov/5113/) Active Fires As Observed by VIIRS, Oct 2024 – Oct 2026 | 40, dated from NASA's stamp | share of land where VIIRS saw fire (5-day window) |
-| Sea Level Change | [SVS 5235](https://svs.gsfc.nasa.gov/5235/) Sea Level Through a Porthole, 1993–2023 | 31, by water level | sea level above 1993, read off the porthole's own ruler: waves around 1–3 cm at first, 11.2 cm at the end (NASA's own 2023 marker sits at about 10.8) |
-| Air Quality | [SVS 5175](https://svs.gsfc.nasa.gov/5175/) TEMPO NO₂ over North America, Aug 28–31 2023 | 37 daylight scans with NASA's EDT stamp (11 of the 48 sampled showed no NO₂ at night or dawn and are skipped) | mean NO₂ in view, every pixel matched to the frame's colour bar, scaled by its tick marks |
-| Greenhouse Gases | [SVS 5116](https://svs.gsfc.nasa.gov/5116/) Global Atmospheric Methane (GEOS), 2021 | 24 | share of the globe under dense methane haze |
-
-**Field guide reference records.**
-
-| Theme | Record | Source |
-|---|---|---|
-| Greenhouse Gases | Global surface methane, annual and monthly, 1984–2025 (1,645 → 1,936 ppb); CO₂ and N₂O for context | [NOAA Global Monitoring Laboratory](https://gml.noaa.gov/ccgg/trends_ch4/) |
-| Sea Level Change | Global mean sea level from TOPEX/Poseidon, Jason-1/2/3 and Sentinel-6MF; +101 mm from 1993 to 2024, trend 3.1 mm/yr | [NOAA Laboratory for Satellite Altimetry](https://www.star.nesdis.noaa.gov/socd/lsa/SeaLevelRise/) |
-| Air Quality | March mean tropospheric NO₂ for four regions and the globe, 2005–2025, compared on three-year averages at each end | NASA OMI via GIBS, derived by Terra Vox (method in `data/reference.json`) |
-| Wildfires | Published MODIS studies (Cunningham et al. 2024; Andela et al. 2017) | linked in `data/context.json` |
-
-Substitutions, stated plainly:
-- The GIBS sea-surface-height layer ends in 2018, so NOAA's altimetry record carries the field guide to 2025.
-- The regional NO₂ means are computed by Terra Vox from NASA's OMI layer. They are not an official NASA product, and the top of the GIBS palette saturates, so peaks read low.
-- On side B, the top of TEMPO's colour bar fades to the same black as space, so values above about 10 ×10¹⁵ cannot be read and are left out. TEMPO only scans in daylight, so the movie's overnight frames are skipped.
-
-## Repository
+### Repository
 
 ```
-data/        raw_frames/ (GIBS PNGs + manifests + colormaps), features/ (one JSON per frame),
-             display/ (frames as shown), points/ (note-spark positions), themes.json,
-             eic.json + eic/ (side B frames), reference.json (field guide records),
-             legends.json (map keys), context.json (checked facts and citations)
-scripts/     fetch_frames.py, extract_features.py, extract_points.py, fetch_reference.py,
-             fetch_eic.py, eic_labels.json (NASA date stamps), theme_defs.py
-web/         index.html, styles/main.css (all design tokens), src/
-               audio/   sonify.js (locked formulas, Voice, mix), scales.js, duet.js, levelCheck.js (dev)
-               ui/      globe.js, turntable.js, odometer.js, themeTiles.js, mappingReadout.js,
-                        fieldGuide.js, mapKey.js, guessTheYear.js, captions.js, a11y.js, tokens.js
-               data/    loader.js
-assets/      thumbnails/ (NASA SVS EIC cover images)
-docs/        mapping-explainer.md
+data/        features/ (one JSON per frame), display/ (frames as shown), points/ (note sparks),
+             themes.json, eic.json + eic/ (side B), reference.json (field guide records),
+             fire_check.json (Terra vs Aqua), legends.json (map keys), context.json (checked facts)
+scripts/     theme_defs.py (themes and fixed sound ranges), fetch_frames.py, extract_features.py,
+             extract_points.py, fetch_reference.py, fetch_eic.py, check_fire_drift.py,
+             validate_mapping.py
+web/src/     audio/  mapping.js (the mapping, pure), sonify.js (instruments, Voice, mix), duet.js, scales.js
+             ui/     globe.js, turntable.js, themeTiles.js, captions.js, fieldGuide.js, mapKey.js,
+                     mappingReadout.js, guessTheYear.js, a11y.js, tokens.js
+             data/   loader.js
+docs/        mapping-explainer.md, submission.md (disclosures, references, checklists)
 demo/        demo-script.md (90-second video)
-DESIGN.md    the design brief: tokens, type, motion, components, review protocol
+DESIGN.md    the design brief
 ```
 
-## Credits and license
+`data/raw_frames/` (24 MB of GIBS PNGs) is no longer committed; `fetch_frames.py` rebuilds it.
 
-Imagery courtesy of NASA EOSDIS GIBS / Worldview, built on MODIS (Terra), OMI (Aura), AIRS (Aqua) and JPL MEaSUREs altimetry. Side B visualizations and cover art are by NASA's Scientific Visualization Studio for the Earth Information Center; each track's credits are in `data/eic.json`. TEMPO data from the Smithsonian Astrophysical Observatory. Reference records from the NOAA Global Monitoring Laboratory (Lan, Thoning and Dlugokencky) and the NOAA Laboratory for Satellite Altimetry. NASA and NOAA do not endorse this project.
+### Credits and license
+
+Imagery courtesy of NASA EOSDIS GIBS / Worldview, built on MODIS (Terra, Aqua), OMI (Aura), AIRS (Aqua) and JPL MEaSUREs altimetry. Side B visualizations and cover art are by NASA's Scientific Visualization Studio for the Earth Information Center; each track's credits are in `data/eic.json`. TEMPO data from the Smithsonian Astrophysical Observatory. Reference records from the NOAA Global Monitoring Laboratory and the NOAA Laboratory for Satellite Altimetry. NASA and NOAA do not endorse this project. Full references: [docs/submission.md](docs/submission.md#references).
+
+Built solo with Claude Code (AI coding assistant) for implementation; the concept, data choices, mapping design and testing are mine. _(Draft: confirm or edit before submitting.)_
 
 Code is released under the [MIT License](LICENSE).
