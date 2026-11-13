@@ -133,4 +133,7 @@ def main():
 
 
 if __name__ == "__main__":
+    # Track names carry subscripts (CH₄, NO₂); a Windows console is cp1252 by default.
+    if hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(encoding="utf-8")
     main()

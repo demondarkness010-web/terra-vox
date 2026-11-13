@@ -124,5 +124,17 @@ export function createThemeTiles(container, themes, { onSelect, onActivate, labe
     tiles.forEach((t) => t.classList.toggle('is-playing', playing && t.dataset.theme === id));
   }
 
-  return { select, setPlaying, get current() { return current; } };
+  // Names and listening hints after a language switch.
+  function relabel(countWord) {
+    tiles.forEach((tile, i) => {
+      const theme = themes[i];
+      tile.setAttribute('aria-label', theme.name);
+      tile.querySelector('.tile-name').textContent = theme.name;
+      const [, listen, count] = tile.querySelectorAll('.tile-meta > span');
+      listen.textContent = theme.signature.charAt(0).toUpperCase() + theme.signature.slice(1);
+      count.textContent = `, ${countWord(theme.frameCount)}`;
+    });
+  }
+
+  return { select, setPlaying, relabel, get current() { return current; } };
 }

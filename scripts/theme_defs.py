@@ -160,20 +160,32 @@ THEMES = [
 #                  tense third ("how far the planet has moved")
 
 SOUND = {
-    # Separate fire areas in the 8-day composite (connected groups of MODIS
-    # detections at the frame's 0.35 degree grid). A count, so it does not
-    # grow with the dot size the map is drawn at. 0 to just above the record
-    # (295 in 2022). Fire count IS its spread, so density follows it too.
-    "wildfires": {"value": "clusters", "range": (0, 300), "share": "value",
-                  "rangeLabel": "0 to 300 separate fire areas (record: 295)"},
+    # Separate fire areas in an 8-day composite (connected groups of MODIS
+    # detections at the frame's 0.35 degree grid), averaged over the fifteen
+    # windows of the June-September season. A count, so it does not grow with
+    # the dot size the map is drawn at. Every season mean 2001-2025 sits
+    # between 273 and 300, so the range is 250 to 325: the record plus about
+    # a third of its spread again as headroom at each end. (The 0-300 range
+    # of the single-window data, data/legacy, would squeeze the whole record
+    # into its top tenth.) Fire count IS its spread, so density follows it.
+    "wildfires": {"value": "clusters", "range": (250, 325), "share": "value",
+                  "rangeLabel": "250 to 325 fire areas per 8-day window, season mean (record: 300)"},
     # Mean sea-surface height anomaly against the 1993-2012 mean.
     "sea_level": {"value": "value", "range": (-5.0, 10.0), "share": "active", "shareMax": 50,
                   "rangeLabel": "-5 to +10 cm"},
-    # March mean tropospheric NO2 over one region (data/reference.json); the
-    # global mean barely moves, regions move in opposite directions.
+    # Yearly mean tropospheric NO2 over one region (data/reference.json); the
+    # global mean barely moves, regions move in opposite directions. Each
+    # region has its own fixed range by one rule: 0 to 1.3x the region's
+    # yearly record, rounded up. On one shared 0-14 range the yearly means of
+    # the cleaner regions (2-4) fit in two notes, so a 50 % change in northern
+    # India was nearly inaudible. Pitch compares years within a region, not
+    # regions with each other; a Duet only ever plays one region.
     "air_quality": {"value": "region", "range": (0.0, 14.0), "share": "region",
-                    "shareMax": {"north_china": 100, "northern_india": 50, "eastern_us": 50, "western_europe": 50},
-                    "rangeLabel": "0 to 14 x10^15 molecules/cm2 (record: 13.0, North China 2011)"},
+                    # the same rule for the polluted share, rounded up to 5 %
+                    "shareMax": {"north_china": 100, "northern_india": 20, "eastern_us": 25, "western_europe": 40},
+                    "rangeByRegion": {"north_china": (0.0, 14.0), "northern_india": (0.0, 4.0),
+                                      "eastern_us": (0.0, 5.0), "western_europe": (0.0, 6.0)},
+                    "rangeLabel": "0 to 1.3x the region's yearly record, x10^15 molecules/cm2 (North China 0-14, northern India 0-4, eastern US 0-5, western Europe 0-6)"},
     # Mean methane at 400 hPa.
     "greenhouse_gases": {"value": "value", "range": (1750.0, 1950.0), "share": "active", "shareMax": 100,
                          "rangeLabel": "1,750 to 1,950 ppb"},

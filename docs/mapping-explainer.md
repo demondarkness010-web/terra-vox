@@ -1,7 +1,7 @@
 # How Terra Vox translates sight into sound
 
 > **Limits, stated up front**
-> - **One snapshot per year is not an annual mean.** Each side A year is one calendar window (an 8-day fire composite, a 3-day NO₂ mosaic, one October sea-surface grid, one August methane month), taken at the same time every year so the seasons cancel. It shows the direction of change, not an official yearly average. The field guide (behind **More**) sets each theme against the record scientists cite.
+> - **Each year is an average of many windows, made by us, not an official NASA product.** Sea level, NO₂ and methane average 12 maps a year (one per month); wildfires average the 15 eight-day composites of the June to September season. The current year averages only the months so far, and a Duet compares it with the same months of the other year. Checked against NOAA's independent records (`referenceCheck` in `data/themes.json`): methane r = 0.992 against NOAA's global surface mean (2003–2025, 23 years); sea level r = 0.997 against NOAA's satellite altimetry (1993–2018, 26 years). With one window a year instead, both were 0.989 (`singleWindow`).
 > - **NASA GIBS sea-surface height ends in 2018.** Side A's sea level stops there; NOAA's altimetry record in the field guide carries it to 2025, and side B's porthole reaches 2023.
 > - **Reading values back from colours has quantisation error.** We invert NASA's published colormaps (every pixel matched a palette entry), but each colour stands for a bin, not an exact number, and the top of some palettes saturates over the most extreme places, so peaks read low.
 
@@ -27,10 +27,10 @@ GIBS publishes the exact RGB → value table for each layer. Inverting it turns 
 
 | Theme | Measurement | Fixed range | Active share (density) | Share range |
 |---|---|---|---|---|
-| Wildfires | Separate fire areas: connected patches of MODIS detections in the 8-day August composite | 0–300 (record 295, 2022) | the count itself | — |
-| Sea Level Change | Mean sea-surface height anomaly vs the 1993–2012 mean | −5 to +10 cm | ocean ≥ 10 cm above the mean | 0–50 % (record 25 %) |
-| Air Quality | March mean tropospheric NO₂ over one region | 0–14 ×10¹⁵ molecules/cm² (record 13.0, North China 2011) | the region's observed air ≥ 5 ×10¹⁵ | 0–100 % North China (record 86 %); 0–50 % northern India, eastern US, western Europe (records 19, 26, 41 %) |
-| Greenhouse Gases | Mean methane at 400 hPa | 1,750–1,950 ppb | air ≥ 1,900 ppb | 0–100 % (record 49 %) |
+| Wildfires | Separate fire areas: connected patches of MODIS detections, mean of the 15 eight-day composites, June to September | 250–325 (record 300, 2022); 0–300 squeezed the whole record into its top tenth | the count itself | — |
+| Sea Level Change | Yearly mean sea-surface height anomaly vs the 1993–2012 mean | −5 to +10 cm (record +4.2 cm, 2018) | ocean ≥ 10 cm above the mean | 0–50 % |
+| Air Quality | Yearly mean tropospheric NO₂ over one region | each region on its own scale, 0 to 1.3× its yearly record: North China 0–14, northern India 0–4, eastern US 0–5, western Europe 0–6 ×10¹⁵ molecules/cm² | the region's observed air ≥ 5 ×10¹⁵ | 0–100 % North China; 0–50 % the other three |
+| Greenhouse Gases | Yearly mean methane at 400 hPa | 1,750–1,950 ppb (record 1,880 ppb, 2025) | air ≥ 1,900 ppb | 0–100 % |
 
 **Side B, the NASA Earth Information Center visualizations:** each yields one quantity, which drives pitch, loudness and density together.
 
@@ -122,10 +122,10 @@ What each Duet plays (side A):
 
 | Theme | Dataset (NASA) | GIBS layer | Frames |
 |---|---|---|---|
-| Wildfires | MODIS/Terra Thermal Anomalies & Fires | `MODIS_Terra_Thermal_Anomalies_All` | 8-day union, Aug 8–15, 2001–2025 (25) |
-| Sea Level Change | JPL MEaSUREs Gridded Sea Surface Height Anomalies (TOPEX/Poseidon, Jason-1/2/3) | `JPL_MEaSUREs_L4_Sea_Surface_Height_Anomalies` | 5-day grid date nearest Oct 1, 1992–2018 (27) |
-| Air Quality | OMI/Aura Tropospheric NO₂ Column | `OMI_Nitrogen_Dioxide_Tropo_Column` | 3-day gap-filling mosaic, Mar 15–17, 2005–2025 (21); the sound follows each region's mean over all of March |
-| Greenhouse Gases | AIRS/Aqua Methane at 400 hPa, monthly | `AIRS_L3_Methane_400hPa_Volume_Mixing_Ratio_Monthly_Day` | August mean, 2003–2026 (24) |
+| Wildfires | MODIS/Terra Thermal Anomalies & Fires | `MODIS_Terra_Thermal_Anomalies_All` | season mean of 15 eight-day composites, June 1 to September 27, 2001–2025 (25 years) |
+| Sea Level Change | JPL MEaSUREs Gridded Sea Surface Height Anomalies (TOPEX/Poseidon, Jason-1/2/3) | `JPL_MEaSUREs_L4_Sea_Surface_Height_Anomalies` | yearly mean of 12 monthly maps, 1993–2018 (26 years) |
+| Air Quality | OMI/Aura Tropospheric NO₂ Column | `OMI_Nitrogen_Dioxide_Tropo_Column` | yearly mean of 12 three-day composites (one a month), 2005–2025 (21 years) |
+| Greenhouse Gases | AIRS/Aqua Methane at 400 hPa, monthly | `AIRS_L3_Methane_400hPa_Volume_Mixing_Ratio_Monthly_Day` | yearly mean of 12 monthly maps, 2003–2026 (24 years; 2026 is January to the latest month) |
 
 - **Imagery:** [NASA GIBS](https://nasa-gibs.github.io/gibs-api-docs/), the imagery service behind [NASA Worldview](https://worldview.earthdata.nasa.gov). Global equirectangular WMS frames, 1024 × 512. Colormaps from `gibs.earthdata.nasa.gov/colormaps/v1.3/`. Every frame's source URLs are recorded in `data/features/<theme>/<date>.json`.
 - **Why side A uses GIBS:** most EIC visualizations cover a single year or a few days, so on their own they cannot supply a decades-long oldest-vs-newest pair. GIBS serves the same instruments' imagery by date.

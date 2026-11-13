@@ -3,7 +3,7 @@
   "kind": "marker",
   "title": "Active fire detected",
   "color": "#ff7a1a",
-  "note": "Each dot is a 1 km MODIS pixel where a fire burned during the 8-day window."
+  "note": "Each dot is a 1 km MODIS pixel where a fire burned during the June to September fire season."
  },
  "sea_level": {
   "kind": "gradient",

@@ -3,17 +3,22 @@
 // works offline and never depends on a live NASA request during a demo.
 //
 // Each theme is a record with two sides:
-//   side A  the calibrated year-by-year record built from NASA GIBS layers
+//   side A  the calibrated year-by-year record built from NASA GIBS layers,
+//           each year an average over many windows (scripts/build_annual.py)
 //   side B  frames of the theme's NASA Earth Information Center visualization
 //           (data/eic.json, scripts/fetch_eic.py)
 // Both sides are "tracks" with the same shape, so the player, Duet, captions
 // and readout treat them alike.
 //
 // Air Quality follows one region at a time (data/reference.json): the global
-// March mean barely moves, while regions move in opposite directions (North
+// yearly mean barely moves, while regions move in opposite directions (North
 // China falling, northern India rising). Each region is its own side A track.
+//
+// Names, labels and units are getters that read the current language
+// (i18n/index.js), so a language switch needs no reload.
 
 import themesMeta from '../../../data/themes.json';
+import { t, num, locale } from '../i18n/index.js';
 
 const featureFiles = import.meta.glob('../../../data/features/*/*.json', { eager: true, import: 'default' });
 const displayImages = import.meta.glob('../../../data/display/*/*.jpg', { eager: true, query: '?url', import: 'default' });
@@ -37,19 +42,74 @@ let sideB = null;
 let airRegion = null;
 const regionTracks = new Map();
 
-// "over the North China Plain": region names as they read inside a sentence.
-const OVER = {
-  north_china: 'the North China Plain',
-  northern_india: 'northern India',
-  eastern_us: 'the eastern United States',
-  western_europe: 'western Europe',
-};
-const REGION_SHORT = {
-  north_china: 'North China',
-  northern_india: 'Northern India',
-  eastern_us: 'Eastern US',
-  western_europe: 'Western Europe',
-};
+// ------------------------------------------------------------ words that follow the language
+
+// Theme names and listening hints come from the language files, not themes.json.
+function localizeTrack(track) {
+  Object.defineProperties(track, {
+    name: { get: () => t(`theme.${track.parent}.name`), enumerable: true, configurable: true },
+    signature: { get: () => t(`theme.${track.id}.signature`), enumerable: true, configurable: true },
+  });
+  if (track.physical && !track.region) {
+    const physical = { ...track.physical };
+    Object.defineProperty(physical, 'label', { get: () => t(`physlabel.${track.id}`), enumerable: true });
+    track.physical = physical;
+  }
+  return track;
+}
+
+const fmtDate = (d, opts) => new Intl.DateTimeFormat(locale(), opts).format(d);
+const monthName = (m) => fmtDate(new Date(Date.UTC(2001, m - 1, 15)), { month: 'long', timeZone: 'UTC' });
+const signedNum = (v, d) => `${v >= 0 ? '+' : '−'}${num(Math.abs(v), d)}`;
+
+// A frame's label, short and big date in the current language.
+function labelsFor(f) {
+  if (f.window) {                                   // side A: one year's average
+    const m = f.window.months ?? [];
+    const range = m.length ? { from: monthName(m[0]), to: monthName(m[m.length - 1]), count: m.length } : {};
+    return { label: t(`frame.${f.window.kind}`, { year: f.year, ...range }), short: String(f.year), big: String(f.year) };
+  }
+  if (f.side !== 'b') return { label: f.label0, short: String(f.year), big: String(f.year) };
+  if (!f.date) {                                    // the porthole: labelled by its water level
+    const s = signedNum(f.physical.value, 1);
+    return { label: t('eic.seaLabel', { v: s }), short: `${s} cm`, big: s };
+  }
+  if (f.date.includes('T')) {                       // TEMPO: hourly, Eastern time
+    const d = new Date(f.date);
+    const tz = { timeZone: 'America/New_York' };
+    const time = fmtDate(d, { hour: '2-digit', minute: '2-digit', hourCycle: 'h23', ...tz });
+    return { label: `${fmtDate(d, { dateStyle: 'long', ...tz })}, ${time} EDT`, short: `${fmtDate(d, { month: 'short', day: 'numeric', ...tz })} ${time}`, big: time };
+  }
+  const d = new Date(`${f.date}T12:00:00Z`);
+  const utc = { timeZone: 'UTC' };
+  if (f.theme === 'greenhouse_gases_eic') {         // one model year: the day is what changes
+    return { label: fmtDate(d, { dateStyle: 'long', ...utc }), short: fmtDate(d, { month: 'short', day: 'numeric', ...utc }), big: fmtDate(d, { month: 'short', day: '2-digit', ...utc }) };
+  }
+  return { label: fmtDate(d, { dateStyle: 'long', ...utc }), short: fmtDate(d, { dateStyle: 'medium', ...utc }), big: fmtDate(d, { month: 'short', day: '2-digit', ...utc }) };
+}
+
+function localizeFrame(f) {
+  Object.defineProperties(f, {
+    label: { get: () => labelsFor(f).label, enumerable: true, configurable: true },
+    short: { get: () => labelsFor(f).short, enumerable: true, configurable: true },
+    big: { get: () => labelsFor(f).big, enumerable: true, configurable: true },
+  });
+  return f;
+}
+
+// Region names as they read alone and inside a sentence ("over northern India").
+function localizeRegion(region) {
+  Object.defineProperties(region, {
+    short: { get: () => t(`region.${region.id}.short`), enumerable: true, configurable: true },
+    over: { get: () => t(`region.${region.id}.over`), enumerable: true, configurable: true },
+  });
+  return region;
+}
+
+// Copy a frame's plain data, leaving its language getters behind.
+const plain = ({ label, short, big, ...rest }) => rest;
+
+// ------------------------------------------------------------ tracks
 
 /** The four themes (side A), each with its frames in date order (oldest first). */
 export function loadThemes() {
@@ -59,24 +119,25 @@ export function loadThemes() {
     const frames = meta.frames.map((date) => {
       const features = featureFiles[`../../../data/features/${meta.id}/${date}.json`];
       if (!features) throw new Error(`Missing features for ${meta.id} ${date}; run scripts/extract_features.py`);
-      return {
-        ...features,
-        short: String(features.year),
-        big: String(features.year),
-        themeName: meta.name,
+      const { label, ...rest } = features;
+      return localizeFrame({
+        ...rest,
+        label0: label,
+        side: 'a',
         imageUrl: displayImages[`../../../data/display/${meta.id}/${date}.jpg`],
         signal: points[date] ?? { kind: 'none', points: [] },
-      };
+      });
     });
-    return {
-      ...meta,
+    const { name, signature, ...rest } = meta;
+    return localizeTrack({
+      ...rest,
       side: 'a',
       parent: meta.id,
       frames,
       rangeLabel: meta.yearRange.map(String),
       step: 'year',
       thumbnailUrl: thumbnails[`../../../assets/thumbnails/${meta.id}.jpg`] ?? frames[frames.length - 1].imageUrl,
-    };
+    });
   }).map((track) => (track.sound?.regions ? regionTrack(track, track.sound.defaultRegion) : track));
   return cache;
 }
@@ -86,23 +147,27 @@ export function loadThemes() {
 function regionTrack(base, id) {
   const key = `${base.id}:${id}`;
   if (regionTracks.has(key)) return regionTracks.get(key);
-  const region = { id, short: REGION_SHORT[id] ?? id, over: OVER[id] ?? id, ...base.sound.regions.find((r) => r.id === id) };
-  const label = `March mean NO₂ over ${region.over}`;
-  const track = {
-    ...base,
+  const { name, range, rangeLabel, ...found } = base.sound.regions.find((r) => r.id === id);
+  const region = localizeRegion({ ...found });
+  const { name: _n, signature: _s, physical, ...rest } = base;
+  if (range) rest.sound = { ...rest.sound, range, rangeLabel };
+  const regionPhysical = { units: physical.units };
+  Object.defineProperty(regionPhysical, 'label', { get: () => t('aq.label', { over: region.over }), enumerable: true });
+  const track = localizeTrack({
+    ...rest,
     region,
-    physical: { ...base.physical, label },
-    frames: base.frames.map((f) => ({ ...f, ...f.regions[id], physical: { ...f.physical, label, value: f.regions[id].value } })),
-  };
+    physical: regionPhysical,
+    frames: base.frames.map((f) => localizeFrame({ ...plain(f), ...f.regions[id], physical: { ...f.physical, value: f.regions[id].value } })),
+  });
   regionTracks.set(key, track);
   if (!airRegion) airRegion = id;
   return track;
 }
 
-/** Regions Air Quality can follow: [{ id, name, short, over }]. */
+/** Regions Air Quality can follow: [{ id, short, over }]. */
 export function airRegions() {
-  const aq = themesMeta.themes.find((t) => t.id === 'air_quality');
-  return (aq?.sound?.regions ?? []).map((r) => ({ ...r, short: REGION_SHORT[r.id] ?? r.name, over: OVER[r.id] ?? r.name }));
+  const aq = themesMeta.themes.find((th) => th.id === 'air_quality');
+  return (aq?.sound?.regions ?? []).map(({ name, ...r }) => localizeRegion({ ...r }));
 }
 
 /** Follow another Air Quality region; returns its track. */
@@ -116,38 +181,40 @@ export function setAirRegion(id) {
 export function loadSideB() {
   if (sideB) return sideB;
   sideB = {};
-  for (const t of eicMeta?.tracks ?? []) {
-    const parent = loadThemes().find((th) => th.id === t.theme);
+  for (const tr of eicMeta?.tracks ?? []) {
+    const parent = loadThemes().find((th) => th.id === tr.theme);
     if (!parent) continue;
-    const frames = t.frames.map((f) => ({
+    const frames = tr.frames.map(({ label, short, big, ...f }) => localizeFrame({
       ...f,
-      themeName: parent.name,
+      label0: label,
+      side: 'b',
       imageUrl: eicImages[`../../../${f.image}`],
       signal: { kind: 'none', points: [] },
     }));
-    sideB[t.theme] = {
-      ...t,
-      name: parent.name,
+    const { signature, ...rest } = tr;
+    const track = localizeTrack({
+      ...rest,
       side: 'b',
       parent: parent.id,
       frames,
       yearRange: [frames[0].year ?? null, frames[frames.length - 1].year ?? null],
-      rangeLabel: [frames[0].short, frames[frames.length - 1].short],
       step: 'frame',
       thumbnailUrl: parent.thumbnailUrl,
-    };
+    });
+    Object.defineProperty(track, 'rangeLabel', { get: () => [frames[0].short, frames[frames.length - 1].short], enumerable: true });
+    sideB[tr.theme] = track;
   }
   return sideB;
 }
 
 /** Any track by id: a theme id (side A) or a side B id like "wildfires_eic". */
 export function getTheme(id) {
-  return loadThemes().find((t) => t.id === id) ?? Object.values(loadSideB()).find((t) => t.id === id);
+  return loadThemes().find((th) => th.id === id) ?? Object.values(loadSideB()).find((th) => th.id === id);
 }
 
 /** The track for a theme and side; side B falls back to A if it is missing. */
 export function trackFor(themeId, side) {
-  const a = loadThemes().find((t) => t.id === themeId);
+  const a = loadThemes().find((th) => th.id === themeId);
   if (side === 'b' && loadSideB()[themeId]) return loadSideB()[themeId];
   return a?.region && airRegion ? regionTrack(a, airRegion) : a;
 }
@@ -155,18 +222,27 @@ export function trackFor(themeId, side) {
 export const oldestFrame = (theme) => theme.frames[0];
 export const newestFrame = (theme) => theme.frames[theme.frames.length - 1];
 
-/** "23 years apart", "3 days apart", ... for the two ends of a track. */
+/** The frame for a year on a side A track, clamped to the record: { frame, clamped }. */
+export function frameForYear(theme, year) {
+  const first = oldestFrame(theme);
+  const last = newestFrame(theme);
+  if (!Number.isFinite(year)) return { frame: null, clamped: false };
+  if (year <= first.year) return { frame: first, clamped: year < first.year };
+  if (year >= last.year) return { frame: last, clamped: year > last.year };
+  // Records with gaps: the nearest year present.
+  const frame = theme.frames.reduce((best, f) => (Math.abs(f.year - year) < Math.abs(best.year - year) ? f : best), first);
+  return { frame, clamped: frame.year !== year };
+}
+
+/** "23 years apart", "3 days apart", ... for two frames of a track. */
 export function spanBetween(theme, a = oldestFrame(theme), b = newestFrame(theme)) {
-  if (theme.side === 'a') {
-    const n = b.year - a.year;
-    return `${n} year${n === 1 ? '' : 's'} apart`;
-  }
-  if (!a.date || !b.date) return `${theme.frames.length} frames of NASA's visualization`;
+  if (theme.side === 'a') return t(b.year - a.year === 1 ? 'span.years_one' : 'span.years_other', { n: num(b.year - a.year) });
+  if (!a.date || !b.date) return t('span.frames', { n: num(theme.frames.length) });
   const days = Math.round((new Date(b.date) - new Date(a.date)) / 86400000);
-  if (days < 2) return `${Math.round((new Date(b.date) - new Date(a.date)) / 3600000)} hours apart`;
-  if (days < 60) return `${days} days apart`;
+  if (days < 2) return t('span.hours', { n: num(Math.round((new Date(b.date) - new Date(a.date)) / 3600000)) });
+  if (days < 60) return t('span.days', { n: num(days) });
   const months = Math.round(days / 30.44);
-  return months < 24 ? `${months} months apart` : `${Math.round(days / 365.25)} years apart`;
+  return months < 24 ? t('span.months', { n: num(months) }) : t('span.years_other', { n: num(Math.round(days / 365.25)) });
 }
 
 // ------------------------------------------------------------ real units
@@ -174,69 +250,62 @@ export function spanBetween(theme, a = oldestFrame(theme), b = newestFrame(theme
 // What counts as "active" per track: its share drives notes per bar. Where
 // the share IS the headline number (wildfires, all of side B), it is not
 // repeated.
-const ACTIVE = {
-  wildfires: null,
-  sea_level: 'ocean at least 10 cm above the mean',
-  air_quality: 'observed air above 5 ×10¹⁵ molec/cm² of NO₂',
-  greenhouse_gases: 'air holding at least 1,900 ppb of methane',
-  wildfires_eic: null,
-  sea_level_eic: null,
-  air_quality_eic: null,
-  greenhouse_gases_eic: null,
-};
+const HAS_SHARE = new Set(['sea_level', 'air_quality', 'greenhouse_gases']);
 
 /** e.g. { label: "ocean at least 10 cm above the mean", percent: 24.8 }, or null. */
 export function activeShare(frame) {
-  const label = ACTIVE[frame.theme];
+  if (!HAS_SHARE.has(frame.theme)) return null;
   // the real share: a region's own, else the frame's (activeShare01 is that
   // share on the track's sound range, which may top out at 50 %)
-  return label ? { label, percent: frame.share ?? frame.raw.pixelDensity * 100 } : null;
+  return { label: t(`active.${frame.theme}`), percent: frame.share ?? frame.raw.pixelDensity * 100 };
 }
 
-const signed = (v, d) => `${v >= 0 ? '+' : '−'}${Math.abs(v).toFixed(d)}`;
-const sci15 = {
-  short: (v) => `${v.toFixed(2)} ×10¹⁵ molec/cm²`,
-  delta: (d) => `${signed(d, 2)} ×10¹⁵`,
-};
+/** A percentage the way captions write it: "4.2%" under 10, "33%" above. */
+export const pct = (x) => `${num(x, x < 10 ? 1 : 0)}%`;
+
+const signed = (v, d) => signedNum(v, d);
+const SCI15 = '×10¹⁵ molec/cm²';
 
 const PHYSICAL = {
   wildfires: {
-    short: (v) => `${v} fire areas`,
-    spoken: (v) => `satellites saw ${v} separate fire areas`,
-    delta: (d) => `${signed(d, 0)} fire areas`,
+    short: (v) => t('phys.fire.short', { v: num(v) }),
+    spoken: (v) => t('phys.fire.spoken', { v: num(v) }),
+    delta: (d) => t('phys.fire.short', { v: signed(d, 0) }),
   },
   sea_level: {
     short: (v) => `${signed(v, 1)} cm`,
-    spoken: (v) => `the average sea surface sits ${Math.abs(v).toFixed(1)} centimetres ${v >= 0 ? 'above' : 'below'} the 1993–2012 mean`,
+    spoken: (v) => t(v >= 0 ? 'phys.sea.spokenAbove' : 'phys.sea.spokenBelow', { v: num(Math.abs(v), 1) }),
     delta: (d) => `${signed(d, 1)} cm`,
   },
   air_quality: {
-    ...sci15,
-    spoken: (v) => `average nitrogen dioxide is ${v.toFixed(2)} times ten to the fifteen molecules per square centimetre`,
+    short: (v) => `${num(v, 2)} ${SCI15}`,
+    spoken: (v) => t('phys.no2.spoken', { v: num(v, 2) }),
+    delta: (d) => `${signed(d, 2)} ×10¹⁵`,
   },
   greenhouse_gases: {
-    short: (v) => `${Math.round(v).toLocaleString('en-US')} ppb`,
-    spoken: (v) => `average methane is ${Math.round(v).toLocaleString('en-US')} parts per billion`,
+    short: (v) => `${num(Math.round(v))} ppb`,
+    spoken: (v) => t('phys.ch4.spoken', { v: num(Math.round(v)) }),
     delta: (d) => `${signed(Math.round(d), 0)} ppb`,
   },
   wildfires_eic: {
-    short: (v) => `${v.toFixed(2)}% of land`,
-    spoken: (v) => `fire pixels cover ${v.toFixed(2)} percent of the land`,
-    delta: (d) => `${signed(d, 2)} points`,
+    short: (v) => t('phys.fireEic.short', { v: num(v, 2) }),
+    spoken: (v) => t('phys.fireEic.spoken', { v: num(v, 2) }),
+    delta: (d) => t('phys.points', { v: signed(d, 2) }),
   },
   sea_level_eic: {
-    short: (v) => `${signed(v, 1)} cm vs 1993`,
-    spoken: (v) => `the water stands ${Math.abs(v).toFixed(1)} centimetres ${v >= 0 ? 'above' : 'below'} the 1993 sea level`,
+    short: (v) => t('phys.seaEic.short', { v: signed(v, 1) }),
+    spoken: (v) => t(v >= 0 ? 'phys.seaEic.spokenAbove' : 'phys.seaEic.spokenBelow', { v: num(Math.abs(v), 1) }),
     delta: (d) => `${signed(d, 1)} cm`,
   },
   air_quality_eic: {
-    ...sci15,
-    spoken: (v) => `nitrogen dioxide in view averages ${v.toFixed(2)} times ten to the fifteen molecules per square centimetre`,
+    short: (v) => `${num(v, 2)} ${SCI15}`,
+    spoken: (v) => t('phys.no2Eic.spoken', { v: num(v, 2) }),
+    delta: (d) => `${signed(d, 2)} ×10¹⁵`,
   },
   greenhouse_gases_eic: {
-    short: (v) => `${v.toFixed(1)}% of the globe`,
-    spoken: (v) => `dense methane haze covers ${v.toFixed(1)} percent of the globe`,
-    delta: (d) => `${signed(d, 1)} points`,
+    short: (v) => t('phys.ch4Eic.short', { v: num(v, 1) }),
+    spoken: (v) => t('phys.ch4Eic.spoken', { v: num(v, 1) }),
+    delta: (d) => t('phys.points', { v: signed(d, 1) }),
   },
 };
 
@@ -252,4 +321,9 @@ export function physicalSpoken(frame) {
 
 export function physicalDelta(a, b) {
   return PHYSICAL[a.theme].delta(b.physical.value - a.physical.value);
+}
+
+/** Format a bare value in a theme's units (used for the NOAA reference line). */
+export function physicalValue(themeId, v) {
+  return PHYSICAL[themeId].short(v);
 }

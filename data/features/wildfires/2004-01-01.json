@@ -1,0 +1,70 @@
+{
+ "theme": "wildfires",
+ "index": 3,
+ "date": "2004-01-01",
+ "year": 2004,
+ "label": "2004 yearly average",
+ "window": {
+  "kind": "season",
+  "months": [
+   6,
+   9
+  ],
+  "windows": 15
+ },
+ "image": "data/display/wildfires/2004-01-01.jpg",
+ "hue": 50.858,
+ "brightness": 0.0779,
+ "colorVariance": 0.0343,
+ "pixelDensity": 0.2093,
+ "frameDelta": 0.4633,
+ "latBand": "north",
+ "raw": {
+  "hue": 50.48458,
+  "brightness": 0.07327,
+  "colorVariance": 0.26876,
+  "pixelDensity": 0.1664,
+  "hsvHueMean": 248.19109,
+  "activeCentroidLat": 24.5067,
+  "frameDelta": 0.03255
+ },
+ "physical": {
+  "label": "MODIS fire count",
+  "units": "separate fire areas",
+  "activeThreshold": null,
+  "value": 279.9,
+  "clusters": 279.9,
+  "windowCounts": [
+   333,
+   325,
+   286,
+   321,
+   302,
+   297,
+   280,
+   289,
+   260,
+   246,
+   243,
+   269,
+   249,
+   247,
+   251
+  ],
+  "mapPct": 16.64
+ },
+ "source": {
+  "layer": "MODIS_Terra_Thermal_Anomalies_All",
+  "averaging": {
+   "kind": "season",
+   "months": [
+    6,
+    9
+   ],
+   "windows": 15
+  }
+ },
+ "value01": 0.3987,
+ "activeShare01": 0.3987,
+ "fromFirst01": 0.0427
+}

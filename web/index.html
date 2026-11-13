@@ -3,10 +3,12 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <meta name="description" content="Terra Vox turns NASA Earth imagery into real-time, musically constrained sound so anyone, sighted or not, can hear how the planet is changing." />
-    <meta name="theme-color" content="#15171a" />
+    <meta name="description" content="Terra Vox: two moments of the planet, one in each ear. NASA Earth data played as sound, so anyone, sighted or not, can hear how the planet changed." />
+    <meta name="theme-color" content="#efebe3" />
     <title>Terra Vox</title>
+    <link rel="manifest" href="./manifest.webmanifest" />
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%2315171a'/%3E%3Cpath d='M5 24a11 11 0 1 1 22 0' fill='none' stroke='%23f2f4f5' stroke-width='2'/%3E%3Cpath d='M3 24h26' stroke='%236e757e' stroke-width='2'/%3E%3C/svg%3E" />
+    <link rel="apple-touch-icon" href="./icon-192.png" />
     <link rel="stylesheet" href="./styles/main.css" />
     <script>
       // Motion before first paint: the listener's saved choice, else the OS setting.
@@ -19,7 +21,7 @@
     </script>
   </head>
   <body>
-    <a class="skip-link" href="#player">Skip to player</a>
+    <a class="skip-link" href="#player" data-i18n="skip">Skip to player</a>
 
     <header class="topbar">
       <div class="brand">
@@ -29,42 +31,55 @@
         </svg>
         <div>
           <h1>Terra Vox</h1>
-          <p class="tagline">NASA Earth data you can hear</p>
+          <p class="tagline" data-i18n="tagline">Two moments of the planet, one in each ear.</p>
         </div>
       </div>
       <div class="top-actions">
         <button id="duet-toggle" class="duet-toggle" type="button" aria-pressed="false" aria-describedby="duet-hint">
           <span class="duet-dots" aria-hidden="true"><span class="duet-dot old"></span><span class="duet-dot new"></span></span>
-          <span>Duet</span>
+          <span data-i18n="duet">Duet</span>
           <kbd aria-hidden="true">D</kbd>
         </button>
-        <span id="duet-hint" class="sr-only">Plays the oldest year in your left ear and the newest year in your right ear at the same time. Shortcut: D.</span>
-        <button id="more-toggle" class="ghost more-toggle" type="button" aria-expanded="false" aria-controls="more">More</button>
+        <span id="duet-hint" class="sr-only" data-i18n="duet.hint">Plays the oldest year in your left ear and the newest year in your right ear at the same time. Shortcut: D.</span>
+        <button id="more-toggle" class="ghost more-toggle" type="button" aria-expanded="false" aria-controls="more" data-i18n="more">More</button>
+        <details id="settings-menu" class="settings-menu" open>
+        <summary class="ghost settings-summary" data-i18n="settings">Settings</summary>
         <div class="settings">
-          <button id="speak-toggle" class="ghost" type="button" aria-pressed="false" title="Read descriptions aloud with the browser's voice (S)">Speak aloud</button>
+          <button id="speak-toggle" class="ghost" type="button" aria-pressed="false" data-i18n="speak" data-i18n-attr="title:speak.title">Speak aloud</button>
           <label class="describe">
-            <span>Describe</span>
+            <span data-i18n="describe">Describe</span>
             <select id="describe" aria-describedby="describe-hint">
               <option value="off">Off</option>
               <option value="brief" selected>Brief</option>
               <option value="full">Full</option>
             </select>
           </label>
-          <span id="describe-hint" class="sr-only">How much a screen reader hears on every bar. Brief: the year and its value. Full: the whole caption. Shortcut: C.</span>
-          <button id="motion-toggle" class="ghost" type="button" aria-pressed="false" title="Stop the planet turning and other movement (M)">Reduce motion</button>
-          <button id="help-button" class="ghost" type="button" aria-haspopup="dialog" title="Keyboard shortcuts (?)">Keys <kbd>?</kbd></button>
+          <span id="describe-hint" class="sr-only" data-i18n="describe.hint">How much a screen reader hears on every bar. Brief: the year and its value. Full: the whole caption. Shortcut: C.</span>
+          <label class="describe">
+            <span data-i18n="lang.label">Language</span>
+            <select id="lang" aria-describedby="lang-hint"></select>
+          </label>
+          <span id="lang-hint" class="sr-only" data-i18n="lang.hint">Captions, speech and labels. Hindi and Spanish are machine-translated. Shortcut: T.</span>
+          <button id="motion-toggle" class="ghost" type="button" aria-pressed="false" data-i18n="motion" data-i18n-attr="title:motion.title">Reduce motion</button>
+          <button id="help-button" class="ghost" type="button" aria-haspopup="dialog" data-i18n-attr="title:keys.title"><span data-i18n="keys">Keys</span> <kbd>?</kbd></button>
         </div>
+        </details>
       </div>
     </header>
 
     <main id="panel-jukebox" class="jukebox">
       <section class="crate" aria-labelledby="themes-heading">
         <div class="crate-top">
-          <h2 id="themes-heading" class="crate-title">Themes</h2>
+          <div class="view-switch" id="view-switch">
+            <h2 id="view-label" class="crate-title" data-i18n="view.label">Listen to</h2>
+            <div id="view-modes" class="segmented views" role="radiogroup" aria-labelledby="view-label" aria-describedby="view-line"></div>
+            <p id="view-line" class="view-line" data-i18n="view.line">Real NASA Earth Information Center visualizations, played live as sound.</p>
+          </div>
+          <h2 id="themes-heading" class="crate-title" data-i18n="themes">Themes</h2>
           <div id="theme-tiles"></div>
         </div>
         <div class="region-switch" id="region-switch" hidden>
-          <h3 id="region-label" class="crate-title">Air Quality region</h3>
+          <h3 id="region-label" class="crate-title" data-i18n="region.label">Air Quality region</h3>
           <div id="region-modes" class="segmented regions" role="radiogroup" aria-labelledby="region-label"></div>
         </div>
       </section>
@@ -72,14 +87,15 @@
       <section id="player" class="player" aria-labelledby="player-heading" tabindex="-1" data-mode="single">
         <div id="stage" class="stage" data-mode="single">
           <div id="globe" class="globe" role="img" aria-label="NASA Earth frame"></div>
+          <p class="stage-status" aria-hidden="true" data-i18n="stage.loading">Loading the NASA frame</p>
           <div id="eic-screen" class="eic-screen" role="img" aria-label="" hidden>
             <img id="eic-a" class="eic-frame old" alt="" />
             <img id="eic-b" class="eic-frame new" alt="" hidden />
           </div>
           <div class="duet-overlay" aria-hidden="true">
-            <div class="ear old"><span class="ear-tag">Left ear, oldest year</span><span id="year-old-sr" class="sr-only"></span><div id="year-old" class="ear-year"></div></div>
+            <div class="ear old"><span class="ear-tag" data-i18n="ear.left">Left ear</span><span id="year-old-sr" class="sr-only"></span><div id="year-old" class="ear-year"></div></div>
             <div class="seam"><span class="meter old"><i id="duet-old-meter"></i></span><span class="meter new"><i id="duet-new-meter"></i></span></div>
-            <div class="ear new"><span class="ear-tag">Right ear, newest year</span><span id="year-new-sr" class="sr-only"></span><div id="year-new" class="ear-year"></div></div>
+            <div class="ear new"><span class="ear-tag" data-i18n="ear.right">Right ear</span><span id="year-new-sr" class="sr-only"></span><div id="year-new" class="ear-year"></div></div>
           </div>
         </div>
 
@@ -87,6 +103,7 @@
           <div id="now-read" class="now-read">
             <h2 id="player-heading" class="now-theme"><span id="player-theme">Wildfires</span></h2>
             <p id="side-note" class="side-note"></p>
+            <p id="eic-credit" class="eic-credit" hidden><a target="_blank" rel="noopener"></a> <span class="eic-credit-text"></span></p>
             <p id="track-story" class="track-story" hidden></p>
             <div class="now-single">
               <p id="frame-caption" class="now-label"></p>
@@ -98,10 +115,12 @@
             <div id="duet-now" class="now-duet" hidden>
               <p id="gap-years" class="gap-years"></p>
               <p id="gap-sentence" class="gap-sentence"></p>
+              <p id="gap-trust" class="gap-trust"></p>
               <p id="gap-physical" class="gap-physical"></p>
+              <p id="gap-noaa" class="gap-noaa" hidden></p>
             </div>
           </div>
-          <div class="lyrics" id="caption-track" role="group" aria-label="Data caption">
+          <div class="lyrics" id="caption-track" role="group" data-i18n-attr="aria-label:caption.label">
             <p id="cap-prev" class="cap-prev" aria-hidden="true"></p>
             <p id="cap-data" class="cap-data"></p>
             <p id="cap-sound" class="cap-sound"></p>
@@ -110,61 +129,112 @@
 
         <section id="duet-panel" class="duet-panel" aria-labelledby="gap-heading" hidden>
           <div class="listen-modes">
-            <span id="listen-label" class="listen-label">Listen</span>
+            <span id="listen-label" class="listen-label" data-i18n="listen.label">Listen</span>
             <div id="listen-modes" role="radiogroup" aria-labelledby="listen-label" aria-describedby="listen-help" class="segmented"></div>
             <p id="listen-help" class="listen-help"></p>
           </div>
-          <h3 id="gap-heading" class="sr-only">How the sound changed</h3>
+          <div class="duet-actions">
+            <button id="ref-toggle" class="ghost" type="button" aria-pressed="false" hidden><span data-i18n="ref.button">NOAA reference voice</span> <kbd aria-hidden="true">N</kbd></button>
+            <button id="copy-link" class="ghost" type="button" data-i18n="link.copy">Copy link to this Duet</button>
+            <span id="copy-status" class="copy-status" role="status"></span>
+          </div>
+          <h3 id="gap-heading" class="sr-only" data-i18n="gap.heading">How the sound changed</h3>
           <table class="gap-table">
-            <caption class="sr-only">How each part of the sound changed from the oldest to the newest frame</caption>
-            <thead><tr><th scope="col">Sound</th><th scope="col" class="old">Oldest</th><th scope="col" class="new">Newest</th><th scope="col">Change</th></tr></thead>
+            <caption class="sr-only" data-i18n="gap.caption">How each part of the sound changed from the left year to the right year</caption>
+            <thead><tr><th scope="col" data-i18n="gap.col.sound">Sound</th><th scope="col" class="old" data-i18n="gap.col.left">Left</th><th scope="col" class="new" data-i18n="gap.col.right">Right</th><th scope="col" data-i18n="gap.col.change">Change</th></tr></thead>
             <tbody id="gap-rows"></tbody>
           </table>
         </section>
 
-        <div class="transport" role="group" aria-label="Playback">
-          <button id="prev" class="icon-btn" type="button" aria-label="Previous year" title="Previous year ( [ )">
+        <div class="transport" role="group" data-i18n-attr="aria-label:transport">
+          <button id="prev" class="icon-btn" type="button" data-i18n-attr="aria-label:key.prev;title:prev.title">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 5h2v14H6zM20 5v14L9 12z" /></svg>
           </button>
           <button id="play" class="play-btn" type="button" aria-label="Play" title="Play (Space)">
             <svg class="i-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4v16l13-8z" /></svg>
             <svg class="i-pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4h4v16H6zM14 4h4v16h-4z" /></svg>
           </button>
-          <button id="next" class="icon-btn" type="button" aria-label="Next year" title="Next year ( ] )">
+          <button id="next" class="icon-btn" type="button" data-i18n-attr="aria-label:key.next;title:next.title">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 5h2v14h-2zM4 5v14l11-7z" /></svg>
           </button>
           <div class="groove">
-            <label for="scrubber" class="sr-only">Timeline</label>
+            <label for="scrubber" class="sr-only" data-i18n="timeline">Timeline</label>
             <div class="groove-track">
               <div id="groove-ticks" class="groove-ticks" aria-hidden="true"></div>
               <input id="scrubber" type="range" min="0" max="0" step="1" value="0" />
             </div>
-            <div class="scrubber-ends" aria-hidden="true"><span id="scrub-start"></span><span id="groove-note" class="groove-note">Each bar is one year, its height the year's value</span><span id="scrub-end"></span></div>
+            <div class="scrubber-ends" aria-hidden="true"><span id="scrub-start"></span><span id="groove-note" class="groove-note"></span><span id="scrub-end"></span></div>
           </div>
         </div>
       </section>
 
       <section id="more" class="more" aria-labelledby="more-heading" hidden>
-        <h2 id="more-heading" class="more-title" tabindex="-1">More</h2>
+        <h2 id="more-heading" class="more-title" tabindex="-1" data-i18n="more">More</h2>
         <div class="more-cards">
           <section class="more-card" aria-labelledby="guess-card-heading">
-            <h3 id="guess-card-heading">Guess the Year</h3>
-            <p>A hidden year plays. Compare it with the oldest and newest, then pick which year it is.</p>
-            <button id="open-guess" class="ghost" type="button">Play Guess the Year <kbd aria-hidden="true">G</kbd></button>
+            <h3 id="guess-card-heading" data-i18n="guess.title">Guess the Year</h3>
+            <p data-i18n="guess.card">A hidden year plays. Compare it with the oldest and newest, then pick which year it is.</p>
+            <button id="open-guess" class="ghost" type="button"><span data-i18n="guess.open">Play Guess the Year</span> <kbd aria-hidden="true">G</kbd></button>
           </section>
-          <section class="more-card side-switch" id="side-switch" aria-labelledby="side-label" hidden>
-            <h3 id="side-label">Side B: NASA's own visualizations</h3>
-            <p>Flip the record to play the theme's NASA Earth Information Center visualization, frame by frame, through the same mapping.</p>
-            <div id="side-modes" class="segmented sides" role="radiogroup" aria-labelledby="side-label"></div>
+          <section class="more-card" aria-labelledby="english-heading">
+            <h3 id="english-heading" data-i18n="more.englishTitle">In English only</h3>
+            <p data-i18n="more.english">The field guide and the mapping desk below are in English. Captions, speech and everything above are in your language.</p>
           </section>
         </div>
 
-      <section id="field-guide" class="guide" aria-labelledby="guide-heading">
+      <section id="field-guide" class="guide" aria-labelledby="guide-heading" lang="en">
         <header class="guide-head">
           <h2 id="guide-heading" class="guide-title">The record behind the sound</h2>
           <p class="guide-lead"></p>
           <p class="guide-measures"><strong>What the pixels measure.</strong> <span></span></p>
         </header>
+        <section class="flow" aria-labelledby="flow-heading">
+          <h3 id="flow-heading" class="flow-title">How a frame becomes a note</h3>
+          <ol class="flow-steps">
+            <li>
+              <svg class="flow-art" viewBox="-8 0 136 80" aria-hidden="true">
+                <path class="ln" d="M10 80a50 50 0 0 1 100 0" />
+                <path class="ln dash" d="M-6 80a66 66 0 0 1 132 0" />
+                <path class="beam" d="M60 19 45 33h30Z" />
+                <rect class="solid" x="55" y="9" width="10" height="10" />
+              </svg>
+              <strong>A satellite passes</strong>
+              <span>It measures every pixel below it, every day or every few days.</span>
+            </li>
+            <li>
+              <svg class="flow-art" viewBox="-8 0 136 80" aria-hidden="true">
+                <g class="grid-px">
+                  <rect x="20" y="10" width="14" height="14" /><rect x="36" y="10" width="14" height="14" /><rect x="52" y="10" width="14" height="14" class="on" /><rect x="68" y="10" width="14" height="14" /><rect x="84" y="10" width="14" height="14" />
+                  <rect x="20" y="26" width="14" height="14" /><rect x="36" y="26" width="14" height="14" class="on" /><rect x="52" y="26" width="14" height="14" class="on" /><rect x="68" y="26" width="14" height="14" /><rect x="84" y="26" width="14" height="14" />
+                  <rect x="20" y="42" width="14" height="14" /><rect x="36" y="42" width="14" height="14" /><rect x="52" y="42" width="14" height="14" /><rect x="68" y="42" width="14" height="14" class="on" /><rect x="84" y="42" width="14" height="14" />
+                  <rect x="20" y="58" width="14" height="14" /><rect x="36" y="58" width="14" height="14" /><rect x="52" y="58" width="14" height="14" /><rect x="68" y="58" width="14" height="14" /><rect x="84" y="58" width="14" height="14" />
+                </g>
+              </svg>
+              <strong>NASA maps it</strong>
+              <span>Each frame is a NASA GIBS map: one reading per pixel.</span>
+            </li>
+            <li>
+              <svg class="flow-art" viewBox="-8 0 136 80" aria-hidden="true">
+                <path class="ln" d="M14 70V40M22 70V30M30 70V46M38 70V24M46 70V38M54 70V34" />
+                <path class="ln" d="M64 50h14" />
+                <rect class="solid" x="88" y="34" width="16" height="36" />
+                <path class="ln" d="M8 70h104" />
+              </svg>
+              <strong>One number a year</strong>
+              <span>Terra Vox averages the year&rsquo;s frames into a single value.</span>
+            </li>
+            <li>
+              <svg class="flow-art" viewBox="-8 0 136 80" aria-hidden="true">
+                <path class="ln" d="M8 20h104M8 32h104M8 44h104M8 56h104M8 68h104" />
+                <circle class="solid" cx="48" cy="38" r="7" />
+                <path class="ln thick" d="M55 38V8" />
+                <circle class="hollow" cx="84" cy="56" r="7" />
+              </svg>
+              <strong>The number plays</strong>
+              <span>How much sets pitch, loudness and timbre. How far it has moved since the first year sets the tempo.</span>
+            </li>
+          </ol>
+        </section>
         <div class="guide-grid">
           <figure class="chart-card">
             <figcaption><h3 class="chart-title"></h3></figcaption>
@@ -200,7 +270,7 @@
         </section>
       </section>
 
-      <section class="desk" aria-labelledby="readout-heading">
+      <section class="desk" aria-labelledby="readout-heading" lang="en">
         <h2 id="readout-heading" class="desk-title">How the data plays the music</h2>
         <div id="mapping-readout"></div>
       </section>
@@ -209,20 +279,17 @@
 
     <main id="panel-guess" class="guess" hidden>
       <section class="guess-card" aria-labelledby="guess-heading">
-        <button id="close-guess" class="btn-text guess-back" type="button">← Back to the jukebox <kbd aria-hidden="true">G</kbd></button>
+        <button id="close-guess" class="btn-text guess-back" type="button"><span data-i18n="guess.back">← Back to the jukebox</span> <kbd aria-hidden="true">G</kbd></button>
         <div class="guess-head">
           <div>
-            <h2 id="guess-heading" tabindex="-1">Guess the Year</h2>
-            <p class="guess-intro">
-              A hidden year is playing. Compare it with the oldest and newest years, then pick the one you hear.
-              Denser, faster, tenser sound means more of the theme's "active" signal.
-            </p>
+            <h2 id="guess-heading" tabindex="-1" data-i18n="guess.title">Guess the Year</h2>
+            <p class="guess-intro" data-i18n="guess.intro">A hidden year is playing. Compare it with the oldest and newest years, then pick the one you hear. Denser, faster, tenser sound means more of the theme's "active" signal.</p>
           </div>
-          <span class="guess-score" id="guess-score" aria-live="off">Score 0 / 0</span>
+          <span class="guess-score" id="guess-score" aria-live="off"></span>
         </div>
 
         <div class="guess-setup">
-          <label for="guess-theme">Theme</label>
+          <label for="guess-theme" data-i18n="guess.theme">Theme</label>
           <select id="guess-theme"></select>
         </div>
 
@@ -235,21 +302,21 @@
           <p class="hearing" id="mystery-hearing" aria-hidden="true"></p>
         </div>
 
-        <div class="guess-listen" role="group" aria-label="Listen">
-          <button id="guess-oldest" class="pad old" type="button" aria-keyshortcuts="A"><kbd aria-hidden="true">A</kbd> Hear oldest <span></span></button>
+        <div class="guess-listen" role="group" data-i18n-attr="aria-label:listen.label">
+          <button id="guess-oldest" class="pad old" type="button" aria-keyshortcuts="A"><kbd aria-hidden="true">A</kbd> <b data-i18n="guess.hearOldest">Hear oldest</b> <span></span></button>
           <button id="guess-play" class="pad main" type="button" aria-pressed="false"><kbd>Space</kbd> <span>Play mystery year</span></button>
-          <button id="guess-newest" class="pad new" type="button" aria-keyshortcuts="B"><kbd aria-hidden="true">B</kbd> Hear newest <span></span></button>
+          <button id="guess-newest" class="pad new" type="button" aria-keyshortcuts="B"><kbd aria-hidden="true">B</kbd> <b data-i18n="guess.hearNewest">Hear newest</b> <span></span></button>
         </div>
 
         <fieldset class="guess-choices" id="guess-choices">
-          <legend>Which year is the mystery? Keys 1 to 4</legend>
+          <legend data-i18n="guess.legend">Which year is the mystery? Keys 1 to 4</legend>
           <div id="guess-options" class="options"></div>
         </fieldset>
 
         <div class="guess-result" id="guess-result" hidden>
           <p id="guess-verdict" class="verdict"></p>
           <p id="guess-detail" class="detail"></p>
-          <button id="guess-next" class="pad main" type="button"><kbd>Enter</kbd> Next round</button>
+          <button id="guess-next" class="pad main" type="button"><kbd>Enter</kbd> <span data-i18n="guess.next">Next round</span></button>
         </div>
       </section>
     </main>
@@ -258,30 +325,45 @@
     <div id="sr-captions" class="sr-only" aria-live="polite" aria-atomic="true"></div>
 
     <dialog id="intro" class="intro" aria-labelledby="intro-title" aria-describedby="intro-lead">
-      <h2 id="intro-title">Hear how the planet changed.</h2>
-      <p id="intro-lead" class="intro-lead">NASA satellite data turned into music. The oldest year plays in your left ear, the newest in your right.</p>
+      <h2 id="intro-title" data-i18n="intro.title">Two moments of the planet, one in each ear.</h2>
+      <p id="intro-lead" class="intro-lead" data-i18n="intro.lead">NASA satellite data turned into music. The older year plays in your left ear, the newest in your right.</p>
+      <div class="birth">
+        <label for="birth-year" data-i18n="birth.label">Your birth year (optional)</label>
+        <input id="birth-year" type="text" inputmode="numeric" autocomplete="off" maxlength="4" pattern="[0-9]{4}" aria-describedby="birth-hint" />
+        <p id="birth-hint" class="birth-hint" aria-live="polite"></p>
+      </div>
       <div class="intro-actions">
         <button id="intro-start" class="btn-primary" type="button">Put on headphones and start</button>
-        <button id="intro-skip" class="btn-text" type="button">Explore without sound first</button>
+        <button id="intro-skip" class="btn-text" type="button" data-i18n="intro.skip">Explore without sound first</button>
       </div>
-      <p class="intro-note">Starts with methane, 2003 against 2026. Press <kbd>D</kbd> for Duet any time and <kbd>?</kbd> for every shortcut.</p>
+      <p id="intro-note" class="intro-note"></p>
     </dialog>
 
     <dialog id="help-dialog" class="help-dialog" aria-labelledby="help-title">
       <div class="help-head">
-        <h2 id="help-title">Keyboard shortcuts</h2>
-        <button type="button" class="icon-btn" data-close aria-label="Close">✕</button>
+        <h2 id="help-title" data-i18n="help.title">Keyboard shortcuts</h2>
+        <button type="button" class="icon-btn" data-close data-i18n-attr="aria-label:close">✕</button>
       </div>
-      <p class="help-lead">Every shortcut is also a button on screen. Sound is the main channel; nothing needs the mouse or the visuals.</p>
+      <p class="help-lead" data-i18n="help.lead">Every shortcut is also a button on screen. Sound is the main channel; nothing needs the mouse or the visuals.</p>
       <div class="help-body"></div>
       <div class="help-actions">
-        <button id="intro-again" class="btn-text" type="button">Show the introduction again</button>
+        <button id="intro-again" class="btn-text" type="button" data-i18n="help.introAgain">Show the introduction again</button>
       </div>
     </dialog>
 
-    <footer class="credits">
+    <section class="proof" aria-labelledby="proof-heading">
+      <h2 id="proof-heading" class="proof-title" data-i18n="proof.title">Checked against the record</h2>
+      <ul class="proof-stats">
+        <li><span class="proof-num" data-proof="sea_level"></span><span class="proof-label" data-i18n="proof.sea">Sea level against NOAA's global mean sea level record, yearly (Pearson r)</span><span class="proof-years" data-proof-years="sea_level"></span></li>
+        <li><span class="proof-num" data-proof="greenhouse_gases"></span><span class="proof-label" data-i18n="proof.ch4">Methane against NOAA's surface stations, yearly (Pearson r)</span><span class="proof-years" data-proof-years="greenhouse_gases"></span></li>
+        <li><span class="proof-num" data-proof-span></span><span class="proof-label" data-i18n="proof.span">Years of NASA satellite records you can hear</span></li>
+        <li><span class="proof-num">3</span><span class="proof-label" data-i18n="proof.langs">Languages: English, Hindi, Spanish</span></li>
+      </ul>
+    </section>
+
+    <footer class="credits" lang="en">
       <p><strong>Terra Vox</strong> for the NASA Space Apps Challenge 2026, <a href="https://www.spaceappschallenge.org/2026/challenges/the-earth-information-jukebox/" target="_blank" rel="noopener">The Earth Information Jukebox</a>. Open source, MIT licence.</p>
-      <p>Side A imagery: NASA GIBS / Worldview (MODIS on Terra, OMI on Aura, AIRS on Aqua, JPL MEaSUREs sea surface height). Side B and cover art: NASA Scientific Visualization Studio, Earth Information Center visualizations 5113, 5235, 5175 and 5116. Reference records: NOAA Global Monitoring Laboratory; NOAA Laboratory for Satellite Altimetry ("Altimetry data are provided by NOAA Laboratory for Satellite Altimetry"). Facts checked November 2, 2026.</p>
+      <p>Then and now: NASA GIBS / Worldview (MODIS on Terra, OMI on Aura, AIRS on Aqua, JPL MEaSUREs sea surface height), each year averaged over many windows. NASA EIC visualizations and cover art: NASA Scientific Visualization Studio, Earth Information Center visualizations 5113, 5235, 5175 and 5116. Reference records: NOAA Global Monitoring Laboratory; NOAA Laboratory for Satellite Altimetry ("Altimetry data are provided by NOAA Laboratory for Satellite Altimetry"). Hindi and Spanish are machine-translated; corrections welcome. Facts checked November 2, 2026.</p>
       <p>NASA and NOAA do not endorse this project.</p>
     </footer>
 

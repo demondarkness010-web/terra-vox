@@ -112,7 +112,9 @@ function dataLon(frame) {
 
 function tokenColor(name) {
   const c = new THREE.Color();
-  const v = color(name);
+  // Read on the stage, where the space tokens apply (the page itself is paper).
+  const stage = document.getElementById('stage');
+  const v = stage ? getComputedStyle(stage).getPropertyValue(name).trim() : color(name);
   if (v) c.setStyle(v);
   return c;
 }
@@ -167,6 +169,16 @@ export function createGlobe(container) {
   };
 }
 
+// The stage says "Loading" while a NASA frame is on its way, so the black is never unexplained.
+function trackLoading(container) {
+  const stage = container.closest('.stage');
+  let pending = 0;
+  return {
+    start() { pending += 1; if (stage) stage.dataset.loading = 'true'; },
+    end() { pending = Math.max(0, pending - 1); if (!pending && stage) delete stage.dataset.loading; },
+  };
+}
+
 function createWebGLGlobe(container, onLost) {
   let renderer;
   try {
@@ -207,6 +219,7 @@ function createWebGLGlobe(container, onLost) {
   const blank = new THREE.DataTexture(new Uint8Array([0, 0, 0, 255]), 1, 1);
   blank.needsUpdate = true;
 
+  const loading = trackLoading(container);
   const loader = new THREE.TextureLoader();
   const cache = new Map();
   const maxAniso = renderer.capabilities.getMaxAnisotropy();
@@ -215,10 +228,12 @@ function createWebGLGlobe(container, onLost) {
   function texture(url) {
     let tex = cache.get(url);
     if (tex) return tex;
+    loading.start();
     tex = loader.load(url, () => {
+      loading.end();
       tex.userData.ready = true;
       tex.userData.waiters.splice(0).forEach((fn) => fn());
-    });
+    }, undefined, () => loading.end());
     tex.colorSpace = THREE.SRGBColorSpace;
     tex.anisotropy = Math.min(8, maxAniso);
     tex.userData.waiters = [];
@@ -521,12 +536,22 @@ function createFlatFallback(container) {
   img2.classList.add('newest');
   img2.hidden = true;
   container.append(img, img2);
+  const loading = trackLoading(container);
+  for (const el of [img, img2]) {
+    el.addEventListener('load', () => loading.end());
+    el.addEventListener('error', () => loading.end());
+  }
+  const setSrc = (el, url) => {
+    if (el.getAttribute('src') === url) return;   // same URL never fires load again
+    loading.start();
+    el.src = url;
+  };
   return {
     setTheme() {},
-    showFrame(frame) { img.src = frame.imageUrl; },
+    showFrame(frame) { setSrc(img, frame.imageUrl); },
     setDuet(on, oldest, newest) {
       img2.hidden = !on;
-      if (on) { img.src = oldest.imageUrl; img2.src = newest.imageUrl; }
+      if (on) { setSrc(img, oldest.imageUrl); setSrc(img2, newest.imageUrl); }
     },
     spark() {}, setTempo() {}, setPlaying() {},
     destroy() { img.remove(); img2.remove(); container.classList.remove('is-flat'); },

@@ -65,10 +65,10 @@ function seaLevelSpec(theme) {
     const last = full[full.length - 1];
     summary = `The official satellite record rose ${fmt((last.value - b0.value) / 10, 1)} cm from 1993 to ${last.year}, a trend of ${fmt(ref.trendMmPerYear, 1)} mm a year that is still speeding up (about ${fmt(ref.accelerationMmPerYear2, 2)} mm a year, every year). `;
   }
-  series.push({ id: 'app', name: "This app's October frames (mean sea surface height, set to 0 in 1993)", end: 'October frames, this app', tone: 'ink', kind: 'dots', points: app, playing: true });
+  series.push({ id: 'app', name: "This app's yearly averages (mean sea surface height, set to 0 in 1993)", end: 'Yearly averages, this app', tone: 'ink', kind: 'dots', points: app, playing: true });
   const a = app.find((p) => p.x === 1993) ?? app[0];
   const b = app[app.length - 1];
-  summary += `This app's frames, single October snapshots, rose ${fmt(b.y - a.y, 1)} cm from 1993 to ${b.x} and wobble with El Niño; NASA's gridded layer stops in 2018.`;
+  summary += `This app's yearly averages (one frame a month) rose ${fmt(b.y - a.y, 1)} cm from 1993 to ${b.x} and still wobble with El Niño; NASA's gridded layer stops in 2018.`;
   return {
     title: 'Sea level: the frames against the global record',
     yLabel: 'cm vs 1993', yFormat: (v) => signed(v, 0), series, summary,
@@ -85,8 +85,8 @@ function airQualitySpec() {
   const by = Object.fromEntries(ref.regions.map((r) => [r.id, r]));
   const g = by.global;
   const regions = ref.regions.filter((r) => r.id !== 'global');
-  // One March swings with the weather (cloud, snow, wind), so each end of
-  // the record is a three-year average rather than a single year.
+  // One year still swings with the weather (wind, rain, heat), so each end
+  // of the record is a three-year average rather than a single year.
   const ends = (r) => {
     const v = r.series.map((p) => p.value);
     const mean = (xs) => xs.reduce((a, b) => a + b, 0) / xs.length;
@@ -119,7 +119,7 @@ function airQualitySpec() {
       : `the North China Plain ${moved('north_china')}`);
   }
   if (by.northern_india) parts.push(`northern India ${moved('northern_india')}`);
-  const summary = `March NO₂ from NASA's OMI, comparing ${span.from} with ${span.to}: ${parts.join(', ')}. `
+  const summary = `Yearly mean NO₂ from NASA's OMI, comparing ${span.from} with ${span.to}: ${parts.join(', ')}. `
     + (g ? `The whole-globe average moved only ${signed(change.global.pct, 0)}%, because the regional changes cancel out. That is why the sound follows one region at a time: switch regions under the themes to hear them move apart.` : '');
   const all = ref.regions.map((r) => line(r, {}));
   return {
@@ -130,8 +130,8 @@ function airQualitySpec() {
       ...(g ? [{ name: 'Whole-globe mean, the same in every panel', tone: 'quiet', kind: 'line', ref: true }] : []),
     ],
     series: all,
-    note: "Derived by Terra Vox from NASA's OMI layer: every day of March, cos-latitude weighted, gaps skipped, each end a three-year average. Not an official NASA product; the palette saturates over the dirtiest cities, so peaks read low.",
-    sources: [{ name: 'NASA OMI via GIBS, March means computed by Terra Vox', url: ref.source.page }],
+    note: "Derived by Terra Vox from NASA's OMI layer: one three-day composite a month, cos-latitude weighted, gaps skipped, the year the mean of its months, each end a three-year average. Not an official NASA product; the palette saturates over the dirtiest cities, so peaks read low.",
+    sources: [{ name: 'NASA OMI via GIBS, yearly means computed by Terra Vox', url: ref.source.page }],
     table: tableFrom(all, 'Year', '×10¹⁵', 2),
   };
 }
@@ -145,18 +145,19 @@ function wildfireSpec(theme) {
   const series = [{ id: 'app', name: 'MODIS on Terra, the frames this app plays', end: 'Terra, this app', tone: 'edge', kind: 'bars', points: bars, playing: true }];
   let check = '';
   if (fireCheck) {
-    series.push({ id: 'aqua', name: 'MODIS on Aqua, counted the same way', end: 'Aqua', tone: 'muted', kind: 'line', points: fireCheck.years.map((r) => ({ x: r.year, y: r.aqua })) });
+    // The Terra/Aqua check was run on single August windows (data/legacy), so
+    // it is reported in words, not drawn against the season means.
     const d = fireCheck.drift.at(-1);
-    check = ` Terra's orbit has drifted since 2022, so the same count from Aqua runs alongside: Terra/Aqua held ${fmt(fireCheck.before.minRatio, 2)}–${fmt(fireCheck.before.maxRatio, 2)} before the drift and ${fmt(d.ratio, 2)} in ${d.year}${fireCheck.insidePreDriftRange ? ', still inside that range' : ', outside that range'}.`;
+    check = ` Terra's orbit has drifted since 2022, so the same August count was made from Aqua: Terra/Aqua held ${fmt(fireCheck.before.minRatio, 2)}–${fmt(fireCheck.before.maxRatio, 2)} before the drift and ${fmt(d.ratio, 2)} in ${d.year}${fireCheck.insidePreDriftRange ? ', still inside that range' : ', outside that range'}.`;
   }
   return {
-    title: 'Wildfires: separate fire areas, every August 8–15',
+    title: 'Wildfires: separate fire areas, every June–September season',
     yLabel: 'fire areas', yFormat: (v) => fmt(v, 0),
     series,
-    summary: `MODIS saw ${a.y} separate fire areas in ${a.x} and ${b.y} in ${b.x}; the most in ${peak.x} (${peak.y}), the fewest in ${low.x} (${low.y}). `
+    summary: `In an average 8-day window of the fire season, MODIS saw ${fmt(a.y, 0)} separate fire areas in ${a.x} and ${fmt(b.y, 0)} in ${b.x}; the most in ${peak.x} (${fmt(peak.y, 0)}), the fewest in ${low.x} (${fmt(low.y, 0)}). `
       + "Global fire hasn't simply risen: the record jumps year to year, and burned area worldwide has fallen as savanna became farmland (see the facts)." + check,
-    note: 'No official global fire series matches an 8-day August snapshot, so this chart shows the frames themselves. A count of areas misses intensity: one huge fire and one small one each count once.',
-    sources: fireCheck ? [{ name: 'NASA GIBS layer MODIS_Aqua_Thermal_Anomalies_All', url: 'https://worldview.earthdata.nasa.gov/?l=MODIS_Aqua_Thermal_Anomalies_All' }] : [],
+    note: 'No official global fire series matches this count, so this chart shows the app’s own season means (fifteen 8-day windows, June to September). A count of areas misses intensity: one huge fire and one small one each count once.',
+    sources: fireCheck ? [{ name: 'Drift check: NASA GIBS layer MODIS_Aqua_Thermal_Anomalies_All', url: 'https://worldview.earthdata.nasa.gov/?l=MODIS_Aqua_Thermal_Anomalies_All' }] : [],
     table: tableFrom(series, 'Year', 'fire areas', 0),
   };
 }

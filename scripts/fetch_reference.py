@@ -19,9 +19,12 @@ Sources
                       level from TOPEX/Poseidon, Jason-1/2/3 and Sentinel-6MF
                       (seasonal signal removed, no GIA correction)
     Air Quality       NASA OMI tropospheric NO2 (the same GIBS layer the app
-                      plays), averaged over every day of March each year for
-                      four polluted regions and the whole globe. March matches
-                      the app's frames, which sit on March 15-17.
+                      plays), a yearly mean for four polluted regions and the
+                      whole globe: one three-day composite a month (the
+                      14th-16th, fetch_annual.py downloads them), 12 a year,
+                      each month's mean over the region's cloud-free cells,
+                      then the mean of the months. The March-only means this
+                      replaced are kept in data/legacy/reference_march.json.
     Wildfires         No single official "global fire" series exists that
                       matches 8-day MODIS snapshots; the app cites published
                       MODIS studies instead (see data/context.json).
@@ -65,7 +68,8 @@ NO2_REGIONS = [
 ]
 NO2_YEARS = range(2005, 2026)
 NO2_W, NO2_H = 720, 360  # 0.5 degree grid: plenty for regional means
-MIN_DAYS = 20
+NO2_DAYS = (14, 15, 16)  # one three-day composite a month
+MIN_MONTHS = 10          # a yearly mean needs most of the year
 NO2_ACTIVE = 5e15   # "polluted" air, the same threshold as the app's Air Quality frames
 
 session = requests.Session()
@@ -122,6 +126,7 @@ def greenhouse():
     gurl, _, _, gbody = noaa_csv("ch4_gr_gl")
     growth = [{"year": int(r[0]), "value": round(float(r[1]), 2)} for r in gbody]
     murl, mcreated, _, mbody = noaa_csv("ch4_mm_gl")
+    monthly = [{"year": int(r[0]), "month": int(r[1]), "value": round(float(r[3]), 2)} for r in mbody if float(r[3]) > 0]
     last = mbody[-1]
     latest_month = {"year": int(last[0]), "month": int(last[1]), "value": round(float(last[3]), 2), "trend": round(float(last[5]), 2)}
     context = {}
@@ -135,6 +140,7 @@ def greenhouse():
         "units": "ppb",
         "kind": "annual",
         "series": annual,
+        "monthly": [m for m in monthly if m["year"] >= 2002],
         "growth": growth,
         "latestMonth": latest_month,
         "context": context,
@@ -223,11 +229,13 @@ def air_quality(force):
     masks = {r["id"]: ((lat[:, None] >= r["box"][0]) & (lat[:, None] <= r["box"][1]) &
                        (lon[None, :] >= r["box"][2]) & (lon[None, :] <= r["box"][3])) for r in NO2_REGIONS}
 
-    days = [date(y, 3, d) for y in NO2_YEARS for d in range(1, 32)]
+    days = [date(y, m, d) for y in NO2_YEARS for m in range(1, 13) for d in NO2_DAYS]
     with ThreadPoolExecutor(8) as pool:
         blobs = list(pool.map(lambda d: omi_day(d, theme["layer"], force), days))
 
-    sums = {}
+    # Each month: its three days pooled (cloud and swath gaps skipped), one
+    # cos-latitude weighted mean and polluted share per region.
+    months = {}
     for day, blob in zip(days, blobs):
         if blob is None:
             continue
@@ -237,9 +245,7 @@ def air_quality(force):
             continue
         vals = np.zeros(valid.shape)
         vals[valid], _ = pixels_to_values(rgba[..., :3], valid, cmap)
-        acc = sums.setdefault(day.year, {k: [0.0, 0.0, 0.0] for k in ["global", *masks]})
-        acc.setdefault("days", 0)
-        acc["days"] += 1
+        acc = months.setdefault((day.year, day.month), {k: [0.0, 0.0, 0.0] for k in ["global", *masks]})
         for key, m in [("global", valid), *[(k, valid & mk) for k, mk in masks.items()]]:
             w = weight[m]
             acc[key][0] += float((vals[m] * w).sum())
@@ -249,13 +255,12 @@ def air_quality(force):
     def series(key):
         out = []
         for y in NO2_YEARS:
-            s = sums.get(y)
-            # a March mean needs most of March: skip years the network or the
-            # satellite left short
-            if not s or s["days"] < MIN_DAYS or s[key][1] == 0:
+            per = [months[(y, m)][key] for m in range(1, 13) if (y, m) in months and months[(y, m)][key][1] > 0]
+            # a yearly mean needs most of the year: skip years the satellite left short
+            if len(per) < MIN_MONTHS:
                 continue
-            out.append({"year": y, "value": round(s[key][0] / s[key][1] / 1e15, 3),
-                        "share": round(s[key][2] / s[key][1] * 100, 2)})
+            out.append({"year": y, "value": round(float(np.mean([a / w for a, w, _ in per])) / 1e15, 3),
+                        "share": round(float(np.mean([p / w for _, w, p in per])) * 100, 2), "months": len(per)})
         return out
 
     regions = [{"id": "global", "name": "Whole globe", "series": series("global")}]
@@ -270,13 +275,13 @@ def air_quality(force):
         r["changePct"] = round((s[-1]["value"] / s[0]["value"] - 1) * 100, 1)
         r["fromPeakPct"] = round((s[-1]["value"] / peak["value"] - 1) * 100, 1)
     return {
-        "id": "omi_no2_march",
-        "title": "March mean tropospheric NO2 by region (OMI / Aura)",
+        "id": "omi_no2_yearly",
+        "title": "Yearly mean tropospheric NO2 by region (OMI / Aura)",
         "units": "x10^15 molecules/cm2",
         "kind": "annual-regions",
         "regions": regions,
-        "daysUsed": {str(y): sums[y]["days"] for y in sorted(sums)},
-        "method": "Every day of March, GIBS layer OMI_Nitrogen_Dioxide_Tropo_Column at 0.5 degrees, colours inverted through the GIBS colormap, cloud and swath gaps skipped, means weighted by cos(latitude). share = % of the region's observed air at or above 5 x10^15 molecules/cm2.",
+        "monthsUsed": {str(y): sum((y, m) in months for m in range(1, 13)) for y in NO2_YEARS},
+        "method": "One three-day composite a month (the 14th-16th), 12 a year, GIBS layer OMI_Nitrogen_Dioxide_Tropo_Column at 0.5 degrees, colours inverted through the GIBS colormap, cloud and swath gaps skipped, means weighted by cos(latitude); the year is the mean of its months (at least 10). share = % of the region's observed air at or above 5 x10^15 molecules/cm2.",
         "note": "Derived by Terra Vox from NASA's OMI layer, not an official NASA product. The top of the GIBS palette saturates, so the most polluted cells are under-counted and peaks read low.",
         "source": {"name": "NASA OMI / Aura via NASA GIBS (derived by Terra Vox)", "layer": theme["layer"],
                    "url": gibs_url(theme["layer"], date(2025, 3, 1), width=NO2_W, height=NO2_H),
@@ -295,7 +300,7 @@ LEGEND_UNITS = {
 
 def legends():
     out = {"wildfires": {"kind": "marker", "title": "Active fire detected", "color": "#ff7a1a",
-                         "note": "Each dot is a 1 km MODIS pixel where a fire burned during the 8-day window."}}
+                         "note": "Each dot is a 1 km MODIS pixel where a fire burned during the June to September fire season."}}
     for theme_id, u in LEGEND_UNITS.items():
         xml = (RAW / theme_id / "colormap.xml").read_text(encoding="utf-8")
         title = re.findall(r'<ColorMap title="([^"]+)" units="([^"]+)"', xml)[-1]
@@ -330,10 +335,10 @@ def main():
     if complete or "air_quality" not in old:
         ref["air_quality"] = aq
     else:
-        print("WARNING: OMI March means incomplete (network?); keeping the previous air_quality section")
+        print("WARNING: OMI yearly means incomplete (network?); keeping the previous air_quality section")
         ref["air_quality"] = old["air_quality"]
     if not complete:
-        print(f"WARNING: only {len(aq['regions'][0]['series'])} of {len(NO2_YEARS)} years of OMI March means")
+        print(f"WARNING: only {len(aq['regions'][0]['series'])} of {len(NO2_YEARS)} years of OMI yearly means")
     OUT.write_text(json.dumps(ref, indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
     LEGENDS.write_text(json.dumps(legends(), indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
     g, s, a = ref["greenhouse_gases"], ref["sea_level"], ref["air_quality"]
@@ -341,7 +346,7 @@ def main():
     print(f"GMSL rise {s['riseFirstToLast']}  trend {s['trendMmPerYear']} mm/yr  accel {s['accelerationMmPerYear2']}")
     for r in a["regions"]:
         print(f"NO2 {r['name']:24s} {r['first']} -> {r['last']}  {r['changePct']:+}%  peak {r['peak']}  from peak {r['fromPeakPct']:+}%")
-    print("days used", a["daysUsed"])
+    print("months used", a["monthsUsed"])
 
 
 if __name__ == "__main__":

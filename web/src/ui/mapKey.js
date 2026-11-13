@@ -6,13 +6,7 @@
 // readers; the tick labels are drawn text.
 
 import { legends } from '../data/loader.js';
-
-const SIDE_B_KEYS = {
-  wildfires: "NASA's colour bar is drawn in the frame, lower left: fire radiative power, 0 to 8 MW per pixel, red to white.",
-  sea_level: 'The ruler up the middle is the key: centimetres on the left, inches on the right, zero at the 1993 sea level.',
-  air_quality: "NASA's colour bar is drawn in the frame: NO₂ from 0 (light blue) to 150 ×10¹⁴ molec/cm² (dark purple).",
-  greenhouse_gases: 'Purple haze is methane from NASA\'s GEOS model; the timeline under the globe shows the month.',
-};
+import { t } from '../i18n/index.js';
 
 export function createMapKey(root) {
   function setTrack(track) {
@@ -23,7 +17,7 @@ export function createMapKey(root) {
       root.removeAttribute('role');
       root.removeAttribute('aria-label');
       const p = document.createElement('p');
-      p.textContent = SIDE_B_KEYS[track.parent] ?? '';
+      p.textContent = t(`mapkey.b.${track.parent}`);
       root.append(p);
       return;
     }
@@ -32,21 +26,22 @@ export function createMapKey(root) {
     if (key.kind === 'marker') {
       root.className = 'map-key is-marker';
       root.setAttribute('role', 'img');
-      root.setAttribute('aria-label', `Map key: ${key.title}. ${key.note}`);
+      root.setAttribute('aria-label', t('mapkey.marker', { title: t('legend.wildfires') }));
       root.innerHTML = '<span class="key-dot" aria-hidden="true"></span><span class="key-text" aria-hidden="true"></span>';
       root.querySelector('.key-dot').style.background = key.color;
-      root.querySelector('.key-text').textContent = `${key.title}, one 1 km MODIS pixel each`;
+      root.querySelector('.key-text').textContent = t('mapkey.markerShort', { title: t('legend.wildfires') });
       return;
     }
     root.className = 'map-key is-gradient';
     root.setAttribute('role', 'img');
     const first = key.ticks[0]?.label;
     const last = key.ticks[key.ticks.length - 1]?.label;
-    root.setAttribute('aria-label', `Map key: ${key.title} in ${key.units}, from ${first} at the low end to ${last} at the high end.`);
-    const title = document.createElement('p');
-    title.className = 'key-title';
-    title.setAttribute('aria-hidden', 'true');
-    title.textContent = `${key.title} (${key.units})`;
+    const title = t(`legend.${track.parent}`);
+    root.setAttribute('aria-label', t('mapkey.gradient', { title, units: key.units, first, last }));
+    const titleEl = document.createElement('p');
+    titleEl.className = 'key-title';
+    titleEl.setAttribute('aria-hidden', 'true');
+    titleEl.textContent = `${title} (${key.units})`;
     const bar = document.createElement('div');
     bar.className = 'key-bar';
     bar.setAttribute('aria-hidden', 'true');
@@ -64,7 +59,7 @@ export function createMapKey(root) {
       s.textContent = t.label;
       ticks.append(s);
     });
-    root.append(title, bar, ticks);
+    root.append(titleEl, bar, ticks);
   }
   return { setTrack };
 }

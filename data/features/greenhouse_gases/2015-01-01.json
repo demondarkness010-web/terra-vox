@@ -1,0 +1,99 @@
+{
+ "theme": "greenhouse_gases",
+ "index": 12,
+ "date": "2015-01-01",
+ "year": 2015,
+ "label": "2015 yearly average",
+ "window": {
+  "kind": "year",
+  "months": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11,
+   12
+  ],
+  "windows": 12
+ },
+ "image": "data/display/greenhouse_gases/2015-01-01.jpg",
+ "hue": 195.437,
+ "brightness": 0.5615,
+ "colorVariance": 0.6276,
+ "pixelDensity": 0.0118,
+ "frameDelta": 0.3223,
+ "latBand": "equatorial",
+ "raw": {
+  "hue": 257.48025,
+  "brightness": 0.6091,
+  "colorVariance": 0.1897,
+  "pixelDensity": 0.00435,
+  "hsvHueMean": 35.57551,
+  "activeCentroidLat": 6.12173,
+  "frameDelta": 0.01278
+ },
+ "physical": {
+  "label": "mean methane at 400 hPa",
+  "units": "ppb",
+  "activeThreshold": 1900.0,
+  "value": 1814.0
+ },
+ "source": {
+  "layer": "AIRS_L3_Methane_400hPa_Volume_Mixing_Ratio_Monthly_Day",
+  "averaging": {
+   "kind": "year",
+   "months": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12
+   ],
+   "windows": 12
+  }
+ },
+ "monthly": [
+  1804.978,
+  1804.575,
+  1804.961,
+  1805.374,
+  1803.553,
+  1807.187,
+  1816.113,
+  1824.771,
+  1829.85,
+  1828.387,
+  1824.377,
+  1816.978
+ ],
+ "monthlyShare": [
+  0.018,
+  0.012,
+  0.007,
+  0.0,
+  0.002,
+  0.016,
+  0.304,
+  2.441,
+  2.012,
+  0.29,
+  0.04,
+  0.075
+ ],
+ "value01": 0.32,
+ "activeShare01": 0.0043,
+ "fromFirst01": 0.275
+}

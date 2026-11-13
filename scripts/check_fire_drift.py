@@ -60,7 +60,7 @@ def main():
         aqua = dict(zip([d.year for d in starts], pool.map(lambda d: clusters(aqua_frame(theme, d)), starts)))
     terra = {}
     for d in starts:
-        f = json.loads((ROOT / "data" / "features" / "wildfires" / f"{d.isoformat()}.json").read_text())
+        f = json.loads((ROOT / "data" / "legacy" / "features" / "wildfires" / f"{d.isoformat()}.json").read_text())
         terra[d.year] = f["physical"]["clusters"]
 
     rows = [{"year": y, "terra": terra[y], "aqua": aqua[y], "ratio": round(terra[y] / aqua[y], 3)} for y in sorted(aqua)]

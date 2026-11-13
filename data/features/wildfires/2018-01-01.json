@@ -1,0 +1,70 @@
+{
+ "theme": "wildfires",
+ "index": 17,
+ "date": "2018-01-01",
+ "year": 2018,
+ "label": "2018 yearly average",
+ "window": {
+  "kind": "season",
+  "months": [
+   6,
+   9
+  ],
+  "windows": 15
+ },
+ "image": "data/display/wildfires/2018-01-01.jpg",
+ "hue": 348.878,
+ "brightness": 0.9381,
+ "colorVariance": 0.9249,
+ "pixelDensity": 0.9612,
+ "frameDelta": 0.7754,
+ "latBand": "north",
+ "raw": {
+  "hue": 53.39897,
+  "brightness": 0.07657,
+  "colorVariance": 0.27685,
+  "pixelDensity": 0.1761,
+  "hsvHueMean": 249.04112,
+  "activeCentroidLat": 25.11449,
+  "frameDelta": 0.0331
+ },
+ "physical": {
+  "label": "MODIS fire count",
+  "units": "separate fire areas",
+  "activeThreshold": null,
+  "value": 290.0,
+  "clusters": 290.0,
+  "windowCounts": [
+   333,
+   360,
+   343,
+   312,
+   316,
+   303,
+   280,
+   290,
+   286,
+   261,
+   260,
+   239,
+   252,
+   253,
+   262
+  ],
+  "mapPct": 17.61
+ },
+ "source": {
+  "layer": "MODIS_Terra_Thermal_Anomalies_All",
+  "averaging": {
+   "kind": "season",
+   "months": [
+    6,
+    9
+   ],
+   "windows": 15
+  }
+ },
+ "value01": 0.5333,
+ "activeShare01": 0.5333,
+ "fromFirst01": 0.1773
+}

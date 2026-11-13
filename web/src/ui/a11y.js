@@ -49,25 +49,32 @@ export function installShortcuts(shortcuts) {
   return () => document.removeEventListener('keydown', onKey);
 }
 
-const KEY_NAMES = { ' ': 'Space', ArrowLeft: '←', ArrowRight: '→', Escape: 'Esc', Enter: 'Enter', Home: 'Home', End: 'End' };
+const KEY_NAMES = { ' ': 'Space', ArrowLeft: '←', ArrowRight: '→', Escape: 'Esc', Enter: 'Enter', Home: 'Home', End: 'End', '?': '?', '[': '[', ']': ']' };
 
 export function createHelpDialog(dialog, openers, groups) {
   const body = dialog.querySelector('.help-body');
-  body.replaceChildren(...groups.map(({ title, items }) => {
-    const section = document.createElement('section');
+  build(groups);
+
+  // Rebuilt from the same list after a language switch.
+  function build(list) {
+    body.replaceChildren(...list.map(({ title, items }) => section(title, items)));
+  }
+
+  function section(title, items) {
     const h = document.createElement('h3');
-    h.textContent = title;
+    h.textContent = typeof title === 'function' ? title() : title;
     const dl = document.createElement('dl');
     items.forEach(({ keys, label }) => {
       const dt = document.createElement('dt');
       dt.innerHTML = keys.map((k) => `<kbd>${KEY_NAMES[k] ?? k.toUpperCase()}</kbd>`).join(' ');
       const dd = document.createElement('dd');
-      dd.textContent = label;
+      dd.textContent = typeof label === 'function' ? label() : label;
       dl.append(dt, dd);
     });
-    section.append(h, dl);
-    return section;
-  }));
+    const el = document.createElement('section');
+    el.append(h, dl);
+    return el;
+  }
 
   let returnTo = null;
   function open() {
@@ -79,5 +86,5 @@ export function createHelpDialog(dialog, openers, groups) {
   dialog.addEventListener('close', () => returnTo?.focus?.());
   dialog.querySelector('[data-close]')?.addEventListener('click', close);
   openers.forEach((b) => b.addEventListener('click', open));
-  return { open, close, get isOpen() { return dialog.open; } };
+  return { open, close, rebuild: build, get isOpen() { return dialog.open; } };
 }

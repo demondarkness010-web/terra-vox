@@ -1,0 +1,99 @@
+{
+ "theme": "sea_level",
+ "index": 15,
+ "date": "2008-01-01",
+ "year": 2008,
+ "label": "2008 yearly average",
+ "window": {
+  "kind": "year",
+  "months": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11,
+   12
+  ],
+  "windows": 12
+ },
+ "image": "data/display/sea_level/2008-01-01.jpg",
+ "hue": 253.844,
+ "brightness": 0.6014,
+ "colorVariance": 0.3452,
+ "pixelDensity": 0.3891,
+ "frameDelta": 0.2313,
+ "latBand": "equatorial",
+ "raw": {
+  "hue": 169.18502,
+  "brightness": 0.78413,
+  "colorVariance": 0.28194,
+  "pixelDensity": 0.10509,
+  "hsvHueMean": 104.97692,
+  "activeCentroidLat": -3.04535,
+  "frameDelta": 0.07914
+ },
+ "physical": {
+  "label": "mean sea surface height anomaly",
+  "units": "cm",
+  "activeThreshold": 0.1,
+  "value": 0.4
+ },
+ "source": {
+  "layer": "JPL_MEaSUREs_L4_Sea_Surface_Height_Anomalies",
+  "averaging": {
+   "kind": "year",
+   "months": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12
+   ],
+   "windows": 12
+  }
+ },
+ "monthly": [
+  0.316,
+  -0.016,
+  0.218,
+  -0.196,
+  0.021,
+  0.255,
+  0.357,
+  0.772,
+  0.65,
+  1.037,
+  0.985,
+  0.657
+ ],
+ "monthlyShare": [
+  9.586,
+  10.775,
+  11.286,
+  9.771,
+  9.621,
+  9.752,
+  9.526,
+  10.677,
+  10.968,
+  11.34,
+  11.761,
+  11.048
+ ],
+ "value01": 0.36,
+ "activeShare01": 0.2102,
+ "fromFirst01": 0.2533
+}

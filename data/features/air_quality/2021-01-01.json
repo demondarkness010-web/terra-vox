@@ -1,0 +1,101 @@
+{
+ "theme": "air_quality",
+ "index": 16,
+ "date": "2021-01-01",
+ "year": 2021,
+ "label": "2021 yearly average",
+ "window": {
+  "kind": "year",
+  "months": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11,
+   12
+  ],
+  "windows": 12
+ },
+ "image": "data/display/air_quality/2021-01-01.jpg",
+ "hue": 0.0,
+ "brightness": 1.0,
+ "colorVariance": 0.1672,
+ "pixelDensity": 0.1085,
+ "frameDelta": 0.686,
+ "latBand": "north",
+ "raw": {
+  "hue": 232.44078,
+  "brightness": 0.95834,
+  "colorVariance": 0.0421,
+  "pixelDensity": 0.00234,
+  "hsvHueMean": 55.98672,
+  "activeCentroidLat": 31.99532,
+  "frameDelta": 0.00502
+ },
+ "physical": {
+  "label": "mean tropospheric NO2",
+  "units": "x10^15 molecules/cm2",
+  "activeThreshold": 5000000000000000.0,
+  "value": 0.47
+ },
+ "source": {
+  "layer": "OMI_Nitrogen_Dioxide_Tropo_Column",
+  "averaging": {
+   "kind": "year",
+   "months": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12
+   ],
+   "windows": 12
+  }
+ },
+ "regions": {
+  "north_china": {
+   "value": 6.63,
+   "share": 47.0,
+   "value01": 0.4736,
+   "activeShare01": 0.47,
+   "fromFirst01": 0.0695
+  },
+  "northern_india": {
+   "value": 2.466,
+   "share": 9.84,
+   "value01": 0.6165,
+   "activeShare01": 0.492,
+   "fromFirst01": 0.1417
+  },
+  "eastern_us": {
+   "value": 1.657,
+   "share": 4.02,
+   "value01": 0.3314,
+   "activeShare01": 0.1608,
+   "fromFirst01": 0.3044
+  },
+  "western_europe": {
+   "value": 2.08,
+   "share": 8.05,
+   "value01": 0.3467,
+   "activeShare01": 0.2013,
+   "fromFirst01": 0.279
+  }
+ },
+ "value01": 0.4736,
+ "activeShare01": 0.47,
+ "fromFirst01": 0.0695
+}

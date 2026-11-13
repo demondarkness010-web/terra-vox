@@ -56,7 +56,7 @@ We sonify the measurement, not the picture of it. Each frame's colours are turne
 
 Wildfires: global fire hasn't simply risen, so listen to the record jump year to year. Terra's orbit has drifted since 2022; counted the same way from Aqua, Terra's 2023–2025 counts stay inside the range the two satellites agreed on before the drift ([check](scripts/check_fire_drift.py)). Air Quality follows one region at a time because the global mean barely moves: North China falling, northern India rising.
 
-**Limits.** One snapshot per year is not an annual mean; NASA GIBS sea-surface height ends in 2018; reading values back from colours has quantisation error. [All three, explained](docs/mapping-explainer.md).
+**Limits.** Each year is our own average of 12 monthly maps (wildfires: 15 summer composites), not an official NASA product, though it tracks NOAA closely (methane r = 0.992, sea level r = 0.997); NASA GIBS sea-surface height ends in 2018; reading values back from colours has quantisation error. [All three, explained](docs/mapping-explainer.md).
 
 ### Side B: the Earth Information Center visualizations
 

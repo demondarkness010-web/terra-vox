@@ -7,19 +7,22 @@ description: >-
   primary channel; the visuals are a confirmation, and they should be worth looking at.
 colors:
   space: "#000000"
-  hull: "#15171a"
-  panel: "#1e2125"
-  raised: "#2a2e33"
-  engrave: "#3a3f46"
-  edge: "#6e757e"
-  ink: "#f2f4f5"
-  muted: "#c9cdd2"
-  quiet: "#b3b9c0"
-  old: "#56b4e9"
-  old-text: "#8fd1f7"
-  new: "#e69f00"
-  new-text: "#ffbf47"
-  focus: "#f0e442"
+  hull: "#efebe3"
+  panel: "#e5e0d6"
+  raised: "#d9d3c7"
+  engrave: "#c2bbae"
+  edge: "#7a7367"
+  ink: "#141414"
+  muted: "#3d3933"
+  quiet: "#5a554d"
+  old: "#0072b2"
+  old-text: "#003d62"
+  old-fill: "#56b4e9"
+  new: "#c25400"
+  new-text: "#5e3200"
+  new-fill: "#e69f00"
+  focus: "#141414"
+  on-ink: "#efebe3"
   good: "#3dd6a0"
   limb: "#7fc4ff"
   on-signal: "#15171a"
@@ -52,6 +55,12 @@ components:
 ---
 
 # Terra Vox design system
+
+> **Paper and orbit (November 2026).** The page is now warm paper and the stage stays true
+> black space, after the user's editorial reference (cream page, black space panel, black
+> round play button, serif titles, a black stats band). Where this file still says "graphite
+> hull" or quotes the old dark values, read it through the section "Paper and orbit" below:
+> the dark values now live only inside `.stage` and `.proof` as the `--d-*` tokens.
 
 Read this whole file before touching anything in `web/`. It is the brief, and it overrides
 taste, habit and whatever a "modern website" usually looks like.
@@ -299,6 +308,73 @@ Signature parts:
 - **Duet toggle.** The two dots overlap when off and part when on: the logo of the idea.
   Animate the separation with `transform: translateX`, never `margin`.
 
+## Paper and orbit
+
+The page is paper: a printed field guide and an instrument. Space is the stage. The line where
+they meet is still the horizon, and it is now the strongest contrast on the page.
+
+What was taken from the editorial reference, and what was refused:
+
+| Taken | Refused, and why |
+|---|---|
+| Cream page against black space | NASA logo: protected mark, NASA does not endorse us |
+| Black round play button | Astronaut, rocket and telescope stock imagery: not our data |
+| Serif titles (`--serif`, weight 400, 24px+ only) | Invented stats ("500+ missions"): every number must come from `data/` |
+| Wide display headlines (`font-stretch: var(--wide)`), uppercase only for the wordmark | Letter-spaced all-caps eyebrows: hard for low-vision readers |
+| A black stats band (`.proof`) | Arrows appended to links |
+
+Colour on paper, measured (WCAG 2) on hull / panel / raised:
+
+| Token | Hex | Ratios |
+|---|---|---|
+| `ink` | #141414 | 15.5 / 14.0 / 12.4 |
+| `muted` | #3d3933 | 9.6 / 8.7 / 7.7 |
+| `quiet` | #5a554d | 6.2 / 5.6 / 5.0 (18px+ only) |
+| `edge` | #7a7367 | 4.0 / 3.6 / 3.2 (control edges, idle bars) |
+| `old` / `new` | #0072b2 / #c25400 | marks only: 4.4 / 3.9 / 3.5 and 3.9 / 3.5 / 3.1 |
+| `old-text` / `new-text` | #003d62 / #5e3200 | 9.6 / 8.7 / 7.6 and 9.1 / 8.3 / 7.3 |
+| `old-fill` / `new-fill` | #56b4e9 / #e69f00 | fills under `on-signal` text: 7.8 and 8.0 |
+| `focus` | #141414 | the ring is ink on paper, yellow (`--d-focus`) in space |
+| `on-ink` | #efebe3 | text on any `ink` fill: 15.5 |
+
+Rules:
+
+- **The signal pair keeps its meaning, not its exact shade.** Blue is the oldest year, orange
+  the newest, everywhere. On paper the marks use the darker Okabe-Ito blue and a dark orange so
+  bars, faders and chart lines clear 3:1; text uses `old-text` / `new-text`; filled pads and
+  Duet dots use the original light pair with dark text.
+- **Space tokens are scoped, not duplicated.** `.stage` and `.proof` redefine `--ink`,
+  `--muted`, `--hull` and the rest to the `--d-*` values, so anything placed on black space
+  automatically uses the measured dark palette. The globe reads its colours on `#stage`.
+- **`on-signal` versus `on-ink`.** `on-signal` (dark) sits on the blue/orange/green fills;
+  `on-ink` (paper) sits on anything filled with `ink`. Never swap them.
+- **The proof band never has a typed number.** `main.js` fills it from `referenceCheck` and
+  `yearRange` in `data/themes.json`.
+
+## Reference styles: where each one is allowed
+
+Four outside styles inform the product. Each has exactly one job and one place; none of them
+is a theme painted over everything.
+
+| Style | Where | What it means here |
+|---|---|---|
+| Scientific visualization | The stage, the timeline groove, the field guide charts | Real NASA frames and real values. Never decorative data. |
+| Neo-brutalism | The More section and the field guide only | Heavy flat ink rules (`--rule-heavy`) above sections, square panels with a `--rule-panel` edge, `display`-size headlines. **No offset shadows**: they break the no-`box-shadow` rule and vanish in forced colours. |
+| Scientific illustration + geometric abstraction | "How a frame becomes a note" (`.flow`), top of the field guide | Four steps (satellite pass, NASA map, yearly average, the note) drawn only with circles, lines and squares, in `ink`, `muted`, `edge` and `raised`. No signal colours: nothing in it is the oldest or newest year. Every claim matches `audio/mapping.js`. |
+
+The player (header, stage, transport) stays in the orbit-and-instrument language: no heavy
+rules, no brutalist headlines there.
+
+Supporting states added with this pass:
+
+- **Loading line.** While a NASA frame is on its way, `.stage[data-loading]` shows
+  "Loading the NASA frame" at the stage's lower left, so the black is never unexplained.
+- **Settings fold.** On screens 640px and narrower, Speak aloud, Describe, Language, Motion
+  and Keys fold behind one `Settings` disclosure (`#settings-menu`), so the planet reaches
+  the first screen. Wider screens keep them open and the summary is hidden.
+- **Duet is primary.** The Duet button is `--primary-h` tall with an `ink` edge, the one
+  control in the header that is larger than the rest.
+
 ## Do's and Don'ts
 
 Do:
@@ -478,18 +554,28 @@ review protocol keep them from coming back.
 
 ```css
 :root {
-  color-scheme: dark;
-  /* colour */
-  --space: #000000; --hull: #15171a; --panel: #1e2125; --raised: #2a2e33;
-  --engrave: #3a3f46; --edge: #6e757e;
-  --ink: #f2f4f5; --muted: #c9cdd2; --quiet: #b3b9c0;
-  --old: #56b4e9; --old-text: #8fd1f7; --new: #e69f00; --new-text: #ffbf47;
-  --focus: #f0e442; --good: #3dd6a0; --limb: #7fc4ff; --on-signal: #15171a;
+  color-scheme: light;
+  /* colour: paper (the page) */
+  --space: #000000; --hull: #efebe3; --panel: #e5e0d6; --raised: #d9d3c7;
+  --engrave: #c2bbae; --edge: #7a7367;
+  --ink: #141414; --muted: #3d3933; --quiet: #5a554d;
+  --old: #0072b2; --old-text: #003d62; --new: #c25400; --new-text: #5e3200;
+  --old-fill: #56b4e9; --new-fill: #e69f00;
+  --focus: #141414; --good: #3dd6a0; --limb: #7fc4ff;
+  --on-signal: #15171a; --on-ink: #efebe3;
+  /* colour: space (scoped onto .stage and .proof) */
+  --d-hull: #15171a; --d-panel: #1e2125; --d-raised: #2a2e33;
+  --d-engrave: #3a3f46; --d-edge: #6e757e;
+  --d-ink: #f2f4f5; --d-muted: #c9cdd2; --d-quiet: #b3b9c0;
+  --d-old: #56b4e9; --d-old-text: #8fd1f7; --d-new: #e69f00; --d-new-text: #ffbf47;
+  --d-focus: #f0e442;
   --backdrop: rgb(0 0 0 / 0.72);
   /* type */
   --font: "Atkinson Hyperlegible Next Variable", system-ui, sans-serif;
   --display: "Anybody Variable", "Atkinson Hyperlegible Next Variable", system-ui, sans-serif;
   --mono: ui-monospace, "SFMono-Regular", Consolas, monospace;
+  --serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  --wide: 125%; --narrow: 80%;
   --t-small: 0.875rem; --t-label: 1rem; --t-body: 1.125rem; --t-lead: 1.3125rem;
   --t-title: 1.5rem; --t-headline: 2.25rem; --t-display: 3rem;
   --t-numeral-lg: clamp(3rem, 5vw, 4.5rem); --t-numeral-xl: clamp(5.5rem, 9vw, 9rem);
@@ -498,6 +584,7 @@ review protocol keep them from coming back.
   --s6: 32px; --s7: 48px; --s8: 72px; --s9: 120px;
   --gutter: clamp(16px, 2.6vw, 40px);
   /* shape */
+  --rule: 1px; --rule-panel: 2px; --rule-heavy: 3px;
   --r-tight: 4px; --r-control: 8px; --r-round: 999px;
   /* parts (the component sizes from the YAML, and the layout's fixed measures) */
   --control-h: 44px; --primary-h: 56px; --pad-h: 64px; --play-size: 80px;

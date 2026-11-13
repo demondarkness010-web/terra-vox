@@ -8,10 +8,11 @@
 // the timeline is also the theme's chart.
 
 import { createGlobe } from './globe.js';
-import { physicalShort, activeShare } from '../data/loader.js';
+import { physicalShort, activeShare, pct } from '../data/loader.js';
 import { motionReduced } from './tokens.js';
+import { t } from '../i18n/index.js';
 
-export function createTurntable(root, { onTogglePlay, onScrub, onStep, onListenMode, listenModes = {}, altFor = defaultAlt }) {
+export function createTurntable(root, { onTogglePlay, onScrub, onStep, onListenMode, listenModes = [], altFor = defaultAlt }) {
   const $ = (id) => document.getElementById(id);
   const stage = $('stage');
   const globeEl = $('globe');
@@ -45,16 +46,8 @@ export function createTurntable(root, { onTogglePlay, onScrub, onStep, onListenM
   function setTheme(next) {
     theme = next;
     // Air Quality is one region at a time, so the title says which.
-    const title = theme.region ? `${theme.name}: ${theme.region.short}` : theme.name;
-    themeTitle.textContent = title;
+    labelTrack();
     scrubber.max = String(theme.frames.length - 1);
-    const [r0, r1] = theme.rangeLabel;
-    scrubber.setAttribute('aria-label', `${title} timeline, ${r0} to ${r1}`);
-    $('scrub-start').textContent = r0;
-    $('scrub-end').textContent = r1;
-    $('groove-note').textContent = theme.side === 'b'
-      ? `Each bar is one frame of NASA's visualization, its height the frame's ${theme.physical.label}`
-      : "Each bar is one year, its height the year's value";
     stage.dataset.theme = theme.parent;
     stage.dataset.side = theme.side;
     const flat = theme.side === 'b';
@@ -80,6 +73,17 @@ export function createTurntable(root, { onTogglePlay, onScrub, onStep, onListenM
     ticks[ticks.length - 1].classList.add('is-newest');
   }
 
+  // Everything on the track that is words: re-run on a language switch.
+  function labelTrack() {
+    const title = theme.region ? `${theme.name}: ${theme.region.short}` : theme.name;
+    themeTitle.textContent = title;
+    const [r0, r1] = theme.rangeLabel;
+    scrubber.setAttribute('aria-label', t('scrub.label', { title, from: r0, to: r1 }));
+    $('scrub-start').textContent = r0;
+    $('scrub-end').textContent = r1;
+    $('groove-note').textContent = theme.side === 'b' ? t('groove.b', { label: theme.physical.label }) : t('groove.a');
+  }
+
   function showFrame(index) {
     if (!theme) return;
     const frame = theme.frames[index];
@@ -94,9 +98,9 @@ export function createTurntable(root, { onTogglePlay, onScrub, onStep, onListenM
     frameLabel.textContent = frame.label;
     nowValue.textContent = `${capitalize(theme.physical.label)}: ${physicalShort(frame)}`;
     const share = activeShare(frame);
-    nowShare.textContent = share ? `${share.percent < 10 ? share.percent.toFixed(1) : Math.round(share.percent)}% ${share.label}` : '';
+    nowShare.textContent = share ? `${pct(share.percent)} ${share.label}` : '';
     scrubber.value = String(index);
-    scrubber.setAttribute('aria-valuetext', `${frame.label}, frame ${index + 1} of ${theme.frames.length}`);
+    scrubber.setAttribute('aria-valuetext', t('scrub.value', { label: frame.label, n: index + 1, of: theme.frames.length }));
     screenB.hidden = true;
     ticks.forEach((t, i) => t.classList.toggle('is-current', i === index));
   }
@@ -104,9 +108,9 @@ export function createTurntable(root, { onTogglePlay, onScrub, onStep, onListenM
   function setPlaying(playing) {
     root.classList.toggle('is-playing', playing);
     globe.setPlaying(playing);
-    const what = stage.dataset.mode === 'duet' ? ' duet' : '';
-    playBtn.setAttribute('aria-label', playing ? `Pause${what}` : `Play${what}`);
-    playBtn.title = playing ? 'Pause (Space)' : 'Play (Space)';
+    const duet = stage.dataset.mode === 'duet';
+    playBtn.setAttribute('aria-label', t(`${playing ? 'pause' : 'play'}${duet ? 'Duet' : ''}`));
+    playBtn.title = t(playing ? 'pause.title' : 'play.title');
   }
 
   // A bar was heard: the play ring pulses for one beat. With reduced motion
@@ -130,7 +134,7 @@ export function createTurntable(root, { onTogglePlay, onScrub, onStep, onListenM
 
   const duetPanel = $('duet-panel');
   const duetNow = $('duet-now');
-  const listen = createSegmented($('listen-modes'), listenModes, (m) => onListenMode?.(m));
+  const listen = createSegmented($('listen-modes'), listenModes, (m) => onListenMode?.(m), (m) => t(`listen.${m}`));
 
   function setDuet(on) {
     stage.dataset.mode = on ? 'duet' : 'single';
@@ -140,20 +144,20 @@ export function createTurntable(root, { onTogglePlay, onScrub, onStep, onListenM
     // Duet always compares the two ends of the record, so there is nothing
     // to scrub; say why rather than silently disabling.
     [scrubber, prevBtn, nextBtn].forEach((el) => { el.disabled = on; });
-    scrubber.setAttribute('aria-description', on ? 'Unavailable in Duet mode, which always compares the oldest and newest frames.' : '');
+    scrubber.setAttribute('aria-description', on ? t('scrub.duetOff') : '');
     if (!on) { globe.setDuet(false); screenB.hidden = true; }
   }
 
   function showDuet(gap) {
-    const pair = `Left: ${altFor(gap.oldest, theme)} Right: ${altFor(gap.newest, theme)}`;
+    const pair = t('duet.pairAlt', { left: altFor(gap.oldest, theme), right: altFor(gap.newest, theme) });
     if (theme.side === 'b') {
       screenA.src = gap.oldest.imageUrl;
       screenB.src = gap.newest.imageUrl;
       screenB.hidden = false;
-      screen.setAttribute('aria-label', `Two frames of NASA's visualization. ${pair}`);
+      screen.setAttribute('aria-label', t('duet.framesAlt', { pair }));
     } else {
       globe.setDuet(true, gap.oldest, gap.newest);
-      globeEl.setAttribute('aria-label', `Two planets. ${pair}`);
+      globeEl.setAttribute('aria-label', t('duet.planetsAlt', { pair }));
     }
     years.oldest.set(gap.oldest.big);
     years.newest.set(gap.newest.big);
@@ -162,13 +166,18 @@ export function createTurntable(root, { onTogglePlay, onScrub, onStep, onListenM
     $('year-new-sr').textContent = `, ${gap.newest.label}`;
     $('gap-years').textContent = `${gap.oldest.short} → ${gap.newest.short}, ${gap.apart}`;
     $('gap-sentence').textContent = gap.sentence;
+    $('gap-trust').textContent = gap.trust.sentence;
+    $('gap-trust').dataset.level = gap.trust.level;
+    $('gap-noaa').textContent = gap.noaa ?? '';
+    $('gap-noaa').hidden = !gap.noaa;
     const p = gap.physical;
     $('gap-physical').textContent =
       `${capitalize(p.label)}: ${p.from} → ${p.to} (${p.delta}).`
-      + (p.activeLabel ? ` Share of ${p.activeLabel}: ${p.activeFrom} → ${p.activeTo}.` : '');
+      + (p.activeLabel ? ` ${t('gap.sharePanel', { label: p.activeLabel, from: p.activeFrom, to: p.activeTo })}` : '')
+      + (gap.months ? ` ${gap.months}` : '');
     $('gap-rows').replaceChildren(...gap.items.map((it) => {
       const tr = document.createElement('tr');
-      tr.className = it.change === 'same' || it.change === 'about the same' ? 'same' : 'changed';
+      tr.className = it.same ? 'same' : 'changed';
       [it.aspect, it.from, it.to, it.change].forEach((v, i) => {
         const cell = document.createElement(i === 0 ? 'th' : 'td');
         if (i === 0) cell.scope = 'row';
@@ -201,13 +210,17 @@ export function createTurntable(root, { onTogglePlay, onScrub, onStep, onListenM
 
   return {
     setTheme, showFrame, setPlaying, beat, spark, setDuet, showDuet, setListenMode, setMeters, setTurn,
+    relabel() { if (theme) labelTrack(); listen.relabel(); },
     stage, scrubber, playBtn, get theme() { return theme; },
   };
 }
 
 // A small ARIA radio group of buttons (roving tabindex, arrow keys).
-export function createSegmented(container, options, onChange) {
-  const buttons = Object.entries(options).map(([value, label]) => {
+// `options` is { value: label } or a list of values with `labelFor(value)`,
+// which relabel() re-runs after a language switch.
+export function createSegmented(container, options, onChange, labelFor = null) {
+  const entries = Array.isArray(options) ? options.map((v) => [v, labelFor(v)]) : Object.entries(options);
+  const buttons = entries.map(([value, label]) => {
     const b = document.createElement('button');
     b.type = 'button';
     b.className = 'seg';
@@ -239,7 +252,13 @@ export function createSegmented(container, options, onChange) {
       b.tabIndex = on ? 0 : -1;
     });
   }
-  return { select };
+  function relabel(map = null) {
+    buttons.forEach((b) => {
+      const label = map?.[b.dataset.value] ?? labelFor?.(b.dataset.value);
+      if (label) b.textContent = label;
+    });
+  }
+  return { select, relabel };
 }
 
 const capitalize = (s) => s.charAt(0).toUpperCase() + s.slice(1);

@@ -1,0 +1,99 @@
+{
+ "theme": "greenhouse_gases",
+ "index": 1,
+ "date": "2004-01-01",
+ "year": 2004,
+ "label": "2004 yearly average",
+ "window": {
+  "kind": "year",
+  "months": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11,
+   12
+  ],
+  "windows": 12
+ },
+ "image": "data/display/greenhouse_gases/2004-01-01.jpg",
+ "hue": 20.481,
+ "brightness": 0.9673,
+ "colorVariance": 0.6616,
+ "pixelDensity": 0.0,
+ "frameDelta": 0.269,
+ "latBand": "equatorial",
+ "raw": {
+  "hue": 224.29935,
+  "brightness": 0.70342,
+  "colorVariance": 0.19164,
+  "pixelDensity": 0.0,
+  "hsvHueMean": 62.29107,
+  "activeCentroidLat": 7.7225,
+  "frameDelta": 0.01166
+ },
+ "physical": {
+  "label": "mean methane at 400 hPa",
+  "units": "ppb",
+  "activeThreshold": 1900.0,
+  "value": 1763.0
+ },
+ "source": {
+  "layer": "AIRS_L3_Methane_400hPa_Volume_Mixing_Ratio_Monthly_Day",
+  "averaging": {
+   "kind": "year",
+   "months": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12
+   ],
+   "windows": 12
+  }
+ },
+ "monthly": [
+  1759.675,
+  1756.556,
+  1754.519,
+  1753.892,
+  1752.9,
+  1757.12,
+  1767.182,
+  1771.678,
+  1775.996,
+  1774.057,
+  1768.568,
+  1763.517
+ ],
+ "monthlyShare": [
+  0.0,
+  0.001,
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  0.0
+ ],
+ "value01": 0.065,
+ "activeShare01": 0.0,
+ "fromFirst01": 0.02
+}

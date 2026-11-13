@@ -13,6 +13,7 @@
 import { Voice, mapFeatures } from '../audio/sonify.js';
 import { oldestFrame, newestFrame, physicalShort, physicalSpoken } from '../data/loader.js';
 import { speakNote, showNote } from '../audio/scales.js';
+import { t, tn } from '../i18n/index.js';
 
 const ANCHOR_BARS = 2;
 
@@ -39,8 +40,17 @@ export function createGuessTheYear(root, { themes, unlock, announce }) {
   let playing = null;        // 'mystery' | 'oldest' | 'newest' | null
   const score = { right: 0, played: 0, streak: 0 };
 
-  themeSelect.innerHTML = '<option value="random">Any theme (random)</option>'
-    + themes.map((t) => `<option value="${t.id}">${t.name} (${t.yearRange[0]}–${t.yearRange[1]})</option>`).join('');
+  function fillThemes() {
+    const value = themeSelect.value || 'random';
+    themeSelect.replaceChildren(...[['random', t('guess.any')], ...themes.map((th) => [th.id, `${th.name} (${th.yearRange[0]}–${th.yearRange[1]})`])].map(([v, label]) => {
+      const o = document.createElement('option');
+      o.value = v;
+      o.textContent = label;
+      return o;
+    }));
+    themeSelect.value = value;
+  }
+  fillThemes();
   themeSelect.addEventListener('change', () => newRound());
 
   playBtn.addEventListener('click', () => toggleMystery());
@@ -64,7 +74,7 @@ export function createGuessTheYear(root, { themes, unlock, announce }) {
   function setPlaying(what) {
     playing = what;
     playBtn.setAttribute('aria-pressed', String(what === 'mystery'));
-    playBtn.querySelector('span').textContent = what === 'mystery' ? 'Stop mystery year' : 'Play mystery year';
+    playBtn.querySelector('span').textContent = t(what === 'mystery' ? 'guess.stop' : 'guess.play');
     [oldBtn, newBtn].forEach((b) => b.classList.toggle('is-on', b === (what === 'oldest' ? oldBtn : what === 'newest' ? newBtn : null)));
     root.classList.toggle('is-playing', what !== null);
   }
@@ -132,8 +142,7 @@ export function createGuessTheYear(root, { themes, unlock, announce }) {
     describeHearing(frame);
 
     const [y0, y1] = theme.yearRange;
-    announce(`New round. ${theme.name}, somewhere between ${y0} and ${y1}. `
-      + `Press Space to hear the mystery year, A for ${y0}, B for ${y1}, then 1 to 4 to answer: ${round.choices.join(', ')}.`);
+    announce(t('guess.round', { theme: theme.name, y0, y1, choices: round.choices.join(', ') }));
     if (autoplay) toggleMystery(true);
   }
 
@@ -141,7 +150,7 @@ export function createGuessTheYear(root, { themes, unlock, announce }) {
   // who cannot hear well still play from the mapped sound parameters.
   function describeHearing(frame) {
     const p = mapFeatures(frame);
-    hearing.textContent = `Hearing ${showNote(p.note)}, ${p.notesPerBar} note${p.notesPerBar > 1 ? 's' : ''} a bar, ${p.tempoBPM} BPM, ${p.timbre}, ${p.interval.startsWith('minor') ? 'tense' : 'calm'}`;
+    hearing.textContent = t('guess.hearing', { note: showNote(p.note), notes: tn('cap.notes', p.notesPerBar), bpm: p.tempoBPM, timbre: t(`timbre.${p.timbre}`), harmony: t(p.interval.startsWith('minor') ? 'harmony.tenseWord' : 'harmony.calmWord') });
   }
 
   async function toggleMystery(force) {
@@ -162,7 +171,7 @@ export function createGuessTheYear(root, { themes, unlock, announce }) {
     v.setFrame(frame, { restart: true });
     v.start({ bars: ANCHOR_BARS });
     setPlaying(which);
-    announce(`${which === 'oldest' ? 'Oldest' : 'Newest'}: ${frame.year}.`);
+    announce(t(which === 'oldest' ? 'guess.oldestSaid' : 'guess.newestSaid', { year: frame.year }));
   }
 
   function stopAudio() {
@@ -189,23 +198,22 @@ export function createGuessTheYear(root, { themes, unlock, announce }) {
 
     // reveal: speech first, picture second
     img.src = frame.imageUrl;
-    img.alt = `${theme.name}, ${frame.label}`;
+    img.alt = t('guess.imgAlt', { theme: theme.name, label: frame.label });
     img.hidden = false;
     cover.hidden = true;
     yearBadge.textContent = frame.year;
 
     const p = mapFeatures(frame);
-    verdict.textContent = right ? `Yes, it was ${frame.year}.` : `It was ${frame.year}. You said ${year}, ${off} year${off === 1 ? '' : 's'} off.`;
-    detail.textContent = `${theme.name}, ${frame.label}: ${theme.physical.label} ${physicalShort(frame)}. `
-      + `It played ${showNote(p.note)}, ${p.notesPerBar} note${p.notesPerBar === 1 ? '' : 's'} per bar at ${p.tempoBPM} BPM on a ${p.timbre}.`;
+    verdict.textContent = right ? t('guess.right', { year: frame.year }) : t('guess.wrong', { year: frame.year, said: year, off: tn('guess.off', off) });
+    detail.textContent = t('guess.detail', { theme: theme.name, label: frame.label, what: theme.physical.label, value: physicalShort(frame),
+      note: showNote(p.note), notes: tn('cap.notes', p.notesPerBar), bpm: p.tempoBPM, timbre: t(`timbre.${p.timbre}`) });
     result.hidden = false;
-    scoreEl.textContent = `Score ${score.right} / ${score.played}${score.streak > 1 ? `, streak ${score.streak}` : ''}`;
+    showScore();
     nextBtn.focus();
 
-    const lean = frame.year - (theme.yearRange[0] + theme.yearRange[1]) / 2 > 0 ? 'the newer half' : 'the older half';
-    announce(`${right ? 'Correct!' : 'Not quite.'} The mystery was ${frame.label}, in ${lean} of the record. `
-      + `${capitalize(physicalSpoken(frame))}. It played ${speakNote(p.note)}, ${p.notesPerBar} notes per bar. `
-      + `Score ${score.right} of ${score.played}. Press Enter for the next round.`);
+    const lean = t(frame.year - (theme.yearRange[0] + theme.yearRange[1]) / 2 > 0 ? 'guess.newerHalf' : 'guess.olderHalf');
+    announce(t('guess.reveal', { verdict: t(right ? 'guess.correct' : 'guess.notQuite'), label: frame.label, lean,
+      value: capitalize(physicalSpoken(frame)), note: speakNote(p.note), notes: p.notesPerBar, score: score.right, played: score.played }));
   }
 
   function onKey(e) {
@@ -223,6 +231,19 @@ export function createGuessTheYear(root, { themes, unlock, announce }) {
     e.stopPropagation();
   }
 
+  function showScore() {
+    scoreEl.textContent = t('guess.score', { right: score.right, played: score.played }) + (score.streak > 1 ? `, ${t('guess.streak', { n: score.streak })}` : '');
+  }
+  showScore();
+
+  // After a language switch: the menu, the buttons and the visible result.
+  function relabel() {
+    fillThemes();
+    setPlaying(playing);
+    showScore();
+    if (round) describeHearing(round.frame);
+  }
+
   function activate() {
     document.addEventListener('keydown', onKey);
     if (!round) newRound();
@@ -233,7 +254,7 @@ export function createGuessTheYear(root, { themes, unlock, announce }) {
     stopAudio();
   }
 
-  return { activate, deactivate };
+  return { activate, deactivate, relabel };
 }
 
 function shuffle(arr) {

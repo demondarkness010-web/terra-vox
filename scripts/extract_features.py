@@ -320,7 +320,9 @@ def sound_meta(tid):
         meta["shareMax"] = cfg.get("shareMax", 100)
     if cfg["value"] == "region":
         regions = air_regions()
-        meta["regions"] = [{"id": rid, "name": regions[rid]["name"], "shareMax": cfg["shareMax"][rid]}
+        meta["regions"] = [{"id": rid, "name": regions[rid]["name"], "shareMax": cfg["shareMax"][rid],
+                            "range": list(cfg["rangeByRegion"][rid]),
+                            "rangeLabel": "{:g} to {:g} x10^15 molecules/cm2".format(*cfg["rangeByRegion"][rid])}
                            for rid in AIR_REGIONS]
         meta["defaultRegion"] = AIR_REGIONS[0]
     return meta
@@ -340,6 +342,7 @@ def add_sound(tid, outs):
             out["regions"] = {}
         for rid in AIR_REGIONS:
             by_year = {p["year"]: p for p in regions[rid]["series"]}
+            lo, hi = cfg["rangeByRegion"][rid]
             first = None
             for out in outs:
                 p = by_year[out["year"]]

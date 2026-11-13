@@ -1,11 +1,11 @@
-// Words for what is on screen and in the speakers.
+// Words for what is on screen and in the speakers, in the current language.
 //
 //   altText(frame, theme)     rich alt text built from the frame's own
 //                             numbers: what the map shows, the real value and
 //                             where it sits on the theme's fixed scale, how
 //                             much of it is "active", how far it has moved
-//   captionLine(frame, ...)   the plain-English "subtitle" for the bar now
-//                             playing: real numbers -> the sound they made
+//   captionLine(frame, ...)   the plain "subtitle" for the bar now playing:
+//                             real numbers -> the sound they made
 //   createCaptionTrack(...)   the visible caption bar + the screen-reader
 //                             caption region + optional speech, all synced
 //                             to the bar that is actually sounding
@@ -14,30 +14,9 @@
 // so the words, the sound and the picture can never disagree.
 
 import { mapFeatures, duckMusic, TENSE_FROM } from '../audio/sonify.js';
-import { physicalShort, physicalSpoken, activeShare } from '../data/loader.js';
+import { physicalShort, physicalSpoken, activeShare, pct } from '../data/loader.js';
 import { speakNote, showNote } from '../audio/scales.js';
-
-const MAP_DESCRIPTION = {
-  wildfires: 'World map of satellite-detected active fires, drawn as orange dots over the night-time Earth',
-  sea_level: 'World map of sea surface height: purple and blue where the ocean sits below its long-term mean, green near it, yellow, red and white above it; land is dark',
-  air_quality: 'World map of nitrogen dioxide pollution: pale yellow for clean air, orange to dark red over polluted regions, black gaps where clouds blocked the satellite',
-  greenhouse_gases: 'World map of methane in the mid-troposphere: pale green for lower concentrations through orange to deep red for the highest',
-  wildfires_eic: "NASA Earth Information Center map of active fires seen by VIIRS: yellow and white specks of fire radiative power on dark land and a slate-blue ocean, with NASA's date stamp and colour bar in the lower left",
-  sea_level_eic: 'NASA visualization of the sea seen through a porthole: sky above, blue water below, and a ruler in centimetres and inches up the middle with the 1993 sea level marked at zero',
-  air_quality_eic: 'NASA TEMPO map of nitrogen dioxide over North America on a dark globe: light blue for clean air, cream through red to purple over polluted cities, dark where clouds or night hide the ground',
-  greenhouse_gases_eic: 'NASA visualization of the globe wrapped in a purple haze of methane from the GEOS model, with a January-to-December timeline below',
-};
-
-const ACTIVE_NOUN = {
-  wildfires: 'fire activity',
-  sea_level: 'high-water ocean',
-  air_quality: 'heavily polluted air',
-  greenhouse_gases: 'methane-rich air',
-  wildfires_eic: 'fire activity',
-  sea_level_eic: 'water in the porthole',
-  air_quality_eic: 'heavily polluted air',
-  greenhouse_gases_eic: 'dense methane haze',
-};
+import { t, tn, lang, LANGS } from '../i18n/index.js';
 
 // Words from the same three numbers the sound follows, with the same
 // thresholds, so what you read matches what you hear: level (value01: pitch,
@@ -45,29 +24,36 @@ const ACTIVE_NOUN = {
 // the oldest frame (fromFirst01: tempo and harmony).
 function featureWords(frame) {
   const v = frame.value01;
-  const level = v < 0.33 ? 'low' : v < 0.66 ? 'middling' : 'high';
+  const level = t(`level.${v < 0.33 ? 'low' : v < 0.66 ? 'mid' : 'high'}`);
   const d = frame.activeShare01;
-  const spread = d < 0.2 ? 'sparse' : d < 0.5 ? 'scattered' : d < 0.8 ? 'widespread' : 'dense';
-  const first = frame.theme.endsWith('_eic') ? 'first frame' : 'oldest year';
-  const moved = frame.index === 0 ? `this is the ${first}`
-    : frame.fromFirst01 < 0.05 ? `close to the ${first}`
-    : frame.fromFirst01 < TENSE_FROM ? `some way from the ${first}` : `far from the ${first}`;
+  const spread = t(`spread.${d < 0.2 ? 'sparse' : d < 0.5 ? 'scattered' : d < 0.8 ? 'wide' : 'dense'}`);
+  const b = frame.theme.endsWith('_eic') ? 'B' : 'A';
+  const moved = t(`moved${b}.${frame.index === 0 ? 'first' : frame.fromFirst01 < 0.05 ? 'close' : frame.fromFirst01 < TENSE_FROM ? 'some' : 'far'}`);
   return { level, spread, moved };
 }
 
 /**
- * e.g. "Greenhouse Gases, August 2021. World map of methane ... Mean methane
- * at 400 hPa: 1,864 ppb, middling on this theme's fixed scale; scattered
- * methane-rich air (share of air holding at least 1,900 ppb of methane:
- * 32.8%); far from the oldest year."
+ * e.g. "Greenhouse Gases, 2021 yearly average. World map of methane ... Mean
+ * methane at 400 hPa: 1,864 ppb, middling on this theme's fixed scale;
+ * scattered methane-rich air (share of air holding at least 1,900 ppb of
+ * methane: 32.8%); far from the oldest year."
  */
 export function altText(frame, theme) {
   const w = featureWords(frame);
   const share = activeShare(frame);
-  const shareText = share ? `; ${w.spread} ${ACTIVE_NOUN[frame.theme]} (share of ${share.label}: ${share.percent.toFixed(1)}%)` : '';
-  return `${theme.name}${theme.side === 'b' ? ', side B' : ''}, ${frame.label}. ${MAP_DESCRIPTION[frame.theme]}. `
-    + `${capitalize(theme.physical.label)}: ${physicalShort(frame)}, ${w.level} on this ${theme.side === 'b' ? "track's" : "theme's"} fixed scale`
-    + `${shareText}; ${w.moved}.`;
+  const shareText = share ? t('alt.share', { spread: w.spread, noun: t(`noun.${frame.theme}`), label: share.label, pct: pct(share.percent) }) : '';
+  return t('alt.text', {
+    theme: theme.name,
+    side: theme.side === 'b' ? t('alt.sideB') : '',
+    label: frame.label,
+    map: t(`map.${frame.theme}`),
+    what: capitalize(theme.physical.label),
+    value: physicalShort(frame),
+    level: w.level,
+    scale: t(theme.side === 'b' ? 'alt.scaleB' : 'alt.scaleA'),
+    share: shareText,
+    moved: w.moved,
+  });
 }
 
 /** The subtitle for a bar: "2021: 1,864 ppb, 33% methane-rich air" over "C5, 3 notes a bar, 109 BPM, triangle, tense third" */
@@ -75,13 +61,13 @@ export function captionLine(frame) {
   const p = mapFeatures(frame);
   const share = activeShare(frame);
   const data = [physicalShort(frame)];
-  if (share) data.push(`${share.percent < 10 ? share.percent.toFixed(1) : Math.round(share.percent)}% ${ACTIVE_NOUN[frame.theme]}`);
+  if (share) data.push(`${pct(share.percent)} ${t(`noun.${frame.theme}`)}`);
   const sound = [
     showNote(p.note),
-    `${p.notesPerBar} note${p.notesPerBar > 1 ? 's' : ''} a bar`,
+    tn('cap.notes', p.notesPerBar),
     `${p.tempoBPM} BPM`,
-    p.timbre,
-    p.interval.startsWith('minor') ? 'tense third' : 'calm fifth',
+    t(`timbre.${p.timbre}`),
+    t(p.interval.startsWith('minor') ? 'cap.tense' : 'cap.calm'),
   ];
   return { data: `${when(frame)}${data.join(', ')}`, sound: sound.join(', ') };
 }
@@ -90,19 +76,42 @@ export function captionLine(frame) {
 const when = (frame) => (physicalShort(frame).startsWith(frame.short) ? '' : `${frame.short}: `);
 
 function spokenBrief(frame) {
-  return `${when(frame).replace(/: $/, '. ')}${physicalShort(frame).replace('ppb', 'parts per billion').replace(' cm', ' centimetres').replace('×10¹⁵ molec/cm²', 'times ten to the fifteen')}.`;
+  return `${when(frame).replace(/: $/, '. ')}${capitalize(physicalSpoken(frame))}.`;
 }
 
 function spokenFull(frame) {
   const p = mapFeatures(frame);
-  return `${frame.label}. ${capitalize(physicalSpoken(frame))}. `
-    + `Playing ${speakNote(p.note)}, ${p.notesPerBar} notes per bar at ${p.tempoBPM} beats per minute, `
-    + `${p.timbre} tone, ${p.interval.startsWith('minor') ? 'tense' : 'calm'} harmony.`;
+  return t('spoken.full', {
+    label: frame.label,
+    value: capitalize(physicalSpoken(frame)),
+    note: speakNote(p.note),
+    notes: p.notesPerBar,
+    bpm: p.tempoBPM,
+    timbre: t(`timbre.${p.timbre}`),
+    harmony: t(p.interval.startsWith('minor') ? 'harmony.tenseWord' : 'harmony.calmWord'),
+  });
 }
 
 // ------------------------------------------------------------ caption track
 
-export const VERBOSITY = { off: 'Off', brief: 'Brief', full: 'Full' };
+export const VERBOSITY = ['off', 'brief', 'full'];
+
+// The browser voice for a language, preferring a local one. Voices load
+// late in Chrome, so this is looked up each time.
+function voiceFor(code) {
+  const voices = window.speechSynthesis?.getVoices?.() ?? [];
+  const want = LANGS[code].locale.toLowerCase();
+  const prefix = code.toLowerCase();
+  return voices.find((v) => v.lang.toLowerCase() === want && v.localService)
+    ?? voices.find((v) => v.lang.toLowerCase() === want)
+    ?? voices.find((v) => v.lang.toLowerCase().startsWith(prefix))
+    ?? null;
+}
+
+/** Whether the browser has a voice for the language (it may still speak with a default one). */
+export function hasVoiceFor(code) {
+  return Boolean(voiceFor(code));
+}
 
 /**
  * The live caption track. `show(frame)` is called when a bar is heard.
@@ -112,8 +121,8 @@ export const VERBOSITY = { off: 'Off', brief: 'Brief', full: 'Full' };
  * (after a short pause, so dragging the slider does not stutter).
  *
  * Speech (window.speechSynthesis) is for people without a screen reader: it
- * says the same words, cancels anything stale so it never lags behind the
- * music, and ducks the music by ~8 dB while it talks.
+ * says the same words in the current language, cancels anything stale so it
+ * never lags behind the music, and ducks the music by ~8 dB while it talks.
  */
 export function createCaptionTrack({ dataEl, soundEl, liveEl, prevEl = null, trackEl = null }) {
   let verbosity = 'brief';
@@ -133,6 +142,9 @@ export function createCaptionTrack({ dataEl, soundEl, liveEl, prevEl = null, tra
     if (!speak || !synth) return;
     synth.cancel();
     const u = new SpeechSynthesisUtterance(text);
+    u.lang = LANGS[lang()].locale;
+    const v = voiceFor(lang());
+    if (v) u.voice = v;
     u.rate = 1.05;
     u.onstart = () => duck(true);
     u.onend = () => duck(false);
@@ -178,10 +190,12 @@ export function createCaptionTrack({ dataEl, soundEl, liveEl, prevEl = null, tra
       clearTimeout(describeTimer);
       describeTimer = setTimeout(() => say(altText(frame, theme)), delay);
     },
-    /** Duet: a static two-sided caption. */
+    /** Duet: a static two-sided caption, then the trust line and NOAA under it. */
     duet(gap) {
       clearTimeout(describeTimer);
-      setLines(`${when(gap.oldest).replace(/: $/, ' ')}${gap.physical.from}  ⟷  ${when(gap.newest).replace(/: $/, ' ')}${gap.physical.to}`, `→ ${gap.sentence}`);
+      const side = (f, v) => `${when(f).replace(/: $/, ' ')}${v}`;
+      const extra = [gap.trust.sentence, gap.noaa].filter(Boolean).join(' ');
+      setLines(`${side(gap.oldest, gap.physical.from)}  ⟷  ${side(gap.newest, gap.physical.to)}`, `→ ${gap.sentence} ${extra}`);
     },
     /** Speak an arbitrary sentence through the same channel (respects settings). */
     say,
