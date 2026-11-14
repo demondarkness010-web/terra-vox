@@ -42,7 +42,7 @@
         </button>
         <span id="duet-hint" class="sr-only" data-i18n="duet.hint">Plays the oldest year in your left ear and the newest year in your right ear at the same time. Shortcut: D.</span>
         <button id="more-toggle" class="ghost more-toggle" type="button" aria-expanded="false" aria-controls="more" data-i18n="more">More</button>
-        <details id="settings-menu" class="settings-menu" open>
+        <details id="settings-menu" class="settings-menu">
         <summary class="ghost settings-summary" data-i18n="settings">Settings</summary>
         <div class="settings">
           <button id="speak-toggle" class="ghost" type="button" aria-pressed="false" data-i18n="speak" data-i18n-attr="title:speak.title">Speak aloud</button>
@@ -64,6 +64,7 @@
           <button id="help-button" class="ghost" type="button" aria-haspopup="dialog" data-i18n-attr="title:keys.title"><span data-i18n="keys">Keys</span> <kbd>?</kbd></button>
         </div>
         </details>
+        <script>document.getElementById('settings-menu').open = window.matchMedia('(min-width: 641px)').matches;</script>
       </div>
     </header>
 
@@ -103,7 +104,7 @@
           <div id="now-read" class="now-read">
             <h2 id="player-heading" class="now-theme"><span id="player-theme">Wildfires</span></h2>
             <p id="side-note" class="side-note"></p>
-            <p id="eic-credit" class="eic-credit" hidden><a target="_blank" rel="noopener"></a> <span class="eic-credit-text"></span></p>
+            <p id="eic-credit" class="eic-credit" hidden><a href="https://svs.gsfc.nasa.gov/" target="_blank" rel="noopener"></a> <span class="eic-credit-text"></span></p>
             <p id="track-story" class="track-story" hidden></p>
             <div class="now-single">
               <p id="frame-caption" class="now-label"></p>
@@ -262,7 +263,7 @@
         <section class="side-b-card" aria-labelledby="side-b-heading" hidden>
           <h3 id="side-b-heading" class="side-b-title"></h3>
           <p class="side-b-text"></p>
-          <a target="_blank" rel="noopener"></a>
+          <a href="https://svs.gsfc.nasa.gov/" target="_blank" rel="noopener"></a>
         </section>
         <section class="sources" aria-labelledby="sources-heading">
           <h3 id="sources-heading">Sources</h3>

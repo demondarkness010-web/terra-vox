@@ -355,11 +355,18 @@ export function createFieldGuide(root) {
 
   // Redraw on width changes only; the chart's own height must not loop it.
   let lastWidth = 0;
+  let dirty = false;   // a draw was asked for while the guide was hidden
+  // The guide sits behind "More", so drawing it at start-up is wasted work: draw once it has a width.
+  function render() {
+    if (!chartHost.clientWidth) { dirty = true; return; }
+    dirty = false;
+    draw(chartHost, spec, mark);
+  }
   const ro = new ResizeObserver(([entry]) => {
     const w = Math.round(entry.contentRect.width);
-    if (!spec || w === lastWidth) return;
+    if (!spec || (w === lastWidth && !dirty)) return;
     lastWidth = w;
-    draw(chartHost, spec, mark);
+    render();
   });
   ro.observe(chartHost);
 
@@ -394,7 +401,7 @@ export function createFieldGuide(root) {
       }));
       renderTable(spec.table);
       mark = {};
-      draw(chartHost, spec, mark);
+      render();
     }
 
     facts.replaceChildren(...(ctx?.facts ?? []).map((f) => {
@@ -469,14 +476,14 @@ export function createFieldGuide(root) {
     const x = xOf(frame);
     if (mark.now === x) return;
     mark = { now: x };
-    draw(chartHost, spec, mark);
+    render();
   }
 
   /** Duet: ring the oldest frame in blue and the newest in orange. */
   function showDuet(oldest, newest) {
     if (!spec || !track) return;
     mark = { oldest: xOf(oldest), newest: xOf(newest) };
-    draw(chartHost, spec, mark);
+    render();
   }
 
   return { setTrack, showFrame, showDuet };

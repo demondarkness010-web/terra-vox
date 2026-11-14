@@ -777,7 +777,9 @@ if (!prefs.introSeen || hasShared) openIntro();
 
 // Offline: cache the app and its data after the first visit (public/sw.js).
 if ('serviceWorker' in navigator && import.meta.env.PROD) {
-  window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(() => { /* offline install is optional */ }));
+  // The offline copy is several megabytes: fetch it after the page has settled, not alongside the first load.
+  const install = () => navigator.serviceWorker.register('./sw.js').catch(() => { /* offline install is optional */ });
+  window.addEventListener('load', () => setTimeout(install, 8000));
 }
 
 // The proof band: agreement with NOAA, read from the data, never typed in.

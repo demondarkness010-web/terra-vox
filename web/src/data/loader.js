@@ -58,7 +58,14 @@ function localizeTrack(track) {
   return track;
 }
 
-const fmtDate = (d, opts) => new Intl.DateTimeFormat(locale(), opts).format(d);
+const fmtCache = new Map();
+const fmtDate = (d, opts) => {
+  const loc = locale();
+  const key = loc + JSON.stringify(opts);
+  let f = fmtCache.get(key);
+  if (!f) { f = new Intl.DateTimeFormat(loc, opts); fmtCache.set(key, f); }
+  return f.format(d);
+};
 const monthName = (m) => fmtDate(new Date(Date.UTC(2001, m - 1, 15)), { month: 'long', timeZone: 'UTC' });
 const signedNum = (v, d) => `${v >= 0 ? '+' : '−'}${num(Math.abs(v), d)}`;
 
