@@ -66,6 +66,18 @@ export default defineConfig({
     outDir: 'dist',
     assetsInlineLimit: 0,
     chunkSizeWarningLimit: 1200,
+    // three.js (the globe) and Tone.js (the sound) change rarely, so they get their own files:
+    // they download in parallel and a returning visitor keeps them cached after an app update.
+    rolldownOptions: {
+      output: {
+        codeSplitting: {
+          groups: [
+            { name: 'three', test: /node_modules[\\/]three[\\/]/, priority: 20 },
+            { name: 'tone', test: /node_modules[\\/]tone[\\/]/, priority: 20 },
+          ],
+        },
+      },
+    },
   },
   plugins: [offline()],
 });

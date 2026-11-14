@@ -208,8 +208,16 @@ export function createTurntable(root, { onTogglePlay, onScrub, onStep, onListenM
     stage.dataset.turn = side;
   }
 
+  // The Duet introduction: one year alone, the other dimmed, then both.
+  // Reuses the "take turns" dimming; `help` replaces the listening line.
+  function setIntro(phase, help, mode = 'together') {
+    stage.dataset.listen = phase === 'both' ? mode : 'turns';
+    if (phase !== 'both') stage.dataset.turn = phase === 'left' ? 'oldest' : 'newest';
+    $('listen-help').textContent = help;
+  }
+
   return {
-    setTheme, showFrame, setPlaying, beat, spark, setDuet, showDuet, setListenMode, setMeters, setTurn,
+    setTheme, showFrame, setPlaying, beat, spark, setDuet, showDuet, setListenMode, setMeters, setTurn, setIntro,
     relabel() { if (theme) labelTrack(); listen.relabel(); },
     stage, scrubber, playBtn, get theme() { return theme; },
   };

@@ -16,6 +16,13 @@
 //             one of the two years
 //   oldest / newest   solo either year, centred
 //
+// The introduction. A Duet that starts with both years at once is hard to
+// read: the ear cannot yet tell which sound is which. So when Duet is switched
+// on (or the theme changes) in "together" mode, it first plays the left year
+// alone in the left ear, then the right year alone in the right ear, then both:
+// by the time they overlap, each has already been heard on its own. Pausing
+// and resuming skips it.
+//
 // The reference voice (key N, off by default) is a third, quiet, centred
 // voice: NOAA's independent record for the same two years, one bar each,
 // through the same mapping. Methane and sea level only.
@@ -45,6 +52,8 @@ export class Duet {
     this.running = false;
     this.theme = null;
     this.listeners = new Set();
+    this.phaseListeners = new Set();
+    this._intro = null;
     this.oldest.onBar((e) => this._onBar(e));
     this.newest.onBar((e) => this._onBar(e));
     this.reference.onBar((e) => this._onReferenceBar(e));
@@ -56,20 +65,30 @@ export class Duet {
     return () => this.listeners.delete(fn);
   }
 
+  /** The introduction's steps: fn({ phase: 'left' | 'right' | 'both', time }). */
+  onPhase(fn) {
+    this.phaseListeners.add(fn);
+    return () => this.phaseListeners.delete(fn);
+  }
+
+  _phase(phase, time) {
+    this.phaseListeners.forEach((fn) => fn({ phase, time }));
+  }
+
   /** pair = { left, right } frames (default: the two ends of the record). */
   setTheme(theme, pair = null, referenceFrames = null) {
     this.theme = theme;
     this.oldest.setFrame(pair?.left ?? oldestFrame(theme));
     this.newest.setFrame(pair?.right ?? newestFrame(theme));
     this.referenceFrames = referenceFrames;
-    if (this.running) this.start();
+    if (this.running) this.start({ introduce: true });
   }
 
   setMode(mode) {
     if (!LISTEN_MODES.includes(mode)) return;
     this.mode = mode;
     this._applyMode();
-    if (this.running) this.start();
+    if (this.running) this.start({ introduce: true });
   }
 
   /** The NOAA voice on or off; returns whether it can play for this theme. */
@@ -80,11 +99,14 @@ export class Duet {
     return this.referenceOn;
   }
 
-  start() {
+  start({ introduce = false } = {}) {
     this.stop();
     this.running = true;
     const at = this.oldest.transport.seconds + 0.08;   // shared first downbeat
-    if (this.mode === 'together') {
+    if (this.mode === 'together' && introduce) {
+      this._intro = 'left';
+      this.oldest.start({ bars: 1, at });
+    } else if (this.mode === 'together') {
       this.oldest.start({ at });
       this.newest.start({ at });
     } else if (this.mode === 'turns') {
@@ -97,6 +119,7 @@ export class Duet {
 
   stop() {
     this.running = false;
+    this._intro = null;
     this.oldest.stop();
     this.newest.stop();
     this.reference.stop();
@@ -136,6 +159,19 @@ export class Duet {
   }
 
   _onBar(event) {
+    if (this.running && this._intro === 'left' && event.voice === 'oldest') {
+      // The left year is sounding alone; the right year follows on its own.
+      this._intro = 'right';
+      this._phase('left', event.time);
+      this.newest.start({ at: event.at + event.plan.barSeconds + TURN_GAP });
+    } else if (this.running && this._intro === 'right' && event.voice === 'newest') {
+      // The right year is sounding alone; the left joins on its next downbeat.
+      this._intro = null;
+      this._phase('right', event.time);
+      const join = event.at + event.plan.barSeconds;
+      this.oldest.start({ at: join });
+      this._phase('both', event.time + event.plan.barSeconds);
+    }
     if (this.running && this.mode === 'turns') {
       const other = event.voice === 'oldest' ? this.newest : this.oldest;
       other.start({ bars: 1, at: event.at + event.plan.barSeconds + TURN_GAP });

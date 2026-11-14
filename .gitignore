@@ -10,3 +10,14 @@ data/raw_frames/**/_days/
 .vite/
 .cache/
 data/raw_frames/
+
+# demo video: keep the small scripts (plan, narration, build), drop the large or session-specific files
+demo/*.mp4
+demo/video-src/video/
+demo/video-src/audio/
+demo/video-src/vo/
+demo/video-src/beats/
+demo/video-src/fonts/
+demo/video-src/captions2.ass
+demo/video-src/*.log
+demo/video-src/*.mjs

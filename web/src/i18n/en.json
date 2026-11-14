@@ -1,5 +1,6 @@
 {
   "skip": "Skip to player",
+  "skip.guess": "Skip to the game",
   "tagline": "Two moments of the planet, one in each ear.",
   "duet": "Duet",
   "duet.hint": "Plays one year in your left ear and the newest year in your right ear at the same time. Shortcut: D.",
@@ -10,6 +11,8 @@
   "proof.ch4": "Methane against NOAA's surface stations, yearly (Pearson r)",
   "proof.span": "Years of NASA satellite records you can hear",
   "proof.langs": "Languages: English, Hindi, Spanish",
+  "intro.left": "Left ear only: {year}.",
+  "intro.right": "Right ear only: {year}.",
   "more": "More",
   "speak": "Speak aloud",
   "speak.title": "Read descriptions aloud with the browser's voice (S)",

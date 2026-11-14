@@ -4,13 +4,31 @@
 
 ### [▶ Try it live (headphones on)](https://demondarkness010-web.github.io/terra-vox/)
 
-![Terra Vox in Duet: methane in August 2003 on the left half of the planet, August 2026 on the right](docs/media/duet.png)
+![Terra Vox in Duet: methane in 2003 on the left half of the planet, 2026 on the right](docs/media/duet.png)
 
-**Video (90 s):** _link goes here once recorded; script in [demo/demo-script.md](demo/demo-script.md)_
+**Video (about 110 s, narrated):** _YouTube link goes here once uploaded; plan and review in [demo/video-plan.md](demo/video-plan.md)_
 
 - **What it does.** An Earth Information Jukebox for NASA Space Apps 2026: it plays NASA's [Earth Information Center](https://svs.gsfc.nasa.gov/gallery/earth-information-center/) visualizations and 20+ years of the same satellites' records as live music. In **Duet**, the oldest and newest year of a theme play at once, one in each ear, through the identical mapping, so the change is the difference you hear.
 - **Who it's for.** 338 million people are blind or have moderate to severe vision loss, and climate data almost always arrives as a chart. Terra Vox is built to be heard first: keyboard only, screen-reader captions generated from the data, spoken descriptions, no sight needed. _Tester result goes here, only once a session has actually happened (see [docs/submission.md](docs/submission.md))._
 - **Proof the sound carries the data.** [`scripts/validate_mapping.py`](scripts/validate_mapping.py) runs every frame through the app's own mapping: pitch, loudness, density and tempo follow the measured value at **r ≥ 0.82 on all 11 tracks** (r = 1.00 for loudness everywhere). [The table](docs/mapping-explainer.md#3-proof-does-the-sound-carry-the-data).
+
+## Judge in 60 seconds
+
+Headphones on. Every number below is what the app shows on screen today.
+
+1. **Open the [live link](https://demondarkness010-web.github.io/terra-vox/) and press _Put on headphones and start_.** You land in the methane Duet: 2003 in your left ear, 2026 in your right.
+2. **Listen (25 s).** Duet introduces each ear first: *left year alone* (3 s), *right year alone* (2 s), then both together, so you know which sound is which before they overlap. Left: one calm, low note (C4, sine, 80 BPM). Right: higher, busier and faster (E♭5, 3 notes a bar, triangle, 118 BPM, tense third). Under the stage the app says why: *1,754 ppb → 1,879 ppb* at 400 hPa (January to August of both years, because 2026 isn't over), then *"NOAA ground stations: 1,775 ppb → 1,938 ppb, the same direction."*
+3. **Press `2`** for sea level, still in Duet: 1993 against 2018, *−3.4 cm → +4.2 cm*. The bass climbs an octave (E♭3 → E♭4).
+4. **Close your eyes.** Press `?` for every shortcut; nothing needs sight or a mouse. Captions, Speak aloud, and English, Hindi or Spanish (`T`).
+5. **Check the claims.** Open **More**: the field guide sets each theme against the record scientists cite, and the black band shows agreement with NOAA. To check the sound itself, run `python scripts/validate_mapping.py`; `python scripts/audibility_check.py` shows how many cues (pitch, busyness, tempo, timbre, harmony) separate the two ears for every theme (6 of 7 default pairs differ on 3 or more).
+
+| A judge asks | Where the answer is |
+|---|---|
+| Is the science right? | Each year is a yearly average of NASA GIBS maps, checked against NOAA: methane r = 0.992 (2003–2025), sea level r = 0.997 (1993–2018). Every fact in the field guide cites its paper. [Limits, up front](docs/mapping-explainer.md) |
+| Is it NASA data? | Side A: NASA GIBS (MODIS, OMI, AIRS, JPL MEaSUREs). Side B (`F`): four NASA Earth Information Center visualizations (SVS 5113, 5235, 5175, 5116). Source URLs for every frame in `data/features/` |
+| Does the sound carry the data? | Pitch, loudness, density and tempo follow the measured value at r ≥ 0.82 on all 11 tracks (`validate_mapping.py`, exits 1 otherwise) |
+| Can I compare places and times? | Duet (any two ends), four Air Quality regions, a birth-year Duet, and shareable links such as `?theme=greenhouse_gases&left=2005&right=2026` |
+| Is it accessible? | Keyboard only, screen-reader captions generated from the data, Speak aloud, Take turns for one ear, reduced motion, measured contrast (7:1 body text) |
 
 ---
 
@@ -20,7 +38,7 @@
 
 Other sonifications play a chart over time. Terra Vox plays two moments of the planet at once, one in each ear, so the change is the difference you hear.
 
-**Greenhouse Gases, 2003 ⟷ 2026.** Left ear: one low, calm C4 on a sine, 80 BPM. Right ear: E♭5, four notes a bar on a buzzy sawtooth at 115 BPM over a tense minor third, and louder. Methane at 400 hPa went from 1,769 to 1,887 ppb; air at or above 1,900 ppb from 0 % to 49 % of the planet.
+**Greenhouse Gases, 2003 ⟷ 2026.** Left ear: one low, calm C4 on a sine, 80 BPM. Right ear: E♭5, three notes a bar on a triangle at 118 BPM over a tense minor third, and louder. Yearly mean methane at 400 hPa went from 1,754 to 1,879 ppb (January to August of both years); air at or above 1,900 ppb from 0 % to 35 % of the planet. NOAA's ground stations, over the same months: 1,775 → 1,938 ppb.
 
 ### How it meets the challenge
 
@@ -49,10 +67,10 @@ We sonify the measurement, not the picture of it. Each frame's colours are turne
 
 | Theme | NASA data | Years | What the sound follows |
 |---|---|---|---|
-| Wildfires | MODIS/Terra active fires, 8-day Aug 8–15 composite | 2001–2025 | separate fire areas, 0–300 |
-| Sea Level Change | JPL MEaSUREs sea surface height (TOPEX/Poseidon, Jason-1/2/3) | 1992–2018 | mean anomaly, −5 to +10 cm |
-| Air Quality | OMI/Aura tropospheric NO₂, March | 2005–2025 | one region's mean, 0–14 ×10¹⁵ molec/cm² (North China, northern India, eastern US, western Europe) |
-| Greenhouse Gases | AIRS/Aqua methane at 400 hPa, August | 2003–2026 | mean, 1,750–1,950 ppb |
+| Wildfires | MODIS/Terra active fires, mean of 15 eight-day composites, June to September | 2001–2025 | separate fire areas, 250–325 |
+| Sea Level Change | JPL MEaSUREs sea surface height (TOPEX/Poseidon, Jason-1/2/3), yearly mean of 12 monthly maps | 1993–2018 | mean anomaly, −5 to +10 cm |
+| Air Quality | OMI/Aura tropospheric NO₂, yearly mean of 12 monthly composites | 2005–2025 | one region's mean, each on its own scale (North China 0–14, northern India 0–4, eastern US 0–5, western Europe 0–6 ×10¹⁵ molec/cm²) |
+| Greenhouse Gases | AIRS/Aqua methane at 400 hPa, yearly mean of 12 monthly maps | 2003–2026 (2026: January to the latest month) | mean, 1,750–1,950 ppb |
 
 Wildfires: global fire hasn't simply risen, so listen to the record jump year to year. Terra's orbit has drifted since 2022; counted the same way from Aqua, Terra's 2023–2025 counts stay inside the range the two satellites agreed on before the drift ([check](scripts/check_fire_drift.py)). Air Quality follows one region at a time because the global mean barely moves: North China falling, northern India rising.
 
@@ -86,11 +104,11 @@ Wildfires: global fire hasn't simply risen, so listen to the record jump year to
   | `G` | Guess the Year / back to the jukebox |
   | `?` | Show the shortcuts |
 
-- **Captions and alt text from the data**, synced to the bar you hear: *"2021: 1,864 ppb, 33% methane-rich air → C5, 3 notes a bar, 109 BPM, triangle, tense third."*
+- **Captions and alt text from the data**, synced to the bar you hear: *"2001: 277 fire areas → G4, 3 notes a bar, 80 BPM, triangle, calm fifth."*
 - **Speak aloud** for people without a screen reader, ducking the music while it talks.
 - **Take turns** for one speaker, one earbud or hearing in one ear.
 - **Works without WebGL or speech.** If the browser has no WebGL, the frame is shown as a flat image and the sound and captions carry on; without speech synthesis the Speak aloud button hides.
-- **Lighthouse accessibility: 100** on mobile and on desktop (Lighthouse 13.6, production build, November 2, 2026). Lighthouse sees the first load, with the welcome dialog open; the jukebox behind it was checked separately with axe-core ([docs/submission.md](docs/submission.md#accessibility-checks)).
+- **Lighthouse accessibility: 100** on mobile and on desktop (Lighthouse 13.6, November 2, 2026, before the November 13 redesign; not re-run since). **After the redesign (November 14, 2026):** axe-core 4.14.0 found **0 violations in 9 states** (start dialog, Duet, single mode, More open, Air Quality, Guess the Year, shortcuts dialog, Hindi, Spanish); 934 text elements were measured against the 7:1 / 4.5:1 contrast floors with 0 failures; the Tab order has 17 stops, each named and with a 3 px focus ring ([details](docs/submission.md#accessibility-checks)). No real screen-reader session has happened yet.
 
 ### One real use
 

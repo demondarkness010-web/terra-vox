@@ -373,6 +373,16 @@ async function toggleDuet(on = !state.duet, { quiet = false } = {}) {
         turntable.beat(e.voice, e.params);
         turntable.setTurn(e.voice);
       }));
+      duet.onPhase(({ phase, time }) => whenHeard(time, () => {
+        if (!state.duet) return;
+        const { left, right } = currentPair();
+        const years = { year: phase === 'left' ? left.year : right.year };
+        if (phase === 'both') {
+          turntable.setIntro('both', t(`listenHelp.${state.listenMode}`), state.listenMode);
+        } else {
+          turntable.setIntro(phase, t(`intro.${phase}`, years));
+        }
+      }));
       [duet.oldest, duet.newest].forEach((v) => v.onNote((n) => whenHeard(n.time, () => {
         if (state.duet && state.playing && state.side === 'a') turntable.spark(n.voice, n.frame, n.velocity);
       })));
@@ -380,7 +390,7 @@ async function toggleDuet(on = !state.duet, { quiet = false } = {}) {
     const gap = renderDuet();
     turntable.setListenMode(state.listenMode, t(`listenHelp.${state.listenMode}`));
     loadDuetVoices();
-    duet.start();
+    duet.start({ introduce: true });
     setPlaying(true);
     meterLoop();
     announce(`${clampNote()}${gap.spoken}`);
@@ -491,6 +501,11 @@ function setMode(mode) {
   document.getElementById('panel-guess').hidden = mode !== 'guess';
   duetToggle.hidden = mode !== 'jukebox';
   moreToggle.hidden = mode !== 'jukebox';
+  // The skip link must point at something on screen: the player is hidden in Guess the Year.
+  const skip = document.querySelector('.skip-link');
+  skip.setAttribute('href', mode === 'guess' ? '#guess-heading' : '#player');
+  skip.dataset.i18n = mode === 'guess' ? 'skip.guess' : 'skip';
+  skip.textContent = t(skip.dataset.i18n);
   if (mode === 'guess') {
     if (state.duet) toggleDuet(false);
     voice?.stop();

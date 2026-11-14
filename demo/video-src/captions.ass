@@ -1,0 +1,27 @@
+[Script Info]
+ScriptType: v4.00+
+PlayResX: 1280
+PlayResY: 720
+WrapStyle: 0
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Cap,Arial,34,&H00FFFFFF,&H00FFFFFF,&H00000000,&HB0000000,1,0,0,0,100,100,0,0,3,10,0,2,60,60,34,1
+Style: Big,Arial,76,&H00FFFFFF,&H00FFFFFF,&H00000000,&H00000000,1,0,0,0,100,100,2,0,1,0,0,5,60,60,330,1
+Style: Mid,Arial,36,&H00FFFFFF,&H00FFFFFF,&H00000000,&H00000000,0,0,0,0,100,100,0,0,1,0,0,5,60,60,70,1
+Style: Small,Arial,26,&H00D0D0D0,&H00D0D0D0,&H00000000,&H00000000,0,0,0,0,100,100,0,0,1,0,0,5,60,60,20,1
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0,0:00:00.20,0:00:05.30,Cap,,0,0,0,,Headphones on.\NEach ear alone first, then both.
+Dialogue: 0,0:00:06.00,0:00:13.50,Cap,,0,0,0,,Left ear: methane in 2003. Right ear: 2026.\NSame instrument, same rules.
+Dialogue: 0,0:00:14.00,0:00:21.80,Cap,,0,0,0,,The difference you hear is the change.\NNASA's satellite, 7 km up: 1,754 to 1,879 ppb.
+Dialogue: 0,0:00:22.00,0:00:29.60,Cap,,0,0,0,,NOAA's ground stations: 1,775 to 1,938 ppb.\NTwo instruments, the same direction.
+Dialogue: 0,0:00:30.40,0:00:43.60,Cap,,0,0,0,,Sea level, 1993 to 2018.\NLeft ear: 1993. Right ear: 2018.
+Dialogue: 0,0:00:44.40,0:00:55.60,Cap,,0,0,0,,From -3.4 cm to +4.2 cm: 7.6 cm higher.\NThe bass climbs one octave.
+Dialogue: 0,0:00:56.40,0:01:01.60,Cap,,0,0,0,,Our yearly values track NOAA's records:\Nmethane r = 0.992, sea level r = 0.997.
+Dialogue: 0,0:01:02.40,0:01:07.60,Cap,,0,0,0,,338 million people are blind or have moderate\Nto severe vision loss. Climate data arrives as a chart.
+Dialogue: 0,0:01:08.00,0:01:11.80,Cap,,0,0,0,,Close your eyes.\N23 years of methane, in one chord.
+Dialogue: 0,0:01:12.60,0:01:29.50,Big,,0,0,0,,TERRA VOX
+Dialogue: 0,0:01:12.60,0:01:29.50,Mid,,0,0,0,,An Earth Information Jukebox\NNASA Space Apps Challenge 2026
+Dialogue: 0,0:01:12.60,0:01:29.50,Small,,0,0,0,,demondarkness010-web.github.io/terra-vox   |   github.com/demondarkness010-web/terra-vox\NData: NASA GIBS / Worldview and NASA SVS Earth Information Center. Checks: NOAA GML and NOAA LSA.\NNASA and NOAA do not endorse this project.

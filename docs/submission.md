@@ -6,13 +6,21 @@ Everything to paste or check on submission day. Items marked **You** cannot be d
 
 ---
 
+## 0. Project summary (150 words; paste into the description field)
+
+> Terra Vox is an Earth Information Jukebox that lets anyone hear how the planet changed. It turns NASA satellite imagery back into the numbers NASA's colour scales encode, then plays those numbers as music, live in the browser. In Duet mode the oldest year of a theme plays in the left ear and the newest in the right, through the same fixed mapping, so the change is the difference you hear. Four themes use NASA GIBS records from 1993 to 2026: wildfires (MODIS), sea level (JPL MEaSUREs), nitrogen dioxide (OMI) and methane (AIRS). Side B plays four NASA Earth Information Center visualizations. Each year is an average that tracks NOAA's independent records (methane r = 0.992, sea level r = 0.997), and a script shows pitch, loudness, density and tempo following the data on all 11 tracks. Built for blind and low-vision listeners first: keyboard, captions, speech, three languages.
+
+Rewrite it in your own words if you can; keep the numbers exactly as they are.
+
+---
+
 ## 1. Disclosures (drafts: confirm or edit, then paste)
 
 ### AI use: **You** must confirm this is true before using it
 
 > Built solo with Claude Code (AI coding assistant) for implementation; the concept, data choices, mapping design and testing are mine.
 
-Every commit in the repository is co-authored by Claude, so this needs to be stated. If any part of the sentence isn't accurate (for example, if Claude proposed a design you then kept), change it until it is. Be ready to explain any part of the code in a live Q&A.
+Every commit in the repository is co-authored by Claude, so this needs to be stated. If the demo video uses the ElevenLabs narration, add: "The video's narration is an AI-generated voice (ElevenLabs)." The end card of the video already says so. If any part of the sentence isn't accurate (for example, if Claude proposed a design you then kept), change it until it is. Be ready to explain any part of the code in a live Q&A.
 
 ### Timeline: **You** ask your local event lead first
 
@@ -106,7 +114,7 @@ Then add one line to the README's second bullet and to the video, for example *"
 
 - Lighthouse accessibility 100 (mobile and desktop) and axe-core with 0 violations across the app's states (see Accessibility checks below).
 - `python scripts/validate_mapping.py` passes: pitch, loudness, density and tempo correlate at r ≥ 0.82 with the measured value on all 11 tracks.
-- In the methane Duet the right ear (2026) is higher (E♭5 vs C4) and louder (velocity 0.81 vs 0.46).
+- In the methane Duet the right ear (2026) is higher (E♭5 vs C4) and louder (0.79 vs 0.41), checked on screen November 13, 2026.
 - Pan means only time: oldest left, newest right.
 - The 2.2 billion figure and the "45 dB" claim are gone from the README, the video script and the app.
 - Wildfires and Air Quality are reframed so the sound tells only what the data supports (fire areas jump year to year; air quality follows one region at a time).
@@ -115,14 +123,16 @@ Then add one line to the README's second bullet and to the video, for example *"
 
 ## Accessibility checks
 
-Run on the production build on November 2, 2026. Automated checks catch only part of what real users hit; the tester session (section 3) and the screen-reader pass (section 4) are still needed.
+Run on the production build on November 2, 2026, **before the November 13 redesign** (paper page, yearly averages). After it, every visible text element was re-measured against the 7:1 / 4.5:1 contrast floors (246 elements, 0 failures) and the layout was checked at 1920, 1280, 1024, 768, 360 and 320 px; axe-core was re-run on November 14 (see the table); Lighthouse has **not** been re-run. Automated checks catch only part of what real users hit; the tester session (section 3) and the screen-reader pass (section 4) are still needed.
 
 | Check | Result |
 |---|---|
-| Lighthouse 13.6 accessibility, mobile | 100 (audits the first load, with the welcome dialog open) |
-| Lighthouse 13.6 accessibility, desktop | 100 (same) |
-| axe-core 4.14, WCAG 2.0–2.2 A/AA and best practice, jukebox / Duet / Air Quality / More open / Guess the Year | 0 violations in every state (43–49 rules passing per state) |
-| Keyboard: Tab from the skip link round the whole page | 13 stops, each with the 3px focus ring, no trap |
+| Lighthouse 13.6 accessibility, mobile | 100 on November 2 (before the redesign); **not re-run**: Lighthouse is too large to install on the laptop the build was made on (about 190 MB of free disk). Its accessibility score is built from axe-core's checks, which were re-run below |
+| Lighthouse 13.6 accessibility, desktop | 100 on November 2 (same note) |
+| **axe-core 4.14.0, after the redesign (November 14)**, WCAG 2.0-2.2 A/AA and best practice | **0 violations in 9 states**: start dialog (23 rules passing), Duet (52), single mode (48), More open (49), Air Quality (48), Guess the Year (44), shortcuts dialog (22), Hindi (48), Spanish (48) |
+| axe "needs review" items | `label-content-name-mismatch` on the 4 theme tiles: each button's name is its visible title ("Wildfires"), and the years are attached as a description, so the name matches what is on screen (reviewed, not a defect). `color-contrast` where text sits over the globe or images: covered by the measurement below. `skip-link` in Guess the Year: the skip link pointed at the player, which is hidden in that mode, so it led nowhere. Found on November 14 and fixed: in Guess the Year the link now reads "Skip to the game" and targets the game heading (translated in Hindi and Spanish) |
+| Colour contrast, measured on the rendered page after the redesign | 934 text elements in the same 9 states: 0 below 7:1 (4.5:1 for large text). Text drawn directly over the live globe is checked by eye |
+| Keyboard: Tab from the top of the page | 17 stops per cycle, each with an accessible name and a solid 3 px focus ring, no trap (checked November 14) |
 | No WebGL (Chrome with WebGL disabled) | flat NASA frames replace the globe; Duet, sound and captions keep working |
 | No speech synthesis | Speak aloud hides itself; captions and the screen-reader live region keep working |
 | 1440×900, 1366×657 and 375×812 | header, stage and transport fit one screen; no horizontal scroll |

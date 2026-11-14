@@ -1,5 +1,6 @@
 {
   "skip": "Ir al reproductor",
+  "skip.guess": "Ir al juego",
   "tagline": "Dos momentos del planeta, uno en cada oído.",
   "duet": "Dúo",
   "duet.hint": "Reproduce un año en el oído izquierdo y el año más reciente en el derecho, a la vez. Atajo: D.",
@@ -10,6 +11,8 @@
   "proof.ch4": "Metano frente a las estaciones de superficie de la NOAA, anual (r de Pearson)",
   "proof.span": "Años de registros satelitales de la NASA que puedes escuchar",
   "proof.langs": "Idiomas: inglés, hindi, español",
+  "intro.left": "Solo el oído izquierdo: {year}.",
+  "intro.right": "Solo el oído derecho: {year}.",
   "more": "Más",
   "speak": "Leer en voz alta",
   "speak.title": "Leer las descripciones con la voz del navegador (S)",

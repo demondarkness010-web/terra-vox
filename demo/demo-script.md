@@ -1,18 +1,19 @@
 # Terra Vox: 90-second demo video
 
-**One idea only: Duet mode makes climate change audible.** Open cold on the sound, prove it twice, state the accessibility stat once, end. Do not tour features: no Guess the Year, no readout walkthrough, no settings.
+**Three beats, one idea: Duet makes climate change audible.** Beat 1, hear it. Beat 2, trust it. Beat 3, anyone can use it. Then five seconds of NASA's own Earth Information Center visualization, and the end card. No feature tour.
 
-- **Format:** 1920×1080, 30 fps, **stereo** (Duet depends on it). Put "🎧 Headphones on" in the first frame.
-- **Audio:** the app's own output only, with no music bed. Voice-over (VO) is sparse and sits about 6 dB over the app audio, never over the first 6 seconds.
-- **The video must itself be accessible:** burn in open captions for every VO line, and write the VO so it also serves as audio description of what is on screen.
+- **Format:** 1920×1080, 30 fps, **stereo** (Duet depends on it). First frame: "Headphones on".
+- **Audio:** the app's own output only, no music bed. Voice-over (VO) sits about 6 dB over the app and never covers the first 6 seconds.
+- **Accessible video:** burn in open captions for every VO line, and write the VO so it also describes what is on screen.
+- **Every number below was read off the app on November 13, 2026.** If you rebuild the data, re-read them before recording.
 
 ---
 
 ## Before recording
 
-1. Run `npm run build && npm run preview` in `web/` and open it full-screen in Chrome at 100% zoom.
-2. Set **Describe** to *Off* and **Speak aloud** to off, so the app's own speech doesn't cross the VO.
-3. Clear the saved settings (open in a private window) so the intro shows. **Put on headphones and start** unlocks audio and drops straight into the methane Duet; that one click is the whole cold open. Then **2** switches to sea level while Duet stays on, and **Space** stops. (Rehearsed: intro → 2 → 4 → Space runs the whole video.)
+1. Open the live site, https://demondarkness010-web.github.io/terra-vox/, in a private Chrome window (so the intro shows), full screen, 100% zoom.
+2. Set **Describe** to *Off* and leave **Speak aloud** off, so the app's speech doesn't cross the VO.
+3. Rehearse once: **Put on headphones and start** (methane Duet) → **2** (sea level, Duet stays on) → **4** (methane again) → **F** (side B) → **Space** (stop).
 4. Record system audio in stereo (OBS: Desktop Audio, stereo, 48 kHz).
 
 ---
@@ -21,13 +22,18 @@
 
 | Time | Picture | Sound | VO / on-screen text |
 |---|---|---|---|
-| **0:00–0:06** | **Black.** Small white text, centred: *🎧 Headphones on*. | Click **Put on headphones and start** off-camera. Methane Duet starts on the soft pad. **Left ear:** one low, calm C4 on a sine, 80 BPM. **Right ear:** E♭5, four buzzy sawtooth notes a bar at 115 BPM over a tense third, louder. | No VO. At 0:03 the text changes to *Left ear: 2003 · Right ear: 2026*. |
-| **0:06–0:20** | Fade up on the Terra Vox **Duet** view: the globe cut down the middle by a seam, the left half tinted blue under *Left ear, oldest year* **2003**, the right half amber under *Right ear, newest year* **2026**, rings pulsing on each half where that year's methane is densest. | Duet continues. | "That's methane, measured by NASA's AIRS satellite. Left ear, 2003. Right ear, 2026. Same instrument, same rules turning the measurement into sound. The difference you hear is the planet." |
-| **0:20–0:34** | Slow push-in on the caption and the gap table under **Listen**: *2003 1,769 ppb ⟷ 2026 1,887 ppb*, *"2026 sounds higher, busier, faster, harsher, more tense and louder than 2003."* | Duet continues. | "More methane, higher and louder. More of the sky past nineteen hundred parts per billion, more notes per bar. The further from 2003, the faster and more tense. Every note comes from the measured value, and it always stays in key." |
-| **0:34–0:52** | Press **2** (Sea Level Change); still in Duet. The globe halves flip to **1992 vs 2018** sea-surface height. | The instrument changes to the deep bass. **Left:** F3, two soft sine notes a bar, 80 BPM. **Right:** E♭4, four buzzy notes a bar at 104 BPM over a tense third, louder. | "Sea level, 1992 to 2018. The ocean surface rose almost six centimetres on average, and the share of ocean ten centimetres above normal nearly tripled. You don't need to see the map to hear it." |
-| **0:52–1:02** | **Accessibility (10 s).** Keyboard close-up: a hand presses **4**, the focus ring and live caption visible. Lower-third: *Keyboard + screen reader · sound first, visuals optional*. | Duet fades to −12 dB under VO. | "338 million people are blind or have moderate to severe vision loss, and climate data almost always arrives as a chart. Terra Vox is built to be heard first." *(on screen: "338 million: Bourne et al., Lancet Global Health, 2021")* |
-| **1:02–1:20** | Press **4**: back to the **methane Duet**, full frame. At 1:12 the picture slowly fades to black while the audio keeps playing. | Methane Duet at full level, unbroken. | At 1:05: "Close your eyes." At 1:12, on black: "Twenty-three years of change, in one chord." |
-| **1:20–1:30** | End card on black: **Terra Vox**, *An Earth Information Jukebox · NASA Space Apps Challenge 2026*, `github.com/demondarkness010-web/terra-vox`, *Data: NASA GIBS / Worldview, NASA SVS Earth Information Center*. | Duet resolves: press **Space** at 1:22 to stop; let the reverb tail ring out. | No VO. |
+| **0:00–0:06** | Black. Small text: *Headphones on*. | Click **Put on headphones and start** off camera. Methane Duet starts. **Left:** one low, calm C4 on a sine, 80 BPM. **Right:** E♭5, three notes a bar on a triangle, 118 BPM, tense third, louder. | None. Let the sound land. |
+| **BEAT 1: HEAR IT** | | | |
+| **0:06–0:22** | (The app introduces each ear: *Left ear only: 2003*, then *Right ear only: 2026*, then both, about 5 s in all. Say the VO over the intro, then let both play.) Fade up on the Duet: the globe cut by the seam, *Left ear* **2003** in blue, *Right ear* **2026** in orange, rings where each year's methane is densest. | Duet continues. | "Left ear: methane in 2003. Right ear: 2026. Same instrument, same rules. The difference you hear is the change." |
+| **BEAT 2: TRUST IT** | | | |
+| **0:22–0:36** | Push in on the text under the stage: *1,754 ppb → 1,879 ppb*, then *"NOAA ground stations: 1,775 ppb → 1,938 ppb, the same direction."* | Duet continues, −6 dB. | "NASA's satellite, seven kilometres up. NOAA's ground stations. Both say the same thing." |
+| **0:36–0:50** | Press **2**: sea level, still in Duet, 1993 against 2018. Text: *−3.4 cm → +4.2 cm*. | The deep bass climbs an octave: E♭3, two notes a bar, 80 BPM → E♭4, four notes, 110 BPM. | "Sea level, 1993 to 2018. Seven and a half centimetres, one octave." |
+| **0:50–0:56** | Scroll to the black band: *0.997* and *0.992*. | Duet under VO. | "Our yearly values track NOAA's records almost exactly." |
+| **BEAT 3: ANYONE CAN USE IT** | | | |
+| **0:56–1:10** | Keyboard close-up: press **4** (methane), the focus ring and the live caption visible. Lower third: *Keyboard and screen reader, sound first*. At 1:04 the picture fades to black; the audio keeps playing. | Methane Duet at full level. | "338 million people are blind or have moderate to severe vision loss. Climate data almost always arrives as a chart." At 1:05, on black: "Close your eyes. Twenty-three years of methane, in one chord." |
+| **NASA EIC (5 s)** | | | |
+| **1:10–1:15** | Fade up and press **F**: side B, NASA's Global Atmospheric Methane visualization (SVS 5116), credit visible. | Side B plays NASA's own animation through the same rules. | On screen only: *NASA Earth Information Center, SVS 5116, played as sound*. |
+| **1:15–1:30** | End card on black: **Terra Vox**, *An Earth Information Jukebox, NASA Space Apps Challenge 2026*, `github.com/demondarkness010-web/terra-vox`, *Data: NASA GIBS / Worldview and NASA SVS Earth Information Center; NOAA GML and NOAA LSA for checks*. | Press **Space** at 1:17; let the tail ring out. | None. |
 
 Total: 90 seconds.
 
@@ -35,17 +41,18 @@ Total: 90 seconds.
 
 ## Keep / cut rules for the edit
 
-- **Keep** the first six seconds without VO, whatever else gets trimmed. The cold, audio-only gap is the hook.
-- **Keep** the stereo image intact; never mix down to mono, even for social cuts. For a mono platform, re-record that segment with Duet set to **Take turns** and say so on screen.
-- **Cut** anything that isn't Duet or the single accessibility beat. Guess the Year, side B and the field guide live behind **More** and stay out of the video. If over time, shorten the sea-level segment first, never the cold open or the stat.
-- **Say the stat once.** No other numbers about the audience.
-- **Tester:** once the tester session in `docs/submission.md` has happened, put a 5-second clip of the tester or their quote on screen during 0:52–1:02, with their permission. Only what they actually said.
-- **Mono check:** before uploading, play the finished video once on a phone speaker. If Duet means nothing there, keep the on-screen text "Headphones: left = 2003, right = 2026" up for the whole first Duet.
-- **Upload** to YouTube as unlisted, with the captions burned in, and put the link on the README's first screen.
+- **Keep** the silent first six seconds and the stereo image. Never mix to mono. For a mono platform, re-record the Duet with **Take turns** and say so on screen.
+- **If over time,** shorten the sea-level shot first, then the black band. Never the cold open, the NOAA line or the accessibility stat.
+- **Say the audience stat once.** No other numbers about people.
+- **Tester:** only once the session in `docs/submission.md` has happened, add their quote or a 5-second clip during 0:56–1:10, with permission. Only what they actually said.
+- **No NASA logo** in the video. The SVS credit line stays visible during side B.
+- **Mono check:** play the finished video once on a phone speaker. If Duet means nothing there, keep "Headphones: left = 2003, right = 2026" on screen for the whole first Duet.
+- **Upload** to YouTube as unlisted, with captions burned in, and put the link on the README's first screen.
 
-## Sources for on-screen facts
+## Sources for the on-screen numbers
 
-- Methane values: `data/features/greenhouse_gases/2003-08-01.json` and `2026-08-01.json` (AIRS/Aqua methane at 400 hPa, monthly mean, via NASA GIBS).
-- Methane sound: C4, 1 note, 80 BPM, sine, calm fifth → E♭5, 4 notes, 115 BPM, sawtooth, tense third (from `web/src/audio/mapping.js`; `python scripts/validate_mapping.py` prints the same mapping for every year).
-- Sea level values: `data/features/sea_level/1992-09-30.json` and `2018-09-29.json` (JPL MEaSUREs SSH anomaly; mean −0.6 → +5.3 cm; ocean ≥ 10 cm above mean 8.7% → 24.8%). Sound: F3, 2 notes, 80 BPM, sine → E♭4, 4 notes, 104 BPM, sawtooth, tense third.
-- Vision loss: Bourne R. et al., "Trends in prevalence of blindness and distance and near vision impairment over 30 years", *The Lancet Global Health* 9(2), 2021, e130–e143, [doi:10.1016/S2214-109X(20)30425-3](https://doi.org/10.1016/S2214-109X(20)30425-3): 43.3 million blind and 295 million with moderate or severe distance vision impairment in 2020, 338 million together.
+- **Methane:** `data/features/greenhouse_gases/2003-01-01.json` and `2026-01-01.json` (AIRS/Aqua methane at 400 hPa, yearly mean of monthly maps via NASA GIBS). The Duet compares January to August of both years because 2026 is incomplete, so 2003 shows 1,754 ppb in Duet and 1,759 ppb for its full year. NOAA line: `data/reference.json` (NOAA GML global surface CH₄, same months).
+- **Methane sound:** C4, 1 note a bar, 80 BPM, sine, calm fifth → E♭5, 3 notes, 118 BPM, triangle, tense third (from `web/src/audio/mapping.js`, shown in the app's "How the sound changed" table).
+- **Sea level:** `data/features/sea_level/1993-01-01.json` and `2018-01-01.json` (JPL MEaSUREs sea surface height anomaly, yearly mean): −3.4 → +4.2 cm (+7.6 cm). Sound: E♭3, 2 notes, 80 BPM, sine → E♭4, 4 notes, 110 BPM, triangle, tense third.
+- **Agreement with NOAA:** `referenceCheck` in `data/themes.json`: sea level r = 0.997 (NOAA LSA, 1993–2018, n = 26); methane r = 0.992 (NOAA GML, 2003–2025, n = 23).
+- **Vision loss:** Bourne R. et al., *The Lancet Global Health* 9(2), 2021, e130–e143, [doi:10.1016/S2214-109X(20)30425-3](https://doi.org/10.1016/S2214-109X(20)30425-3): 43.3 million blind and 295 million with moderate to severe vision impairment in 2020 (338 million together).
