@@ -6,7 +6,7 @@
 
 ![Terra Vox in Duet: methane in 2003 on the left half of the planet, 2026 on the right](docs/media/duet.png)
 
-**Video (about 110 s, narrated):** _YouTube link goes here once uploaded; plan and review in [demo/video-plan.md](demo/video-plan.md)_
+**Video (110 s, narrated, captioned): [watch on YouTube](https://youtu.be/iBgT21rSTec)** (unlisted). Plan and review in [demo/video-plan.md](demo/video-plan.md).
 
 - **What it does.** An Earth Information Jukebox for NASA Space Apps 2026: it plays NASA's [Earth Information Center](https://svs.gsfc.nasa.gov/gallery/earth-information-center/) visualizations and 20+ years of the same satellites' records as live music. In **Duet**, the oldest and newest year of a theme play at once, one in each ear, through the identical mapping, so the change is the difference you hear.
 - **Who it's for.** 338 million people are blind or have moderate to severe vision loss, and climate data almost always arrives as a chart. Terra Vox is built to be heard first: keyboard only, screen-reader captions generated from the data, spoken descriptions, no sight needed. _Tester result goes here, only once a session has actually happened (see [docs/submission.md](docs/submission.md))._
