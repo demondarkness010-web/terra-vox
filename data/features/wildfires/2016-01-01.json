@@ -16,8 +16,8 @@
  "hue": 231.569,
  "brightness": 0.6391,
  "colorVariance": 0.6408,
- "pixelDensity": 0.6512,
- "frameDelta": 0.6406,
+ "pixelDensity": 0.6,
+ "frameDelta": 0.3355,
  "latBand": "north",
  "raw": {
   "hue": 52.25178,

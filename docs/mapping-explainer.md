@@ -122,7 +122,7 @@ What each Duet plays (side A):
 
 | Theme | Dataset (NASA) | GIBS layer | Frames |
 |---|---|---|---|
-| Wildfires | MODIS/Terra Thermal Anomalies & Fires | `MODIS_Terra_Thermal_Anomalies_All` | season mean of 15 eight-day composites, June 1 to September 27, 2001–2025 (25 years) |
+| Wildfires | MODIS/Terra Thermal Anomalies & Fires | `MODIS_Terra_Thermal_Anomalies_All` | season mean of 15 eight-day composites, June 1 to September 27, 2001–2026 (26 years) |
 | Sea Level Change | JPL MEaSUREs Gridded Sea Surface Height Anomalies (TOPEX/Poseidon, Jason-1/2/3) | `JPL_MEaSUREs_L4_Sea_Surface_Height_Anomalies` | yearly mean of 12 monthly maps, 1993–2018 (26 years) |
 | Air Quality | OMI/Aura Tropospheric NO₂ Column | `OMI_Nitrogen_Dioxide_Tropo_Column` | yearly mean of 12 three-day composites (one a month), 2005–2025 (21 years) |
 | Greenhouse Gases | AIRS/Aqua Methane at 400 hPa, monthly | `AIRS_L3_Methane_400hPa_Volume_Mixing_Ratio_Monthly_Day` | yearly mean of 12 monthly maps, 2003–2026 (24 years; 2026 is January to the latest month) |

@@ -19,7 +19,7 @@ Writes (ignored by git, rebuildable)
     Sea Level Change  the JPL MEaSUREs 5-day grid date nearest the 15th of
                       every month, 1993-2018 (12 a year)
     Wildfires         fifteen 8-day MODIS Terra composites a year, June 1 to
-                      September 27, 2001-2025 (the northern fire season); each
+                      September 27, 2001-2026 (the northern fire season); each
                       composite is the union of its eight days, as before
     Air Quality       OMI NO2 on the 14th-16th of every month, 2005-2025, at
                       0.5 degrees (12 three-day composites a year)
@@ -85,7 +85,7 @@ FIRE_WINDOWS = 15   # 8-day composites from June 1: the last ends September 27
 
 
 def fire_windows():
-    return [date(y, 6, 1) + timedelta(days=8 * k) for y in range(2001, 2026) for k in range(FIRE_WINDOWS)]
+    return [date(y, 6, 1) + timedelta(days=8 * k) for y in range(2001, 2027) for k in range(FIRE_WINDOWS)]
 
 
 def no2_days():

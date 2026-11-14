@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-02T16:56:45+00:00",
+  "generatedAt": "2026-11-14T13:01:55+00:00",
   "source": "NASA GIBS (Worldview) imagery, yearly averages (scripts/build_annual.py); NASA SVS Earth Information Center cover art",
   "scale": "C minor pentatonic",
   "themes": [
@@ -28,13 +28,13 @@
       },
       "dateRange": {
         "start": "2001-01-01",
-        "end": "2025-01-01"
+        "end": "2026-01-01"
       },
       "yearRange": [
         2001,
-        2025
+        2026
       ],
-      "frameCount": 25,
+      "frameCount": 26,
       "frames": [
         "2001-01-01",
         "2002-01-01",
@@ -60,7 +60,8 @@
         "2022-01-01",
         "2023-01-01",
         "2024-01-01",
-        "2025-01-01"
+        "2025-01-01",
+        "2026-01-01"
       ],
       "normalization": {
         "hue": {
@@ -77,11 +78,11 @@
         },
         "pixelDensity": {
           "min": 0.1637,
-          "max": 0.1766
+          "max": 0.1777
         },
         "frameDelta": {
           "min": 0.0317203646391825,
-          "max": 0.033504932378631794
+          "max": 0.03512811598434947
         }
       },
       "sound": {
@@ -425,7 +426,7 @@
         },
         "pixelDensity": {
           "min": 0.0,
-          "max": 0.36920899999999995
+          "max": 0.3751622222222222
         },
         "frameDelta": {
           "min": 0.005983410006255106,

@@ -159,6 +159,11 @@ kbd {
 }
 :is(.ghost, .duet-toggle, .seg, .icon-btn, .numbers summary, .btn-primary, .pad, .option, .tile):not(:disabled):active { transform: scale(0.97); }
 .play-btn:active { transform: scale(0.94); }
+/* Press in fast (70 ms), let go a little slower (the base rule's transition), so a tap feels immediate and the
+   release settles instead of snapping. */
+:is(.ghost, .duet-toggle, .seg, .icon-btn, .numbers summary, .btn-primary, .pad, .option, .tile, .play-btn):not(:disabled):active {
+  transition: transform 70ms var(--ease-mechanical);
+}
 :is(button, select):disabled { opacity: 0.4; cursor: default; }
 
 /* ------------------------------------------------------------------ top bar */
@@ -382,7 +387,7 @@ kbd {
 }
 .stage[data-mode="duet"] .seam { scale: 1 1; transition: scale var(--dur-settle) var(--ease-settle); }
 .meter { position: relative; width: var(--s1); height: 100%; border-radius: var(--r-round); overflow: hidden; background: var(--raised); forced-color-adjust: none; }
-.meter i { position: absolute; inset: 0; transform-origin: bottom; transform: scaleY(0); }
+.meter i { position: absolute; inset: 0; transform-origin: bottom; transform: scaleY(0); transition: transform 90ms linear; will-change: transform; }
 .meter.old i { background: var(--old); }
 .meter.new i { background: var(--new); }
 
@@ -1064,4 +1069,9 @@ html[data-motion="reduce"] .play-btn.is-tick { background: var(--muted); }
 #field-guide, .desk, .proof, .credits {
   content-visibility: auto;
   contain-intrinsic-size: auto 900px;
+}
+
+/* Anchor jumps (skip link, "Checked against the record") glide unless motion is reduced. */
+@media (prefers-reduced-motion: no-preference) {
+  html:not([data-motion="reduce"]) { scroll-behavior: smooth; }
 }

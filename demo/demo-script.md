@@ -51,7 +51,7 @@ Total: 90 seconds.
 
 ## Sources for the on-screen numbers
 
-- **Methane:** `data/features/greenhouse_gases/2003-01-01.json` and `2026-01-01.json` (AIRS/Aqua methane at 400 hPa, yearly mean of monthly maps via NASA GIBS). The Duet compares January to August of both years because 2026 is incomplete, so 2003 shows 1,754 ppb in Duet and 1,759 ppb for its full year. NOAA line: `data/reference.json` (NOAA GML global surface CH₄, same months).
+- **Methane:** `data/features/greenhouse_gases/2003-01-01.json` and `2026-01-01.json` (AIRS/Aqua methane at 400 hPa, yearly mean of monthly maps via NASA GIBS). The Duet compares January to September of both years because 2026 is incomplete, so 2003 shows 1,756 ppb in Duet and 1,759 ppb for its full year. NOAA line: `data/reference.json` (NOAA GML global surface CH₄, same months).
 - **Methane sound:** C4, 1 note a bar, 80 BPM, sine, calm fifth → E♭5, 3 notes, 118 BPM, triangle, tense third (from `web/src/audio/mapping.js`, shown in the app's "How the sound changed" table).
 - **Sea level:** `data/features/sea_level/1993-01-01.json` and `2018-01-01.json` (JPL MEaSUREs sea surface height anomaly, yearly mean): −3.4 → +4.2 cm (+7.6 cm). Sound: E♭3, 2 notes, 80 BPM, sine → E♭4, 4 notes, 110 BPM, triangle, tense third.
 - **Agreement with NOAA:** `referenceCheck` in `data/themes.json`: sea level r = 0.997 (NOAA LSA, 1993–2018, n = 26); methane r = 0.992 (NOAA GML, 2003–2025, n = 23).

@@ -1,5 +1,5 @@
 {
-  "checked": "2026-11-02",
+  "checked": "2026-11-14",
   "note": "Every number here was checked against the linked source on the date above. Numbers computed by Terra Vox from NASA/NOAA files live in data/reference.json and data/features, and are shown with their method.",
   "themes": {
     "wildfires": {
@@ -26,14 +26,14 @@
         }
       ],
       "instruments": [
-        { "name": "MODIS on Terra", "launched": "1999-12-18", "role": "Side A frames: 1 km active-fire detections, 2001–2025" },
+        { "name": "MODIS on Terra", "launched": "1999-12-18", "role": "Side A frames: 1 km active-fire detections, 2001–2026" },
         { "name": "VIIRS on Suomi NPP / NOAA-20 / NOAA-21", "launched": "2011-10-28", "role": "Side B: NASA EIC fire radiative power visualization, 2024–present" }
       ],
       "caveats": [
-        "Each frame is one 8-day window in mid-August: the northern fire season. Africa's and Australia's peak seasons fall outside it.",
+        "Each year is the mean of fifteen 8-day windows from June 1 to September 27: the northern fire season. Africa's and Australia's peak seasons fall mostly outside it.",
         "The number is separate fire areas: connected patches of detections on the frame's 0.35° grid. It says how many places burned, not how intense the fires were or how much land burned, so a year can have fewer areas and worse fires.",
         "Terra left its formation in October 2022 and has drifted to an earlier overpass, away from the afternoon fire peak. We checked: counted the same way from MODIS on Aqua, Terra's 2023–2025 counts stay inside the range the two satellites agreed on before the drift (Terra/Aqua 0.91–1.10 in 2003–2021; 2025: 1.03). Aqua drifts too, so this is a cross-check, not proof.",
-        "NASA plans to begin shutting down Terra and Aqua in late 2026 or early 2027; VIIRS carries the fire record forward."
+        "NASA projects the end of science for Terra in February 2027 and Aqua in September 2027, as their fuel runs low; VIIRS carries the fire record forward."
       ],
       "sources": [
         { "name": "NASA GIBS layer MODIS_Terra_Thermal_Anomalies_All", "url": "https://worldview.earthdata.nasa.gov/?l=MODIS_Terra_Thermal_Anomalies_All" },
@@ -75,7 +75,7 @@
       ],
       "caveats": [
         "NASA's gridded sea-surface-height layer in GIBS (JPL MEaSUREs) ends in January 2019, so these frames stop at 2018. The official record on the chart continues to 2025.",
-        "Each frame is one 5-day snapshot near October 1. El Niño years (1997, 2015) bulge the Pacific, so single frames wobble around the long-term rise.",
+        "Each year is the mean of 12 five-day maps, one a month. El Niño years (1997, 2015) still raise the Pacific, so single years wobble around the long-term rise.",
         "Map colours show regional height differences. The global mean is a small shift of the whole picture, which is why the sound changes slowly.",
         "The reference line has no glacial isostatic adjustment, so its trend reads about 0.3 mm a year lower than NASA's corrected figure."
       ],
@@ -114,7 +114,7 @@
         { "name": "TEMPO", "launched": "2023-04-07", "role": "Side B: hourly NO₂ over North America (NASA EIC)" }
       ],
       "caveats": [
-        "Each frame is a 3-day March mosaic, so wind and weather drive most frame-to-frame change: that noise is this theme's sound.",
+        "Each year is the mean of 12 three-day composites, one a month. Wind, cloud and weather still move single years: that noise is this theme's sound.",
         "The global average barely moves because big regional changes cancel out: cleaner air over China, the US and Europe, dirtier air over South Asia. So the sound follows one region at a time.",
         "OMI's 'row anomaly' (since 2007) blanks part of every swath. Gaps are skipped, not counted as clean air.",
         "A column measured from space is not the concentration at street level, and the top of the GIBS palette saturates over the dirtiest cities."
@@ -132,10 +132,10 @@
       "measures": "Methane volume mixing ratio at the 400 hPa pressure level: methane molecules per billion molecules of air.",
       "facts": [
         {
-          "figure": "+166%",
-          "text": "Methane in 2024 stood 166% above its pre-industrial level (before 1750), at 1,942 ppb. Carbon dioxide was 52% above and nitrous oxide 25%.",
-          "source": "WMO Greenhouse Gas Bulletin No. 21, October 2025",
-          "url": "https://wmo.int/publication-series/wmo-greenhouse-gas-bulletin-no-21"
+          "figure": "+167%",
+          "text": "Methane in 2025 averaged 1,948 ppb, a new record and 267% of its level before 1750: 167% above it. Carbon dioxide stood at 153% (426.8 ppm) and nitrous oxide at 126% (339.1 ppb).",
+          "source": "WMO Greenhouse Gas Bulletin No. 22, October 27, 2026",
+          "url": "https://wmo.int/news/media-centre/greenhouse-gas-levels-once-again-reach-record-high"
         },
         {
           "figure": "≈80×",
@@ -156,8 +156,8 @@
       ],
       "caveats": [
         "AIRS sees methane about 7 km up, where it is lower and smoother than at the surface, so these values sit below NOAA's surface line. The trends agree.",
-        "Each frame is the August monthly mean, which removes the seasonal cycle; El Niño and wetland swings still move single years.",
-        "Aqua is drifting and NASA plans to begin shutting it down in late 2026 or early 2027.",
+        "Each year is the mean of its monthly maps, which removes the seasonal cycle; the current year runs from January to the latest month and is compared with the same months of the other year. El Niño and wetland swings still move single years.",
+        "Aqua is drifting, and NASA projects the end of its science in September 2027 as its fuel runs low.",
         "GIBS stores methane in 2 ppb colour steps, so every value here is rounded to within about 1 ppb."
       ],
       "sources": [

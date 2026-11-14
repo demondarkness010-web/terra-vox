@@ -46,10 +46,14 @@ const INSTRUMENTS = {
   'breathy noise': { osc: '', env: { attack: 0.05, decay: 0.3, sustain: 0.3, release: 0.9 }, cutoff: 0.9, trim: 1.0, breath: 0.9 },
 };
 const PAD_LEVEL = 0.35;
+const REVERB_SEND = 0.28;       // single play: a roomy tail
 
 let master = null;
 
-/** Shared master bus: voices -> (dry + reverb) -> compressor -> limiter -> out. */
+/**
+ * Shared master bus: voices -> compressor -> limiter -> out, plus a reverb that each voice feeds through
+ * its own send (so Duet can keep its two voices drier and crisper than single play).
+ */
 export function getMaster({ reverb = true } = {}) {
   const ctx = Tone.getContext();
   if (master && master.context === ctx) return master;
@@ -60,11 +64,11 @@ export function getMaster({ reverb = true } = {}) {
   const duck = new Tone.Gain(1);       // dips the music while speech talks
   const output = new Tone.Gain(0.9);   // master volume
   input.connect(compressor);
+  let verbIn = null;
   if (reverb) {
     const verb = new Tone.Reverb({ decay: 4, preDelay: 0.03, wet: 1 });
-    const send = new Tone.Gain(0.28);
-    input.connect(send);
-    send.connect(verb);
+    verbIn = new Tone.Gain(1);
+    verbIn.connect(verb);
     verb.connect(compressor);
   }
   compressor.connect(limiter);
@@ -77,7 +81,7 @@ export function getMaster({ reverb = true } = {}) {
   limiter.connect(waveform);
   limiter.connect(fft);
 
-  master = { context: ctx, input, duck, output, waveform, fft };
+  master = { context: ctx, input, verbIn, duck, output, waveform, fft };
   return master;
 }
 
@@ -146,7 +150,7 @@ export function duckMusic(on) {
  * and reports every bar so captions and readouts stay in sync with the sound.
  */
 export class Voice {
-  constructor({ name = 'voice', destination = null, level = 0.5 } = {}) {
+  constructor({ name = 'voice', destination = null, level = 0.5, send = REVERB_SEND } = {}) {
     this.name = name;
     this.frame = null;
     this.pending = null;
@@ -191,6 +195,16 @@ export class Voice {
     this.waveform = new Tone.Waveform(512);
     this.trim.connect(this.waveform);
     this.out.connect(destination ?? getMaster().input);
+    // Reverb send, after the panner so the tail stays on the voice's side.
+    this.send = new Tone.Gain(send);
+    const m = getMaster();
+    const verbIn = !destination || destination === m.input ? m.verbIn : null;
+    if (verbIn) { this.out.connect(this.send); this.send.connect(verbIn); }
+  }
+
+  /** How much of this voice goes to the shared reverb (0.28 = single play). */
+  setSend(linear, ramp = 0.3) {
+    this.send.gain.rampTo(linear, ramp);
   }
 
   onBar(fn) {
@@ -280,7 +294,7 @@ export class Voice {
     this.listeners.clear();
     this.noteListeners.clear();
     [this.lead, this.pad, this.filter, this.trim, this.panner, this.out, this.meter, this.waveform,
-      this.breathNoise, this.breathBand, this.breathEnv].forEach((n) => n?.dispose());
+      this.send, this.breathNoise, this.breathBand, this.breathEnv].forEach((n) => n?.dispose());
   }
 
   level() {

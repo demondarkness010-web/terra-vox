@@ -17,7 +17,7 @@
 Headphones on. Every number below is what the app shows on screen today.
 
 1. **Open the [live link](https://demondarkness010-web.github.io/terra-vox/) and press _Put on headphones and start_.** You land in the methane Duet: 2003 in your left ear, 2026 in your right.
-2. **Listen (25 s).** Duet introduces each ear first: *left year alone* (3 s), *right year alone* (2 s), then both together, so you know which sound is which before they overlap. Left: one calm, low note (C4, sine, 80 BPM). Right: higher, busier and faster (E♭5, 3 notes a bar, triangle, 118 BPM, tense third). Under the stage the app says why: *1,754 ppb → 1,879 ppb* at 400 hPa (January to August of both years, because 2026 isn't over), then *"NOAA ground stations: 1,775 ppb → 1,938 ppb, the same direction."*
+2. **Listen (30 s).** Duet introduces each ear first: *left year alone* (two bars, about 6 s), *right year alone* (two bars, about 4 s), then both together, a little drier than single play so each note stays crisp, so you know which sound is which before they overlap. Left: one calm, low note (C4, sine, 80 BPM). Right: higher, busier and faster (E♭5, 4 notes a bar, triangle, 118 BPM, tense third). Under the stage the app says why: *1,756 ppb → 1,881 ppb* at 400 hPa (January to September of both years, because 2026 isn't over), then *"NOAA ground stations: 1,775 ppb → 1,938 ppb, the same direction."*
 3. **Press `2`** for sea level, still in Duet: 1993 against 2018, *−3.4 cm → +4.2 cm*. The bass climbs an octave (E♭3 → E♭4).
 4. **Close your eyes.** Press `?` for every shortcut; nothing needs sight or a mouse. Captions, Speak aloud, and English, Hindi or Spanish (`T`).
 5. **Check the claims.** Open **More**: the field guide sets each theme against the record scientists cite, and the black band shows agreement with NOAA. To check the sound itself, run `python scripts/validate_mapping.py`; `python scripts/audibility_check.py` shows how many cues (pitch, busyness, tempo, timbre, harmony) separate the two ears for every theme (6 of 7 default pairs differ on 3 or more).
@@ -38,7 +38,7 @@ Headphones on. Every number below is what the app shows on screen today.
 
 Other sonifications play a chart over time. Terra Vox plays two moments of the planet at once, one in each ear, so the change is the difference you hear.
 
-**Greenhouse Gases, 2003 ⟷ 2026.** Left ear: one low, calm C4 on a sine, 80 BPM. Right ear: E♭5, three notes a bar on a triangle at 118 BPM over a tense minor third, and louder. Yearly mean methane at 400 hPa went from 1,754 to 1,879 ppb (January to August of both years); air at or above 1,900 ppb from 0 % to 35 % of the planet. NOAA's ground stations, over the same months: 1,775 → 1,938 ppb.
+**Greenhouse Gases, 2003 ⟷ 2026.** Left ear: one low, calm C4 on a sine, 80 BPM. Right ear: E♭5, four notes a bar on a triangle at 118 BPM over a tense minor third, and louder. Yearly mean methane at 400 hPa went from 1,756 to 1,881 ppb (January to September of both years); air at or above 1,900 ppb from 0 % to 38 % of the planet. NOAA's ground stations, over the same months: 1,775 → 1,938 ppb.
 
 ### How it meets the challenge
 
@@ -67,7 +67,7 @@ We sonify the measurement, not the picture of it. Each frame's colours are turne
 
 | Theme | NASA data | Years | What the sound follows |
 |---|---|---|---|
-| Wildfires | MODIS/Terra active fires, mean of 15 eight-day composites, June to September | 2001–2025 | separate fire areas, 250–325 |
+| Wildfires | MODIS/Terra active fires, mean of 15 eight-day composites, June to September | 2001–2026 | separate fire areas, 250–325 |
 | Sea Level Change | JPL MEaSUREs sea surface height (TOPEX/Poseidon, Jason-1/2/3), yearly mean of 12 monthly maps | 1993–2018 | mean anomaly, −5 to +10 cm |
 | Air Quality | OMI/Aura tropospheric NO₂, yearly mean of 12 monthly composites | 2005–2025 | one region's mean, each on its own scale (North China 0–14, northern India 0–4, eastern US 0–5, western Europe 0–6 ×10¹⁵ molec/cm²) |
 | Greenhouse Gases | AIRS/Aqua methane at 400 hPa, yearly mean of 12 monthly maps | 2003–2026 (2026: January to the latest month) | mean, 1,750–1,950 ppb |

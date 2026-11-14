@@ -241,7 +241,7 @@ def build_theme(theme, base, coast, reference):
             if r:
                 years.append((y, r))
     else:
-        for y in range(2001, 2026):
+        for y in range(2001, 2027):
             r = fire_year(y)
             if r:
                 years.append((y, r))

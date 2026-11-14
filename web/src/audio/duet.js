@@ -39,6 +39,13 @@ const TURN_GAP = 0.35;          // seconds of silence between turns
 const DUET_LEVEL = 0.62;        // two voices together ~= one voice at 0.8
 const SOLO_LEVEL = 0.8;
 const REFERENCE_LEVEL = 0.3;    // quiet: it confirms, it does not lead
+// Clarity. With both years sounding, a long reverb tail from each note smears into the next one and hides
+// the two tempos and note counts, the very differences to hear. So in Duet the two voices are drier than
+// in single play. And the introduction gives each year two bars on its own (not one), so the ear has
+// learnt each sound before they overlap.
+const DUET_SEND = 0.1;
+const SOLO_SEND = 0.28;
+const INTRO_BARS = 2;
 
 export class Duet {
   constructor() {
@@ -105,7 +112,7 @@ export class Duet {
     const at = this.oldest.transport.seconds + 0.08;   // shared first downbeat
     if (this.mode === 'together' && introduce) {
       this._intro = 'left';
-      this.oldest.start({ bars: 1, at });
+      this.oldest.start({ bars: INTRO_BARS, at });
     } else if (this.mode === 'together') {
       this.oldest.start({ at });
       this.newest.start({ at });
@@ -156,6 +163,9 @@ export class Duet {
     const level = together ? DUET_LEVEL : SOLO_LEVEL;
     this.oldest.setLevel(level);
     this.newest.setLevel(level);
+    const send = together ? DUET_SEND : SOLO_SEND;
+    this.oldest.setSend(send);
+    this.newest.setSend(send);
   }
 
   _onBar(event) {
@@ -163,14 +173,14 @@ export class Duet {
       // The left year is sounding alone; the right year follows on its own.
       this._intro = 'right';
       this._phase('left', event.time);
-      this.newest.start({ at: event.at + event.plan.barSeconds + TURN_GAP });
+      this.newest.start({ at: event.at + INTRO_BARS * event.plan.barSeconds + TURN_GAP });
     } else if (this.running && this._intro === 'right' && event.voice === 'newest') {
       // The right year is sounding alone; the left joins on its next downbeat.
       this._intro = null;
       this._phase('right', event.time);
-      const join = event.at + event.plan.barSeconds;
+      const join = event.at + INTRO_BARS * event.plan.barSeconds;
       this.oldest.start({ at: join });
-      this._phase('both', event.time + event.plan.barSeconds);
+      this._phase('both', event.time + INTRO_BARS * event.plan.barSeconds);
     }
     if (this.running && this.mode === 'turns') {
       const other = event.voice === 'oldest' ? this.newest : this.oldest;
