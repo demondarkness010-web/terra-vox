@@ -101,7 +101,7 @@ Then add one line to the README's second bullet and to the video, for example *"
 
 - [x] **Enable Pages:** done November 2, 2026 (Source: **GitHub Actions**). `.github/workflows/deploy.yml` now publishes every push to `main` to https://demondarkness010-web.github.io/terra-vox/. Checked live: the page, all four themes and the NASA images load with no failed requests, and Start opens the methane Duet. **You:** open it once in a private window with headphones and confirm you hear sound after one click (a script can't hear it).
 - [ ] **Tester session** done (section 3) and reported in the README with real numbers.
-- [x] **Video:** uploaded to YouTube as unlisted on November 14, 2026 (110 s, narrated, captions burned in): https://youtu.be/iBgT21rSTec. Checked from a signed-out request: title and length correct, playable, not private; the link is in the README's first screen. **Still to do:** play it once on a phone speaker (mono); if Duet means nothing there, add the on-screen text "Headphones: left = 2003, right = 2026".
+- [x] **Video:** uploaded to YouTube as unlisted on November 14, 2026 (110 s, narrated, captions burned in): https://youtu.be/iBgT21rSTec. Checked from a signed-out request: title and length correct, playable, not private; the link is in the README's first screen. **Mono check (code review, Nov 14):** the only stereo effect is Tone's equal-power panner, with no inverted-phase or widening effect, so summing left and right to mono cannot cancel notes; the "Take turns" listening mode is built for one speaker or one earbud. Not yet heard on a real phone speaker.
 - [ ] **GIF:** about 10 seconds of the methane Duet; replace `docs/media/duet.png` in the README with it (a still is there now).
 - [ ] **README in your own voice:** rewrite the first screen (the line, the three bullets) yourself. Judges notice, and you'll present it better.
 - [ ] **Screen-reader pass:** NVDA (Windows, free) or VoiceOver (Mac or iPhone): start, choose a theme, Duet, pause, Guess the Year. Fix anything that reads twice, reads nothing, or traps focus.
@@ -137,3 +137,9 @@ Run on the production build on November 2, 2026, **before the November 13 redesi
 | 1440×900, 1366×657 and 375×812 | header, stage and transport fit one screen; no horizontal scroll |
 
 Fixed along the way: Guess the Year buttons were named differently from what they show (WCAG 2.5.3); the scrolling reading panel shared a landmark name with the player.
+
+
+## Checks done by the author on November 14 (not by outside testers)
+
+- **Accessibility tree (what a screen reader is given):** landmarks banner, main, contentinfo and four named regions; headings TERRA VOX, Checked against the record, Themes, Listen to, Greenhouse Gases, How the sound changed; 0 unnamed buttons, links or inputs; 3 live regions for announcements. This is not the same as a person using NVDA or VoiceOver, which has not been done.
+- **Hindi and Spanish:** all 350 strings are present in both, no placeholder mismatches, and two Hindi sentences that ended in an English full stop now end in the Hindi danda. Read by the author with AI help, not checked by a native speaker.
