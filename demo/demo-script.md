@@ -6,6 +6,7 @@
 - **Audio:** the app's own output only, no music bed. Voice-over (VO) sits about 6 dB over the app and never covers the first 6 seconds.
 - **Accessible video:** burn in open captions for every VO line, and write the VO so it also describes what is on screen.
 - **Every number below was read off the app on November 13, 2026.** If you rebuild the data, re-read them before recording.
+- **The published video predates the November 14 data refresh.** It says methane rose from 1,754 to 1,879 ppb and the right ear plays three notes a bar; the live app now reads 1,756 to 1,881 ppb (January to September of both years, because 2026 is incomplete) and four notes a bar. Direction, years and every other number are unchanged. Re-record before relying on the video's exact methane figures.
 
 ---
 

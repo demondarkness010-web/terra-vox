@@ -70,7 +70,7 @@ pan         = time only: oldest left, newest right
 
 **How a bar is played.** One bar is one year (side A) or one frame (side B). The bar opens on the mapped note, and the remaining notes walk a fixed pentatonic figure up from it, so the pitch centre still follows the data. Underneath, a soft dyad sounds the mapped interval an octave below. That harmony note can step outside the pentatonic set (that is the tension), but the melody never does.
 
-**One instrument per theme.** The theme tells you what; the music tells you how much. Methane plays a **soft pad** (three slightly detuned oscillators, slow attack), sea level a **deep bass** (one octave down), wildfires **plucked notes** (instant attack, no sustain) and air quality **breathy noise** (pink noise band-passed around each note, under a soft lead). The scale and the mapping are the same for all four.
+**One instrument per theme.** The theme tells you what; the music tells you how much. Methane plays a **soft pad** (one oscillator, slow attack), sea level a **deep bass** (one octave down), wildfires **plucked notes** (instant attack, no sustain) and air quality **breathy noise** (pink noise band-passed around each note, under a soft lead). The scale and the mapping are the same for all four.
 
 **Mix.** Each timbre and each instrument has a loudness trim, calibrated by rendering frames offline and measuring RMS (`web/src/audio/levelCheck.js`), so that a bigger value is never quieter. At the top of their ranges all four instruments sit within about 1.5 dB of each other (−15.8 to −17.2 dB RMS). Methane's Duet, measured per ear: 2003 at −20.4 dB, 2026 at −16.5 dB, so the year with more methane is louder. A compressor and a −1 dB limiter guard the master bus.
 
