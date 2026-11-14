@@ -9,7 +9,7 @@
 **Video (110 s, narrated, captioned): [watch on YouTube](https://youtu.be/iBgT21rSTec)** (unlisted). Plan and review in [demo/video-plan.md](demo/video-plan.md).
 
 - **What it does.** An Earth Information Jukebox for NASA Space Apps 2026: it plays NASA's [Earth Information Center](https://svs.gsfc.nasa.gov/gallery/earth-information-center/) visualizations and 20+ years of the same satellites' records as live music. In **Duet**, the oldest and newest year of a theme play at once, one in each ear, through the identical mapping, so the change is the difference you hear.
-- **Who it's for.** 338 million people are blind or have moderate to severe vision loss, and climate data almost always arrives as a chart. Terra Vox is built to be heard first: keyboard only, screen-reader captions generated from the data, spoken descriptions, no sight needed. _Tester result goes here, only once a session has actually happened (see [docs/submission.md](docs/submission.md))._
+- **Who it's for.** 338 million people are blind or have moderate to severe vision loss, and climate data almost always arrives as a chart. Terra Vox is built to be heard first: keyboard only, screen-reader captions generated from the data, spoken descriptions, no sight needed. Checked by automated tools and by the author; **not yet tested by a blind or low-vision listener** (see [docs/submission.md](docs/submission.md)).
 - **Proof the sound carries the data.** [`scripts/validate_mapping.py`](scripts/validate_mapping.py) runs every frame through the app's own mapping: pitch, loudness, density and tempo follow the measured value at **r ≥ 0.82 on all 11 tracks** (r = 1.00 for loudness everywhere). [The table](docs/mapping-explainer.md#3-proof-does-the-sound-carry-the-data).
 
 ## Judge in 60 seconds
