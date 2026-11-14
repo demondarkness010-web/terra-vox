@@ -4,7 +4,7 @@
 
 ### [▶ Try it live (headphones on)](https://demondarkness010-web.github.io/terra-vox/)
 
-![Terra Vox in Duet: methane in 2003 on the left half of the planet, 2026 on the right](docs/media/duet.png)
+![Terra Vox in Duet, 10 seconds: methane in 2003 on the left half of the planet, 2026 on the right; each ring is a note sounding where the satellite measured it](docs/media/duet.gif)
 
 **Video (110 s, narrated, captioned): [watch on YouTube](https://youtu.be/iBgT21rSTec)** (unlisted). Plan and review in [demo/video-plan.md](demo/video-plan.md).
 
