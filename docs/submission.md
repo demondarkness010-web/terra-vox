@@ -57,7 +57,7 @@ Whatever the answer, put one honest line in the submission. Drafts:
 - Andela et al. 2017, *Science*, https://doi.org/10.1126/science.aal4108; Cunningham, Williamson & Bowman 2024, *Nature Ecology & Evolution*, https://doi.org/10.1038/s41559-024-02452-2
 - Hamlington et al. 2024, *Communications Earth & Environment*, https://doi.org/10.1038/s43247-024-01761-5; NASA JPL news, January 29, 2026
 - Duncan et al. 2016, *JGR: Atmospheres*, https://doi.org/10.1002/2015JD024121; OMI row anomaly (FMI); WHO ambient air quality fact sheet, 2024
-- WMO Greenhouse Gas Bulletin No. 21 (2025); IPCC AR6 WG I, chapter 7; US Greenhouse Gas Center
+- WMO Greenhouse Gas Bulletin No. 21 (2025) and No. 22 (October 27, 2026); IPCC AR6 WG I, chapter 7; US Greenhouse Gas Center
 
 **Software and fonts**
 
@@ -65,6 +65,7 @@ Whatever the answer, put one honest line in the submission. Drafts:
 - Anybody and Atkinson Hyperlegible Next, via Fontsource (SIL Open Font License)
 - Python: NumPy, OpenCV, Pillow, Requests; ffmpeg for side B frame sampling
 - Claude Code (Anthropic), AI coding assistant (see the AI-use disclosure)
+- ElevenLabs text-to-speech, voice "George" (AI-generated narration of the demo video); ffmpeg (video assembly)
 
 ### Image rights: checked November 2, 2026
 
@@ -97,12 +98,29 @@ Then add one line to the README's second bullet and to the video, for example *"
 
 ---
 
+## 3b. Global Judging eligibility, checked against the rules (Nov 14)
+
+| Rule | Status |
+|---|---|
+| Responds to an official challenge | Yes: The Earth Information Jukebox |
+| Everyone registered for the same **Local Event**, not waitlisted, listed on the team page's Members tab (Local Event: 1 to 6 people; the Universal Event needs at least 2) | **You** check the team page. Solo works only as a Local Event team |
+| All required fields on the submission page | **You** |
+| Demo: video of at most 30 s, or at most 7 slides | 29.5 s cut made, **upload it** (see section 4) |
+| English on the page and in linked materials | Yes: app, README, docs and video captions are in English (Hindi and Spanish are extra) |
+| Submitted before **Sunday, Nov 15, 11:59 p.m. local time** of your Local Event | **You**; ask your lead if unsure of the exact local deadline |
+| Checkbox 1: read the Submission Guide and agree to the Terms and Privacy Policy | **You** |
+| Checkbox 2: original work, and **every** external resource (code, text, images, even open source) is in References; no copyrighted music, images or text without permission | References in section 2 list the NASA data and images, NOAA, the papers, Tone.js, three.js, Vite, the fonts, ElevenLabs and Claude. The video uses only the app's own sound and no music. **You** confirm it is true |
+| China funding restriction review | Nothing in the repository involves a Chinese government body or Chinese-owned company. The "North China Plain" Air Quality region is NASA satellite data. **You** answer the form's own question about your team |
+
+---
+
 ## 4. Before you submit: **You**
 
 - [x] **Enable Pages:** done November 2, 2026 (Source: **GitHub Actions**). `.github/workflows/deploy.yml` now publishes every push to `main` to https://demondarkness010-web.github.io/terra-vox/. Checked live: the page, all four themes and the NASA images load with no failed requests, and Start opens the methane Duet. **You:** open it once in a private window with headphones and confirm you hear sound after one click (a script can't hear it).
 - [ ] **Video vs app (author, Nov 14):** the video predates the data refresh; it says 1,754 → 1,879 ppb, the app now shows 1,756 → 1,881 (see the note in `demo/demo-script.md`). Either accept the 2 ppb gap or re-record the two methane lines.
 - [ ] **Tester session** done (section 3) and reported in the README with real numbers.
-- [x] **Video:** uploaded to YouTube as unlisted on November 14, 2026 (110 s, narrated, captions burned in): https://youtu.be/iBgT21rSTec. Checked from a signed-out request: title and length correct, playable, not private; the link is in the README's first screen. **Mono check (code review, Nov 14):** the only stereo effect is Tone's equal-power panner, with no inverted-phase or widening effect, so summing left and right to mono cannot cancel notes; the "Take turns" listening mode is built for one speaker or one earbud. Not yet heard on a real phone speaker.
+- [ ] **30-second demo (required):** the rules allow a video of **at most 30 seconds** (or at most 7 slides). The 110 s video below is over that limit, so it cannot be the demo. A 29.5 s cut is built from the same narration and screenshots: `demo/terra-vox-demo-30s.mp4` on this computer (video files are git-ignored, so it is not in the repo; `demo/video-src/build30.py` rebuilds it; 1280x720, captions burned in, ends on the credits card). **You:** upload it (YouTube, unlisted or public) and paste that link as the project demo. Keep the 110 s video as an optional "full walkthrough" link in the description.
+- [x] **Video (110 s, extra):** uploaded to YouTube as unlisted on November 14, 2026 (110 s, narrated, captions burned in): https://youtu.be/iBgT21rSTec. Checked from a signed-out request: title and length correct, playable, not private; the link is in the README's first screen. **Mono check (code review, Nov 14):** the only stereo effect is Tone's equal-power panner, with no inverted-phase or widening effect, so summing left and right to mono cannot cancel notes; the "Take turns" listening mode is built for one speaker or one earbud. Not yet heard on a real phone speaker.
 - [x] **GIF:** 10 seconds of the methane Duet (2003 left, 2026 right, rings at each note), 640 px wide, 1.1 MB, silent; `docs/media/duet.gif`, now in the README's first screen in place of the still. Recorded Nov 14 from the live build.
 - [ ] **README in your own voice:** rewrite the first screen (the line, the three bullets) yourself. Judges notice, and you'll present it better.
 - [ ] **Screen-reader pass:** NVDA (Windows, free) or VoiceOver (Mac or iPhone): start, choose a theme, Duet, pause, Guess the Year. Fix anything that reads twice, reads nothing, or traps focus.
