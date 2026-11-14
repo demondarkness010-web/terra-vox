@@ -229,9 +229,11 @@ export function createMappingReadout(container) {
   /** Briefly mark which side just started a bar (Duet). */
   function pulse(side) {
     board.querySelectorAll(`.cap.${side === 'oldest' ? 'old' : 'new'}`).forEach((c) => {
-      c.classList.remove('is-pulse');
-      void c.offsetWidth;
-      c.classList.add('is-pulse');
+      // Restart the animation by switching between two identical ones (a / -b), not by reading offsetWidth,
+      // which forced a layout of the whole page on every bar and made a slow laptop stutter.
+      const b = c.classList.contains('is-pulse');
+      c.classList.remove(b ? 'is-pulse' : 'is-pulse-b');
+      c.classList.add(b ? 'is-pulse-b' : 'is-pulse');
     });
   }
 

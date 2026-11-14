@@ -134,8 +134,14 @@ function currentFrame() {
 
 // The interface moves on the music's clock (DESIGN.md, Motion): one beat of
 // the bar just heard, written to --beat for the ring, captions and sparks.
+// Written only when it changes: a new value on the root makes the browser restyle the whole page.
+let beatValue = '';
 function setBeat(bpm) {
-  if (bpm > 0) document.documentElement.style.setProperty('--beat', `${Math.round(60000 / bpm)}ms`);
+  if (!(bpm > 0)) return;
+  const v = `${Math.round(60000 / bpm)}ms`;
+  if (v === beatValue) return;
+  beatValue = v;
+  document.documentElement.style.setProperty('--beat', v);
 }
 
 function ensureVoice() {

@@ -163,9 +163,11 @@ export function createCaptionTrack({ dataEl, soundEl, liveEl, prevEl = null, tra
     dataEl.textContent = data;
     soundEl.textContent = sound;
     if (trackEl) {
-      trackEl.classList.remove('is-new');
-      void trackEl.offsetWidth;
-      trackEl.classList.add('is-new');
+      // Restart the animation by switching between two identical ones (a / -b), not by reading offsetWidth,
+      // which forced a layout of the whole page on every bar and made a slow laptop stutter.
+      const b = trackEl.classList.contains('is-new');
+      trackEl.classList.remove(b ? 'is-new' : 'is-new-b');
+      trackEl.classList.add(b ? 'is-new-b' : 'is-new');
     }
   }
 

@@ -38,6 +38,19 @@ export function transpose(note, semitones) {
   return `${INDEX_NOTE[((midi % 12) + 12) % 12]}${Math.floor(midi / 12) - 1}`;
 }
 
+// 'A4' -> 440 (equal temperament), cached: the synth asks for it at every note.
+const HZ = new Map();
+export function noteHz(note) {
+  let hz = HZ.get(note);
+  if (hz === undefined) {
+    const [, name, octave] = note.match(/^([A-G]b?)(-?\d)$/);
+    const midi = (Number(octave) + 1) * 12 + NOTE_INDEX[name];
+    hz = 440 * 2 ** ((midi - 69) / 12);
+    HZ.set(note, hz);
+  }
+  return hz;
+}
+
 // Printed note name: 'Eb4' -> 'E♭4'.
 export function showNote(note) {
   return note.replace(/^([A-G])b/, '$1♭');

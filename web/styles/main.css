@@ -449,9 +449,14 @@ kbd {
 .cap-sound { margin: var(--s1) 0 0; color: var(--muted); }
 .lyrics.is-new .cap-data, .lyrics.is-new .cap-sound { animation: lyric calc(var(--beat) * 0.5) var(--ease-settle) both; }
 .lyrics.is-new .cap-prev { animation: fade-in calc(var(--beat) * 0.5) var(--ease-settle) both; }
+.lyrics.is-new-b .cap-data, .lyrics.is-new-b .cap-sound { animation: lyric-b calc(var(--beat) * 0.5) var(--ease-settle) both; }
+.lyrics.is-new-b .cap-prev { animation: fade-in-b calc(var(--beat) * 0.5) var(--ease-settle) both; }
 @keyframes lyric { from { opacity: 0; transform: translateY(var(--s2)); } }
+@keyframes lyric-b { from { opacity: 0; transform: translateY(var(--s2)); } }
 @keyframes fade-in { from { opacity: 0; } }
+@keyframes fade-in-b { from { opacity: 0; } }
 html[data-motion="reduce"] .lyrics.is-new :is(.cap-data, .cap-sound) { animation-name: fade-in; }
+html[data-motion="reduce"] .lyrics.is-new-b :is(.cap-data, .cap-sound) { animation-name: fade-in-b; }
 
 /* ------------------------------------------------------------------ transport */
 
@@ -490,7 +495,9 @@ html[data-motion="reduce"] .lyrics.is-new :is(.cap-data, .cap-sound) { animation
   pointer-events: none;
 }
 .play-btn.is-beat::after { animation: beat var(--beat) var(--ease-settle); }
+.play-btn.is-beat-b::after { animation: beat-b var(--beat) var(--ease-settle); }
 @keyframes beat { from { opacity: 0.7; transform: scale(1); } to { opacity: 0; transform: scale(1.45); } }
+@keyframes beat-b { from { opacity: 0.7; transform: scale(1); } to { opacity: 0; transform: scale(1.45); } }
 /* Reduced motion: no ring; the fill steps once per bar instead. */
 html[data-motion="reduce"] .play-btn::after { display: none; }
 html[data-motion="reduce"] .play-btn.is-tick { background: var(--muted); }
@@ -749,7 +756,9 @@ html[data-motion="reduce"] .play-btn.is-tick { background: var(--muted); }
 .knob .cap.new { background: var(--new); }
 .cap { forced-color-adjust: none; }
 .cap.is-pulse { animation: cap-pulse var(--beat) var(--ease-settle); }
+.cap.is-pulse-b { animation: cap-pulse-b var(--beat) var(--ease-settle); }
 @keyframes cap-pulse { 30% { opacity: 0.45; } }
+@keyframes cap-pulse-b { 30% { opacity: 0.45; } }
 
 [data-mode="single"] .cap.old, [data-mode="single"] .cap.new,
 [data-mode="single"] .v.old, [data-mode="single"] .v.new,

@@ -121,9 +121,11 @@ export function createTurntable(root, { onTogglePlay, onScrub, onStep, onListenM
       playBtn.classList.toggle('is-tick');
       return;
     }
-    playBtn.classList.remove('is-beat', 'is-tick');
-    void playBtn.offsetWidth;
-    playBtn.classList.add('is-beat');
+    // Restart the animation by switching between two identical ones (a / -b), not by reading offsetWidth,
+    // which forced a layout of the whole page on every bar and made a slow laptop stutter.
+    const b = playBtn.classList.contains('is-beat');
+    playBtn.classList.remove('is-tick', b ? 'is-beat' : 'is-beat-b');
+    playBtn.classList.add(b ? 'is-beat-b' : 'is-beat');
   }
 
   function spark(side, frame, velocity) {

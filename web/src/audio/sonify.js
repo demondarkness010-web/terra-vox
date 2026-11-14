@@ -15,6 +15,8 @@
 
 import * as Tone from 'tone';
 import { mapFeatures, barPlan, instrumentFor, timePan, TENSE_FROM } from './mapping.js';
+import { noteHz } from './scales.js';
+import { LiteSynth } from './liteSynth.js';
 
 export { mapFeatures, barPlan, instrumentFor, timePan, TENSE_FROM };
 
@@ -34,16 +36,17 @@ const TIMBRE = {
 };
 
 // One fixed instrument per theme (mapping.js INSTRUMENT names them): the
-// theme tells you what, the music tells you how much. `osc` prefixes the
-// waveform ("fat" = three detuned copies, a pad's width), `env` shapes every
+// theme tells you what, the music tells you how much. `env` shapes every
 // melody note, `cutoff` scales the timbre's filter, `trim` evens loudness out
 // between instruments, and `breath` adds band-passed pink noise under each
-// note at that share of its velocity.
+// note at that share of its velocity. Every instrument plays one oscillator
+// per note (the soft pad was three detuned copies: three times the work per
+// note, which a slow laptop could not keep up with in the Duet).
 const INSTRUMENTS = {
-  'soft pad':      { osc: 'fat', env: { attack: 0.18, decay: 0.5, sustain: 0.7, release: 2.0 }, cutoff: 0.8, trim: 1.0 },
-  'deep bass':     { osc: '', env: { attack: 0.008, decay: 0.4, sustain: 0.55, release: 0.9 }, cutoff: 0.5, trim: 0.9 },
-  'plucked notes': { osc: '', env: { attack: 0.002, decay: 0.25, sustain: 0.0, release: 0.4 }, cutoff: 1.2, trim: 1.1 },
-  'breathy noise': { osc: '', env: { attack: 0.05, decay: 0.3, sustain: 0.3, release: 0.9 }, cutoff: 0.9, trim: 1.0, breath: 0.9 },
+  'soft pad':      { env: { attack: 0.18, decay: 0.5, sustain: 0.7, release: 1.2 }, cutoff: 0.8, trim: 1.0 },
+  'deep bass':     { env: { attack: 0.008, decay: 0.4, sustain: 0.55, release: 0.9 }, cutoff: 0.5, trim: 0.9 },
+  'plucked notes': { env: { attack: 0.002, decay: 0.25, sustain: 0.0, release: 0.4 }, cutoff: 1.2, trim: 1.1 },
+  'breathy noise': { env: { attack: 0.05, decay: 0.3, sustain: 0.3, release: 0.9 }, cutoff: 0.9, trim: 1.0, breath: 0.9 },
 };
 const PAD_LEVEL = 0.35;
 const REVERB_SEND = 0.28;       // single play: a roomy tail
@@ -170,17 +173,17 @@ export class Voice {
     this.panner = new Tone.Panner(0);
     this.trim = new Tone.Gain(1);
     this.filter = new Tone.Filter({ type: 'lowpass', frequency: 6000, Q: 0.7, rolloff: -12 });
-    // Polyphonic so a note's release tail can overlap the next note's attack
-    // (a mono Tone.Synth throws if a start time is not strictly increasing,
-    // which a scrub-restart can produce, and the throw would kill the loop).
-    this.lead = new Tone.PolySynth(Tone.Synth, { oscillator: { type: 'sine' }, envelope: this.instrument.env });
-    this.lead.maxPolyphony = 12;
+    // Polyphonic so a note's release tail can overlap the next note's attack. LiteSynth, not
+    // Tone.PolySynth: same sound, but a note costs two native audio nodes instead of Tone's per-note
+    // objects, which on a slow laptop held up the main thread long enough to make notes late (crackle).
+    const context = Tone.getContext();
+    this.lead = new LiteSynth(context, { type: 'sine', envelope: this.instrument.env, maxPolyphony: 6 });
     this._noteIds = [];
-    this.pad = new Tone.PolySynth(Tone.Synth, {
-      oscillator: { type: 'sine' },
-      envelope: { attack: 0.6, decay: 0.4, sustain: 0.7, release: 2.2 },
+    this.pad = new LiteSynth(context, {
+      type: 'sine',
+      envelope: { attack: 0.6, decay: 0.4, sustain: 0.7, release: 1.4 },
+      maxPolyphony: 4,
     });
-    this.pad.maxPolyphony = 8;
     this.meter = new Tone.Meter({ smoothing: 0.8 });
 
     this.lead.connect(this.filter);
@@ -357,7 +360,7 @@ export class Voice {
     const t = TIMBRE[params.timbre];
     const inst = INSTRUMENTS[params.instrument] ?? INSTRUMENTS['soft pad'];
     this.instrument = inst;
-    this.lead.set({ oscillator: { type: `${inst.osc}${params.timbre}` }, envelope: inst.env });
+    this.lead.set({ oscillator: { type: params.timbre }, envelope: inst.env });
     this.pad.set({ oscillator: { type: params.timbre } });
     this.filter.frequency.rampTo(t.cutoff * inst.cutoff, 0.1);
     this.trim.gain.rampTo(t.trim * inst.trim, 0.1);
@@ -376,7 +379,7 @@ export class Voice {
       this.breathNoise.chain(this.breathBand, this.breathEnv, this.trim);
       this.breathNoise.start();
     }
-    this.breathBand.frequency.setValueAtTime(Tone.Frequency(note).toFrequency() * 2, time);
+    this.breathBand.frequency.setValueAtTime(noteHz(note) * 2, time);
     this.breathEnv.triggerAttackRelease(duration, time, velocity);
   }
 

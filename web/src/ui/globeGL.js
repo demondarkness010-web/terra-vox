@@ -148,6 +148,11 @@ export function createWebGLGlobe(container, onLost) {
   const dotGeo = new THREE.CircleGeometry(1, 16);
   const Z = new THREE.Vector3(0, 0, 1);
   const tmp = new THREE.Vector3();
+  const HIDDEN = new THREE.Matrix4().makeScale(0, 0, 0);
+  const BLACK = new THREE.Color(0, 0, 0);
+  const sc = new THREE.Vector3();
+  const mtx = new THREE.Matrix4();
+  const col = new THREE.Color();
 
   const blank = new THREE.DataTexture(new Uint8Array([0, 0, 0, 255]), 1, 1);
   blank.needsUpdate = true;
@@ -190,18 +195,26 @@ export function createWebGLGlobe(container, onLost) {
       uniforms: rimUniforms, vertexShader: SPHERE_VERT, fragmentShader: RIM_FRAG,
       side: THREE.BackSide, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
     }));
-    const sparks = Array.from({ length: POOL }, () => {
-      const mat = () => new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending });
-      const ring = new THREE.Mesh(ringGeo, mat());
-      const dot = new THREE.Mesh(dotGeo, mat());
-      ring.visible = dot.visible = false;
-      spinner.add(ring, dot);
-      return { ring, dot, born: -1, life: 1 };
-    });
+    // All of a planet's sparks are two instanced meshes (rings, dots): two draw calls a frame instead of up to
+    // 192 separate meshes, which cost about 10 ms a frame on a slow laptop and made the motion and the sound
+    // stutter. Blending is additive, so a spark fades by darkening its colour (black adds nothing).
+    const sparkMesh = (geo) => {
+      const m = new THREE.InstancedMesh(geo, new THREE.MeshBasicMaterial({ transparent: true, depthWrite: false, blending: THREE.AdditiveBlending }), POOL);
+      m.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+      m.setColorAt(0, new THREE.Color(0, 0, 0));
+      m.instanceColor.setUsage(THREE.DynamicDrawUsage);
+      for (let i = 0; i < POOL; i++) { m.setMatrixAt(i, HIDDEN); m.setColorAt(i, BLACK); }
+      m.frustumCulled = false;
+      spinner.add(m);
+      return m;
+    };
+    const rings = sparkMesh(ringGeo);
+    const dots = sparkMesh(dotGeo);
+    const sparks = Array.from({ length: POOL }, () => ({ on: false, pos: new THREE.Vector3(), quat: new THREE.Quaternion(), tint: new THREE.Color(), born: -1, life: 1 }));
     tilt.add(spinner);
     group.add(rim, tilt);
     scene.add(group);
-    return { group, spinner, uniforms, rimUniforms, cut, sparks, next: 0, url: null, fadeStart: -1, fadeMs: 0 };
+    return { group, spinner, uniforms, rimUniforms, cut, sparks, rings, dots, next: 0, url: null, fadeStart: -1, fadeMs: 0 };
   }
 
   const main = makePlanet('single');
@@ -320,20 +333,20 @@ export function createWebGLGlobe(container, onLost) {
     const pool = own.length >= 3 ? own : facing.length >= 3 ? facing : pts;
     const n = 2 + Math.round(velocity * 3);
     const tint = SPARK[side] ?? SPARK.single;
-    const life = ms('--beat') * 4;     // a spark lives one bar
+    // A spark lives one bar. The tempo comes from setTempo, not the --beat style token: reading a style
+    // at every note made the browser recompute the page's styles each time, which held up the sound.
+    const bpm = tempo[side] || tempo.single || tempo.oldest;
+    const life = bpm ? (4 * 60000) / bpm : 2400;
     const now = performance.now();
     for (let k = 0; k < n; k++) {
       const [lat, lon] = pool[Math.floor(Math.random() * pool.length)];
       const s = planet.sparks[planet.next];
       planet.next = (planet.next + 1) % POOL;
       const v = latLon(lat, lon, 1.004);
-      const q = new THREE.Quaternion().setFromUnitVectors(Z, v.clone().normalize());
-      [s.ring, s.dot].forEach((m) => {
-        m.position.copy(v);
-        m.quaternion.copy(q);
-        m.material.color.copy(tint);
-        m.visible = true;
-      });
+      s.pos.copy(v);
+      s.quat.setFromUnitVectors(Z, v.normalize());
+      s.tint.copy(tint);
+      s.on = true;
       s.born = now + k * 28;       // a short ripple rather than one flash
       s.life = life;
     }
@@ -371,22 +384,42 @@ export function createWebGLGlobe(container, onLost) {
     const calm = motionReduced();
     const half = planet.cut.uHalf.value;
     let alive = false;
-    planet.sparks.forEach((s) => {
-      if (!s.ring.visible) return;
+    let changed = false;
+    const { rings, dots } = planet;
+    planet.sparks.forEach((s, i) => {
+      if (!s.on) return;
       alive = true;
+      changed = true;
       const t = (now - s.born) / s.life;
-      if (t < 0) { s.ring.material.opacity = 0; s.dot.material.opacity = 0; return; }
-      if (t >= 1) { s.ring.visible = s.dot.visible = false; return; }
-      const r = calm ? 0.05 : 0.014 + 0.075 * (1 - (1 - Math.min(1, t * 2.5)) ** 3);
-      s.ring.scale.setScalar(r);
-      s.ring.material.opacity = (1 - t) ** 1.6 * (calm ? 0.6 : 0.95);
-      s.dot.scale.setScalar(0.013);
-      s.dot.material.opacity = 1 - t * t;
-      if (half) {
-        s.dot.getWorldPosition(tmp);
-        if ((tmp.x - planet.group.position.x) * half < 0) { s.ring.material.opacity = 0; s.dot.material.opacity = 0; }
+      let ringA = 0;
+      let dotA = 0;
+      if (t >= 1) {
+        s.on = false;
+      } else if (t >= 0) {
+        ringA = (1 - t) ** 1.6 * (calm ? 0.6 : 0.95);
+        dotA = 1 - t * t;
+        if (half) {
+          tmp.copy(s.pos).applyMatrix4(planet.spinner.matrixWorld);
+          if ((tmp.x - planet.group.position.x) * half < 0) { ringA = 0; dotA = 0; }
+        }
       }
+      if (!s.on || (ringA === 0 && dotA === 0)) {
+        rings.setMatrixAt(i, HIDDEN);
+        dots.setMatrixAt(i, HIDDEN);
+        return;
+      }
+      const r = calm ? 0.05 : 0.014 + 0.075 * (1 - (1 - Math.min(1, t * 2.5)) ** 3);
+      rings.setMatrixAt(i, mtx.compose(s.pos, s.quat, sc.setScalar(r)));
+      rings.setColorAt(i, col.copy(s.tint).multiplyScalar(ringA));
+      dots.setMatrixAt(i, mtx.compose(s.pos, s.quat, sc.setScalar(0.013)));
+      dots.setColorAt(i, col.copy(s.tint).multiplyScalar(dotA));
     });
+    if (changed) {
+      rings.instanceMatrix.needsUpdate = true;
+      rings.instanceColor.needsUpdate = true;
+      dots.instanceMatrix.needsUpdate = true;
+      dots.instanceColor.needsUpdate = true;
+    }
     return alive;
   }
 
