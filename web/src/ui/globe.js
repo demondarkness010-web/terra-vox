@@ -34,6 +34,22 @@ function createPlaceholder(container) {
   };
 }
 
+// Is WebGL running in software (SwiftShader, llvmpipe: a virtual machine, a remote desktop, a headless
+// browser, a machine with no usable graphics driver)? A 3D planet drawn on the CPU takes seconds to set up
+// and then crawls, so there the flat NASA frames are the better view. Real graphics chips are unaffected.
+function softwareRendering() {
+  try {
+    const gl = document.createElement('canvas').getContext('webgl');
+    if (!gl) return false;                       // no WebGL at all: the normal fallback handles it
+    const info = gl.getExtension('WEBGL_debug_renderer_info');
+    const name = info ? String(gl.getParameter(info.UNMASKED_RENDERER_WEBGL)) : '';
+    gl.getExtension('WEBGL_lose_context')?.loseContext();
+    return /swiftshader|llvmpipe|softpipe|software/i.test(name);
+  } catch {
+    return false;
+  }
+}
+
 // The public globe. WebGL can be refused or lost (a GPU reset, or the browser
 // blocking a page after a context loss), so this keeps the latest state,
 // shows the flat frame while WebGL is unavailable, retries, and replays the
@@ -69,8 +85,10 @@ export function createGlobe(container) {
     retry();
   }
 
+  let software = false;
+
   function retry() {
-    if (retries >= 6) return;
+    if (software || retries >= 6) return;
     retries += 1;
     setTimeout(async () => {
       const mod = await engine();
@@ -83,6 +101,7 @@ export function createGlobe(container) {
   }
 
   async function start() {
+    if (softwareRendering()) { software = true; useFlat(); return; }
     const mod = await engine();
     impl.destroy();                       // ends the placeholder's loading note first
     const next = mod ? mod.createWebGLGlobe(container, useFlat) : null;
