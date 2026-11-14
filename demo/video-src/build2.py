@@ -125,7 +125,8 @@ acc = "v0"
 for i in range(1, n):
     vf.append(f"[{acc}][v{i}]xfade=transition=fade:duration={XF}:offset={plan[i]['start']:.3f}[x{i}]")
     acc = f"x{i}"
-vf.append(f"[{acc}]ass=captions2.ass:fontsdir=fonts[vout]")
+# The ass filter outputs a 4:4:4 format; most players (Windows, phones, browsers) only play 4:2:0.
+vf.append(f"[{acc}]ass=captions2.ass:fontsdir=fonts,format=yuv420p[vout]")
 
 # ---- audio graph
 af, idx, a_inputs = [], 0, []
@@ -171,7 +172,7 @@ def run(args, label):
 
 if not (os.environ.get("REUSE_PICTURE") and os.path.exists("video/_picture.mp4")):
     run([*inputs, "-filter_complex", ";".join(vf), "-map", "[vout]", "-an",
-         "-c:v", "libx264", "-preset", "veryfast", "-crf", "23", "-r", str(FPS),
+         "-c:v", "libx264", "-preset", "veryfast", "-crf", "23", "-pix_fmt", "yuv420p", "-profile:v", "high", "-r", str(FPS),
          "-t", f"{TOTAL:.2f}", "video/_picture.mp4"], "picture")
 run([*a_inputs, "-filter_complex", ";".join(af), "-map", "[aout]",
      "-c:a", "aac", "-b:a", "160k", "-ar", "44100", "-t", f"{TOTAL:.2f}", "video/_sound.m4a"], "sound")
