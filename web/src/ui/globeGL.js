@@ -99,14 +99,18 @@ function tokenColor(name) {
   return c;
 }
 
+// A modest laptop (4 cores or fewer, or 4 GB or less) gets a lighter globe: no antialiasing, one pixel per
+// pixel, and 30 frames a second. The sound shares the same processor, so a lighter picture keeps it steady.
+const LOW_POWER = (navigator.hardwareConcurrency || 4) <= 4 || (navigator.deviceMemory || 8) <= 4;
+
 export function createWebGLGlobe(container, onLost) {
   let renderer;
   try {
-    renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
+    renderer = new THREE.WebGLRenderer({ antialias: !LOW_POWER, alpha: true, powerPreference: 'high-performance' });
   } catch {
     return null;
   }
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  renderer.setPixelRatio(LOW_POWER ? 1 : Math.min(window.devicePixelRatio || 1, 2));
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.domElement.className = 'globe-canvas';
   container.append(renderer.domElement);
@@ -382,6 +386,7 @@ export function createWebGLGlobe(container, onLost) {
   let raf = 0;
   function frame(now) {
     raf = visible ? requestAnimationFrame(frame) : 0;
+    if (LOW_POWER && now - lastTime < 30) return;
     const dt = Math.min(0.05, (now - lastTime) / 1000);
     lastTime = now;
     if (!size.w || !size.h) return;

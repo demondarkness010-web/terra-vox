@@ -414,9 +414,10 @@ function cycleListenMode() {
   setListenMode(LISTEN_MODES[(LISTEN_MODES.indexOf(state.listenMode) + 1) % LISTEN_MODES.length]);
 }
 
-function meterLoop() {
+let meterAt = 0;
+function meterLoop(now = 0) {
   if (!state.duet) return;
-  turntable.setMeters(duet.levels());
+  if (now - meterAt >= 66) { meterAt = now; turntable.setMeters(duet.levels()); }
   requestAnimationFrame(meterLoop);
 }
 
