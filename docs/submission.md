@@ -33,7 +33,7 @@ Whatever the answer, put one honest line in the submission. Drafts:
 - *If allowed:* "Development began October 29, 2026, before the event, with my local lead's approval; the commit history shows every change."
 - *If only event-weekend work counts:* "The base app predates the event (commits from October 29); the work submitted for judging is the commits from November 14–15, listed in the README."
 
-**Local lead's answer:** _(write it here when you have it)_
+**Local lead's answer:** The local lead said the October 29 commits are okay (answered 14 Nov 2026).
 
 ---
 

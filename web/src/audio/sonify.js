@@ -87,18 +87,40 @@ export function getMaster({ reverb = true } = {}) {
  * background tabs and would freeze captions while the music plays on.
  */
 export function whenHeard(time, fn) {
-  setTimeout(fn, Math.max(0, (time - Tone.immediate()) * 1000));
+  // `time` is when the note is handed to the output; the speakers play it outputLatency later.
+  const raw = Tone.getContext().rawContext;
+  const latency = (raw.outputLatency || raw.baseLatency || 0) * 1000;
+  setTimeout(fn, Math.max(0, (time - Tone.immediate()) * 1000 + latency));
+}
+
+let tuned = false;
+
+/**
+ * Settings for a slow laptop, applied once, inside the Start press (before any sound node exists):
+ *  - latencyHint 0.1: ask for an output buffer of about 100 ms (the browser picks the nearest it supports;
+ *    the default is 10 ms). On a processor that is busy with the page, a 10 ms buffer runs dry and the
+ *    speakers crackle; a bigger one rides it out. This is a listening app, so the delay is not noticed.
+ *  - lookAhead 0.4 s (not 0.1 s): the scheduler plans notes further ahead, so brief page stalls
+ *    (drawing the globe, building each note's nodes) do not make a note start late.
+ * Neither changes the sound itself; the on-screen cues are shifted by the output latency in whenHeard.
+ */
+function tuneContext() {
+  if (tuned) return;
+  tuned = true;
+  try {
+    Tone.setContext(new Tone.Context({ latencyHint: 0.1, lookAhead: 0.4, updateInterval: 0.05 }), true);
+  } catch {
+    const ctx = Tone.getContext();       // could not swap the context: keep it, just plan further ahead
+    ctx.lookAhead = 0.4;
+    ctx.updateInterval = 0.05;
+  }
 }
 
 /** Unlock audio (must run inside a user gesture) and start the clock. */
 export async function startAudio() {
   // iPhone: without a "playback" session, the ringer's silent switch mutes Web Audio.
   if (navigator.audioSession) navigator.audioSession.type = 'playback';
-  // The page shares one thread with the sound's scheduler. A longer look-ahead (0.4 s, not 0.1 s) lets
-  // notes survive the brief stalls a slow laptop has while it draws the globe; it does not delay the sound.
-  const ctx = Tone.getContext();
-  ctx.lookAhead = 0.4;
-  ctx.updateInterval = 0.05;
+  tuneContext();
   await Tone.start();
   const m = getMaster();
   const transport = Tone.getTransport();
