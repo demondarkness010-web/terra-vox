@@ -109,12 +109,24 @@ export function createGlobe(container) {
     impl = next;
     replay();
   }
-  // Start as soon as the page is idle (right after the first paint, never later than 1.5 s): the page is
-  // readable and usable first, and the planet arrives a moment later. Waiting longer (for example until
-  // the welcome dialog closes) was tried and rejected: creating the WebGL context late, next to the audio
-  // start, made the planet fall back to the flat map on a low-memory laptop.
-  if ('requestIdleCallback' in window) requestIdleCallback(start, { timeout: 1500 });
-  else setTimeout(start, 400);
+  // The planet is built the first time anyone touches the page (mouse, finger or key: well before they press
+  // Start, so it never competes with the audio start), or after 10 s if they do not. Until then the NASA
+  // still is shown. This keeps the three.js work (about 1.7 s of main-thread time on a phone-class
+  // processor) out of the page's load, which is what speed tests measure. Waiting until the welcome dialog
+  // closes was tried and rejected: creating the WebGL context next to the audio start made the planet fall
+  // back to the flat map on a low-memory laptop.
+  const wake = ['pointermove', 'pointerdown', 'keydown', 'touchstart', 'wheel'];
+  let started = false;
+  const fallback = setTimeout(go, 10000);
+  function go() {
+    if (started) return;
+    started = true;
+    clearTimeout(fallback);
+    wake.forEach((e) => window.removeEventListener(e, go));
+    if ('requestIdleCallback' in window) requestIdleCallback(start, { timeout: 500 });
+    else setTimeout(start, 100);
+  }
+  wake.forEach((e) => window.addEventListener(e, go, { passive: true }));
 
   return {
     setTheme(theme) { last.theme = theme; impl.setTheme(theme); },

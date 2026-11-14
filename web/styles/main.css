@@ -1058,3 +1058,10 @@ html[data-motion="reduce"] .play-btn.is-tick { background: var(--muted); }
   .groove-note { display: none; }
   .guess-head { flex-direction: column; gap: var(--s3); }
 }
+
+/* Below the player, the long reading sections are not laid out until they are scrolled near. That keeps the
+   first layout (and the welcome dialog opening) cheap. The sizes are rough guesses for the scrollbar only. */
+#field-guide, .desk, .proof, .credits {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 900px;
+}
