@@ -222,9 +222,10 @@ Duet mode: the stage spans the full width, one hard seam in the middle
 │ "Four buzzy notes up at E♭5, against one calm C4."    gap table      │
 ```
 
-- **The planet is photographed, not displayed.** In single mode its diameter is about 1.15×
-  the stage height and its lower limb is cropped by the horizon, the way it looks from
-  orbit. In Duet the two halves meet on the seam. Never shrink it to "fit nicely".
+- **The whole planet is visible and centred.** Its diameter is 0.9× the stage height, with equal
+  space above and below. (The first design drew it at 1.15× and cropped its lower limb at the horizon,
+  the way it looks from orbit; on a 1366×768 laptop that hid the southern hemisphere and the owner
+  asked for the full Earth, so this overrides it.) In Duet the two halves meet on the seam.
 - **The horizon** is the bottom edge of the stage: a 1px `edge` line where space ends and the
   hull begins. It is the only full-width rule on the page.
 - **Text never overlaps the planet** except the Duet ear years and tags, which sit on space

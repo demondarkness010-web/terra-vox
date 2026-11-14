@@ -9,8 +9,7 @@ const TAU = Math.PI * 2;
 const DEG = Math.PI / 180;
 const POOL = 96;
 const IDLE_MS = 5000;     // DESIGN.md: loops stop after five seconds paused
-const DIAMETER = 1.15;    // planet diameter as a share of stage height
-const HEADROOM = 0.07;    // space above the planet, as a share of stage height
+const DIAMETER = 0.9;     // planet diameter as a share of stage height: the whole planet fits, with margin
 const PART = 0.075;       // how far each Duet half leaves the seam, in planet radii
 const SWEEP_PAD = 0.15;   // the cut starts above the limb and ends below the horizon
 
@@ -405,13 +404,14 @@ export function createWebGLGlobe(container, onLost) {
     });
     if (!active) return;
 
-    // Radius 1 is drawn at 1.15 x half the stage height; the planet's top
-    // sits HEADROOM below the top edge and its lower limb falls under the horizon.
+    // Radius 1 is drawn at DIAMETER x half the stage height, and the whole planet is centred in the
+    // stage (it used to be 1.15x with its lower limb cut off by the horizon, which hid the southern
+    // hemisphere on short laptop screens).
     const halfH = 1 / DIAMETER;
     const halfW = (halfH * size.w) / size.h;
     camera.left = -halfW; camera.right = halfW; camera.top = halfH; camera.bottom = -halfH;
     camera.updateProjectionMatrix();
-    const cy = halfH * (1 - 2 * HEADROOM) - 1;
+    const cy = 0;
     const gap = PART * part.value;
     main.group.position.set(-gap, cy, 0);
     other.group.position.set(gap, cy, 0);

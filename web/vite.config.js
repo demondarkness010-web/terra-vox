@@ -27,8 +27,19 @@ function offline() {
 const CACHE = 'terra-vox-${version}';
 const FILES = ${JSON.stringify(files)};
 
+// The offline copy is about 18 MB. Fetching it all at once starves a small laptop (and the sound),
+// so it is fetched one file at a time with a pause between files; one failure never stops the rest.
+const pause = (ms) => new Promise((r) => setTimeout(r, ms));
+async function precache() {
+  const c = await caches.open(CACHE);
+  for (const url of FILES) {
+    try { await c.add(new Request(url, { cache: 'reload' })); } catch { /* skip it, keep going */ }
+    await pause(120);
+  }
+}
+
 self.addEventListener('install', (e) => {
-  e.waitUntil(caches.open(CACHE).then((c) => c.addAll(FILES)).then(() => self.skipWaiting()));
+  e.waitUntil(precache().then(() => self.skipWaiting()));
 });
 
 self.addEventListener('activate', (e) => {

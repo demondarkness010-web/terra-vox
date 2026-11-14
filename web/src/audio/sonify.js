@@ -94,6 +94,11 @@ export function whenHeard(time, fn) {
 export async function startAudio() {
   // iPhone: without a "playback" session, the ringer's silent switch mutes Web Audio.
   if (navigator.audioSession) navigator.audioSession.type = 'playback';
+  // The page shares one thread with the sound's scheduler. A longer look-ahead (0.4 s, not 0.1 s) lets
+  // notes survive the brief stalls a slow laptop has while it draws the globe; it does not delay the sound.
+  const ctx = Tone.getContext();
+  ctx.lookAhead = 0.4;
+  ctx.updateInterval = 0.05;
   await Tone.start();
   const m = getMaster();
   const transport = Tone.getTransport();
