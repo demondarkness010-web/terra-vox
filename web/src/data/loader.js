@@ -23,8 +23,8 @@ import { t, num, locale } from '../i18n/index.js';
 const featureFiles = import.meta.glob('../../../data/features/*/*.json', { eager: true, import: 'default' });
 const displayImages = import.meta.glob('../../../data/display/*/*.jpg', { eager: true, query: '?url', import: 'default' });
 const thumbnails = import.meta.glob('../../../assets/thumbnails/*.jpg', { eager: true, query: '?url', import: 'default' });
-// Where each frame's signal is (scripts/extract_points.py): drives the note sparks.
-const pointFiles = import.meta.glob('../../../data/points/*.json', { eager: true, import: 'default' });
+// Spark positions (data/points, ~340 KB) are only drawn by the 3D globe, so globeGL.js loads them in its own
+// lazily loaded file instead of every visitor downloading them before the page can start.
 // Optional data files: the app still runs if a script has not been run yet.
 const optional = import.meta.glob(['../../../data/eic.json', '../../../data/reference.json', '../../../data/legends.json', '../../../data/context.json', '../../../data/fire_check.json'], { eager: true, import: 'default' });
 const eicImages = import.meta.glob('../../../data/eic/*/*.jpg', { eager: true, query: '?url', import: 'default' });
@@ -122,7 +122,6 @@ const plain = ({ label, short, big, ...rest }) => rest;
 export function loadThemes() {
   if (cache) return cache;
   cache = themesMeta.themes.map((meta) => {
-    const points = pointFiles[`../../../data/points/${meta.id}.json`] ?? {};
     const frames = meta.frames.map((date) => {
       const features = featureFiles[`../../../data/features/${meta.id}/${date}.json`];
       if (!features) throw new Error(`Missing features for ${meta.id} ${date}; run scripts/extract_features.py`);
@@ -132,7 +131,6 @@ export function loadThemes() {
         label0: label,
         side: 'a',
         imageUrl: displayImages[`../../../data/display/${meta.id}/${date}.jpg`],
-        signal: points[date] ?? { kind: 'none', points: [] },
       });
     });
     const { name, signature, ...rest } = meta;

@@ -5,6 +5,15 @@ import * as THREE from 'three';
 import { color, ms, easing, motionReduced } from './tokens.js';
 import { trackLoading } from './globeLoading.js';
 
+// Where each year's signal sits on the planet (the sparks), per theme and date. Lives here, not in the
+// page's main file, because only the 3D globe uses it.
+const pointFiles = import.meta.glob('../../../data/points/*.json', { eager: true, import: 'default' });
+const NO_POINTS = [];
+function pointsOf(frame) {
+  if (!frame || frame.side === 'b') return NO_POINTS;
+  return pointFiles[`../../../data/points/${frame.theme}.json`]?.[frame.date]?.points ?? NO_POINTS;
+}
+
 const TAU = Math.PI * 2;
 const DEG = Math.PI / 180;
 const POOL = 96;
@@ -82,7 +91,7 @@ const lonDiff = (a, b) => ((((a - b) % 360) + 540) % 360) - 180;
 
 /** Circular mean longitude of a frame's signal, so the planet can face its data. */
 function dataLon(frame) {
-  const pts = frame?.signal?.points ?? [];
+  const pts = pointsOf(frame);
   if (!pts.length) return 20;
   let x = 0;
   let y = 0;
@@ -301,7 +310,7 @@ export function createWebGLGlobe(container, onLost) {
 
   function spark(side, frame, velocity = 0.7) {
     const planet = side === 'newest' ? other : main;
-    const pts = frame?.signal?.points ?? [];
+    const pts = pointsOf(frame);
     if (!pts.length || !planet.group.visible) return;
     const centre = lonFor(spin);
     const facing = pts.filter(([, lon]) => Math.abs(lonDiff(lon, centre)) < 72);

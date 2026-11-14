@@ -357,11 +357,18 @@ export function createFieldGuide(root) {
   let lastWidth = 0;
   let dirty = false;   // a draw was asked for while the guide was hidden
   // The guide sits behind "More", so drawing it at start-up is wasted work: draw once it has a width.
+  // It also sits below the player: draw only when it is within a screen of being seen (about 140 ms of
+  // start-up work on a slow laptop otherwise, for a chart nobody is looking at yet).
+  let near = false;
   function render() {
-    if (!chartHost.clientWidth) { dirty = true; return; }
+    if (!chartHost.clientWidth || !near) { dirty = true; return; }
     dirty = false;
     draw(chartHost, spec, mark);
   }
+  new IntersectionObserver(([entry]) => {
+    near = entry.isIntersecting;
+    if (near && dirty && spec) render();
+  }, { rootMargin: '800px 0px' }).observe(chartHost);
   const ro = new ResizeObserver(([entry]) => {
     const w = Math.round(entry.contentRect.width);
     if (!spec || (w === lastWidth && !dirty)) return;

@@ -23,17 +23,6 @@
 
 import { trackLoading } from './globeLoading.js';
 
-// Until the 3D engine is ready the stage shows "Loading the NASA frame" on black.
-function createPlaceholder(container) {
-  const loading = trackLoading(container);
-  loading.start();
-  return {
-    setTheme() {}, showFrame() {}, setDuet() {}, spark() {}, setTempo() {}, setPlaying() {},
-    destroy() { loading.end(); },
-    webgl: false,
-  };
-}
-
 // Is WebGL running in software (SwiftShader, llvmpipe: a virtual machine, a remote desktop, a headless
 // browser, a machine with no usable graphics driver)? A 3D planet drawn on the CPU takes seconds to set up
 // and then crawls, so there the flat NASA frames are the better view. Real graphics chips are unaffected.
@@ -59,7 +48,9 @@ function softwareRendering() {
 // meantime is replayed into it.
 export function createGlobe(container) {
   const last = { theme: null, frame: null, duet: null, playing: false, tempo: {} };
-  let impl = createPlaceholder(container);
+  // Until the 3D planet is ready the stage shows the flat NASA picture itself (a ~100 KB photo), so there is
+  // something real to look at from the first second instead of a black stage saying "Loading".
+  let impl = createFlatFallback(container);
   let retries = 0;
   let gl = null;
 
@@ -103,21 +94,22 @@ export function createGlobe(container) {
   async function start() {
     if (softwareRendering()) { software = true; useFlat(); return; }
     const mod = await engine();
-    impl.destroy();                       // ends the placeholder's loading note first
     const next = mod ? mod.createWebGLGlobe(container, useFlat) : null;
     if (!next) { useFlat(); return; }
+    impl.destroy();                       // the flat picture stays until the planet exists
     impl = next;
     replay();
   }
-  // The planet is built the first time anyone touches the page (mouse, finger or key: well before they press
-  // Start, so it never competes with the audio start), or after 10 s if they do not. Until then the NASA
-  // still is shown. This keeps the three.js work (about 1.7 s of main-thread time on a phone-class
-  // processor) out of the page's load, which is what speed tests measure. Waiting until the welcome dialog
-  // closes was tried and rejected: creating the WebGL context next to the audio start made the planet fall
-  // back to the flat map on a low-memory laptop.
+  // The planet is built once the page has loaded and gone quiet (at most ~2.5 s later), or sooner if anyone
+  // touches the page first. Until then the flat NASA picture is shown, so nothing waits on three.js. (Waiting
+  // for the first touch alone, or 10 s, left the planet missing for too long on a slow laptop. Waiting until
+  // the welcome dialog closes was tried and rejected: creating the WebGL context next to the audio start made
+  // the planet fall back to the flat map on a low-memory laptop.)
   const wake = ['pointermove', 'pointerdown', 'keydown', 'touchstart', 'wheel'];
   let started = false;
-  const fallback = setTimeout(go, 10000);
+  let fallback = 0;
+  const soon = () => { fallback = setTimeout(() => ('requestIdleCallback' in window ? requestIdleCallback(go, { timeout: 2500 }) : go()), 300); };
+  if (document.readyState === 'complete') soon(); else window.addEventListener('load', soon, { once: true });
   function go() {
     if (started) return;
     started = true;
@@ -150,12 +142,15 @@ function createFlatFallback(container) {
   img2.hidden = true;
   container.append(img, img2);
   const loading = trackLoading(container);
+  let pending = 0;
+  const done = () => { if (pending > 0) { pending -= 1; loading.end(); } };
   for (const el of [img, img2]) {
-    el.addEventListener('load', () => loading.end());
-    el.addEventListener('error', () => loading.end());
+    el.addEventListener('load', done);
+    el.addEventListener('error', done);
   }
   const setSrc = (el, url) => {
     if (el.getAttribute('src') === url) return;   // same URL never fires load again
+    pending += 1;
     loading.start();
     el.src = url;
   };
@@ -167,7 +162,7 @@ function createFlatFallback(container) {
       if (on) { setSrc(img, oldest.imageUrl); setSrc(img2, newest.imageUrl); }
     },
     spark() {}, setTempo() {}, setPlaying() {},
-    destroy() { img.remove(); img2.remove(); container.classList.remove('is-flat'); },
+    destroy() { while (pending > 0) done(); img.remove(); img2.remove(); container.classList.remove('is-flat'); },
     webgl: false,
   };
 }
