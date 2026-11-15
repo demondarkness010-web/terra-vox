@@ -62,11 +62,23 @@ class Run:
         return Image.blend(self.img(k - 1), self.img(k), (t - a) / (b - a))
 
 
+def texture_time(run, after, lo=90.0):
+    """First frame time (after `after`) whose globe is the bright map texture, not the dark fire globe left over from the previous theme."""
+    for t, f in zip(run.t, run.files):
+        if t >= after:
+            a = np.asarray(Image.open(f).convert("L").crop((400, 150, 640, 350)), dtype=np.float32)
+            if a.mean() > lo:
+                return t
+    raise SystemExit("no bright globe found")
+
+
 M = Run("rec_methane")      # intro phases and the first bars of the Duet
 MA = Run("rec_methane_a")   # a longer Duet, for the later scenes
 S = Run("rec_sea")
 
 onL = M.first(0, 1.0)
+texL = texture_time(M, onL - 0.5)
+tL = max(onL + LAT - 0.05, texL + 0.05)          # first picture of the methane globe, and the sound that matches it
 onR = M.first(1, onL + 1.0)
 onBoth = M.first(0, onR + 1.0)
 sL = S.first(0, 1.0)
@@ -74,6 +86,7 @@ sR = S.first(1, sL + 1.0)
 sBoth = S.first(0, sR + 1.0)
 aB = MA.first(1, MA.first(0, 1.0) + 1.0)
 aBoth = MA.first(0, aB + 1.0)
+print(f"methane texture shows from {texL:.2f}, left scene starts at {tL:.2f}")
 print(f"methane: left {onL:.2f} right {onR:.2f} both {onBoth:.2f} | sea: left {sL:.2f} right {sR:.2f} both {sBoth:.2f} | methane-a both {aBoth:.2f}")
 
 # ----------------------------------------------------------------------------- the edit
@@ -81,7 +94,7 @@ print(f"methane: left {onL:.2f} right {onR:.2f} both {onBoth:.2f} | sea: left {s
 PRE = 0.05
 SCENES = [
     ("title",  0.0,  1.8, MA, aBoth + 3.0, "backdrop"),
-    ("left",   1.8,  5.2, M,  onL + LAT - PRE, "left"),
+    ("left",   1.8,  5.2, M,  tL, "left"),
     ("right",  5.2,  7.4, M,  onR + LAT - PRE, "right"),
     ("both",   7.4, 13.0, M,  onBoth + LAT - PRE, "both"),
     ("sea",   13.0, 18.4, S,  sBoth + LAT - PRE, "both"),
@@ -93,7 +106,7 @@ TOTAL = SCENES[-1][2]
 
 # sound: (run, start inside the recording, length, where it goes in the video, fade in, fade out, gain dB)
 MUSIC = [
-    (M,  onL - PRE,       3.4, 1.8,  0.02, 0.12, 0),
+    (M,  tL - LAT,          3.4, 1.8,  0.02, 0.12, 0),
     (M,  onR - PRE,       2.2, 5.2,  0.02, 0.12, 0),
     (M,  onBoth - PRE,    5.6, 7.4,  0.02, 0.10, 0),
     (S,  sBoth - PRE,     5.4, 13.0, 0.02, 0.10, 0),
@@ -175,27 +188,29 @@ def build_ass(path):
     # left alone
     year_cols(1.8, 5.2, "2003", "2026", True, False)
     ev(2.0, 5.2, "low · slow · calm", (50, 345), 7, size=36, color=WHITE)
-    ev(2.2, 5.2, "one note a bar · 80 BPM", (50, 392), 7, size=26, color=GREY)
+    ev(2.2, 5.2, "C4 · one note a bar · 80 BPM", (50, 392), 7, size=26, color=GREY)
     caption(1.95, 4.3, CAPTION["A1"])
     # right alone
     year_cols(5.2, 7.4, "2003", "2026", False, True)
     ev(5.3, 7.4, "higher · busier · tense", (1230, 345), 9, size=36, color=WHITE)
-    ev(5.4, 7.4, "four notes a bar · 118 BPM", (1230, 392), 9, size=26, color=GREY)
+    ev(5.4, 7.4, "E♭5 · four notes a bar · 118 BPM", (1230, 392), 9, size=26, color=GREY)
     caption(5.32, 7.2, CAPTION["A2"])
     # both
     year_cols(7.4, 13.0, "2003", "2026", True, True)
     caption(7.52, 11.1, CAPTION["A3"])
     ev(10.3, 13.0, "1,756", (52, 360), 7, style="Big", size=64, color=BLUE, pop=True)
-    ev(10.3, 13.0, "ppb", (52, 432), 7, size=28, color=GREY)
+    ev(10.3, 13.0, "ppb, January to September", (52, 432), 7, size=24, color=GREY)
     counter(10.6, 12.0, 1756, 1881, lambda v: f"{v:,.0f}", (1228, 360), 9, 64, AMBER, 13.0)
-    ev(10.6, 13.0, "ppb", (1228, 432), 9, size=28, color=GREY)
-    ev(11.9, 13.0, "+125 ppb in 23 years", (640, 666), 2, style="Big", size=44, color=WHITE, pop=True, fad=(100, 150))
+    ev(10.6, 13.0, "ppb, January to September", (1228, 432), 9, size=24, color=GREY)
+    ev(11.9, 13.0, "+125 ppb in 23 years", (640, 656), 2, style="Big", size=44, color=WHITE, pop=True, fad=(100, 150))
+    ev(10.4, 13.0, "NASA AIRS satellite, methane at 400 hPa (about 7 km up)", (640, 704), 2, size=22, color=GREY, fad=(150, 100))
     # sea level
     year_cols(13.0, 18.4, "1993", "2018", True, True)
-    ev(13.3, 18.4, "SEA LEVEL", (52, 70), 7, size=30, color=GREY, spacing=8)
+    ev(13.3, 18.4, "SEA LEVEL", (52, 50), 7, size=30, color=GREY, spacing=8)
+    ev(13.5, 18.4, "NASA JPL MEaSUREs, sea surface height", (52, 92), 7, size=22, color=GREY)
     ev(13.5, 18.4, "−3.4 cm", (52, 360), 7, style="Big", size=64, color=BLUE, pop=True)
     counter(13.9, 15.4, -3.4, 4.2, lambda v: ("+" if v >= 0 else "−") + f"{abs(v):.1f} cm", (1228, 360), 9, 64, AMBER, 18.4)
-    ev(15.2, 18.4, "Sea level rose 7.6 cm.", (640, 628), 2, style="Big", size=44, color=WHITE, pop=True, fad=(100, 150))
+    ev(15.2, 18.4, "1993 to 2018: sea level rose 7.6 cm.", (640, 628), 2, style="Big", size=44, color=WHITE, pop=True, fad=(100, 150))
     ev(16.2, 18.4, "Hear the bass climb an octave.", (640, 676), 2, size=34, color=GREY, fad=(150, 150))
     # proof
     ev(18.4, 23.2, "DOES THE SOUND CARRY THE DATA?", (640, 86), 8, size=34, color=AMBER, spacing=6, fad=(150, 150))
@@ -210,13 +225,13 @@ def build_ass(path):
     # access
     ev(23.2, 26.4, "BUILT FOR LISTENERS FIRST", (640, 92), 8, size=34, color=AMBER, spacing=6, fad=(150, 150))
     ev(23.3, 26.4, "338 million", (640, 170), 8, style="Big", size=150, pop=True, fad=(100, 150))
-    ev(23.5, 26.4, "people are blind or have low vision", (640, 352), 8, size=44, color=WHITE, fad=(150, 150))
+    ev(23.5, 26.4, "people are blind or have moderate to severe vision loss", (640, 352), 8, size=44, color=WHITE, fad=(150, 150))
     ev(24.0, 26.4, "Keyboard only  ·  Captions  ·  Speech  ·  English, Hindi, Spanish", (640, 470), 8, size=34, color=GREY, fad=(150, 150))
     # end card
     ev(26.4, 29.0, "TERRA VOX", (640, 150), 8, style="Big", size=124, pop=True, fad=(100, 250))
     ev(26.6, 29.0, "Hear how the planet changed", (640, 310), 8, size=46, color=WHITE, fad=(150, 250))
     ev(26.8, 29.0, "demondarkness010-web.github.io/terra-vox", (640, 400), 8, size=40, color=AMBER, fad=(150, 250))
-    ev(26.8, 29.0, f"Data: NASA GIBS and NASA SVS Earth Information Center. Checked against NOAA.{BS}N"
+    ev(26.8, 29.0, f"Data: NASA GIBS (AIRS methane, JPL MEaSUREs sea level). Checked against NOAA GML and NOAA LSA.{BS}N"
                    f"Narration: AI voice (ElevenLabs). Built with Claude Code. NASA and NOAA do not endorse this project.",
        (640, 620), 8, size=22, color=GREY, fad=(150, 250))
     head = f"""[Script Info]
