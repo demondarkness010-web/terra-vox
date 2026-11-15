@@ -34,7 +34,7 @@ The form says audio and code must be acknowledged "in descriptive text and metad
 "Narration is an AI-generated voice (ElevenLabs). The app was built with Claude Code (Anthropic), an AI coding assistant. NASA and NOAA do not endorse this project."
 
 ## Project Demonstration (link)
-The 30-second video (demo/terra-vox-demo-30s.mp4 on this computer), uploaded to YouTube as unlisted or public, or to Google Drive with "anyone with the link". Paste the full https:// link.
+https://youtu.be/g190lvPtNrM  (28 s, unlisted; update its description first: delete the old chapter list and add the AI disclosure line)
 
 ## Project (link)
 https://demondarkness010-web.github.io/terra-vox/
