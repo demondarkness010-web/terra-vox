@@ -1,4 +1,6 @@
-# Narration for the 30-second demo (ElevenLabs voice 2oMnzJn2otqHVjyCboYJ)
+# Narration for the 30-second demo (ElevenLabs)
+
+**Status (Nov 15):** the requested voice 2oMnzJn2otqHVjyCboYJ is a Voice Library voice, and ElevenLabs answers 402 `paid_plan_required` for it over the API on a free plan. The delivered film `demo/terra-vox-demo-30s-eleven.mp4` therefore uses ElevenLabs' built-in voice George (JBFqnCBsd6RMkjVDRZzb). To use 2oMnzJn2otqHVjyCboYJ, upgrade the plan or follow route A below, then rebuild.
 
 The film (`demo/video-src/build_v6.py`) fits itself to whatever narrator files it is given, so you only need eight short audio files.
 
